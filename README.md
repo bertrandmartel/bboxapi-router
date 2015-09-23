@@ -16,7 +16,7 @@ This README may contain inaccurate information about these api due to early rele
 <h3>List of API implemented</h3>
 
 | api     | prototype        |   access      | comment
-|--------------|--------------|------------------------|
+|--------------|---------|-----|------------------------|
 | summary | ``getSummary(IApiSummaryListener listener)`` |  public    | some information about Bbox      |
 | authentication | ``authenticate(String password, IAuthenticationListener authenticationListener)`` |  public    | authenticate to be able to use private API      |
 | voip | ``voipData(IVoipDataListener voipDataListener)`` |  private    | request voip data      |
@@ -348,7 +348,6 @@ java -jar bbox-api-client-test-1.0.jar
 Usage :
 ```
 ./bboxapi-curl.sh <your_password> <phone_number>
-
 ```
 
 <hr/>

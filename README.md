@@ -334,6 +334,25 @@ Input :
 
 <hr/>
 
+<h2>Android integration</h2>
+
+To integrate with Android add Internet permission to manifest : 
+```
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+To include jar :
+```
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+```
+
 <h2>Testing Bbox APIs</h2>
 
 * You can test all previous API in java project bbox-api-client-test :

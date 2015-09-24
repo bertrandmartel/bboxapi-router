@@ -3,4 +3,4 @@
 .metadata
 .settings
 .recommenders
-/bin/*
+bin/

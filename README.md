@@ -1,7 +1,7 @@
 # Bbox Api client library #
 http://akinaru.github.io/bbox-api-client
 
-<i>Last update on 23/09/2015</i>
+<i>Last update on 29/09/2015</i>
 
 Library for using Bbox Json API opened in end of september 2015 on Bbox Sensation
 
@@ -383,7 +383,7 @@ dependencies {
 
 ```
 cd ./bbox-api-client-test/release
-java -jar bbox-api-client-test-1.0.jar
+java -jar bbox-api-client-test-1.01.jar
 ```
 
 * You can test Bbox API with a Linux Bash script ``bboxapi-curl.sh`` script accomplishing authentication, request voip data and dial a number.

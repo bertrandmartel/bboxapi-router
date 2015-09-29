@@ -28,6 +28,7 @@ import fr.bmartel.bboxapi.listeners.IAuthenticationListener;
 import fr.bmartel.bboxapi.listeners.IBboxDeviceListener;
 import fr.bmartel.bboxapi.listeners.IFullCallLogListener;
 import fr.bmartel.bboxapi.listeners.IHostsListener;
+import fr.bmartel.bboxapi.listeners.ILogoutListener;
 import fr.bmartel.bboxapi.listeners.IRequestStatusListener;
 import fr.bmartel.bboxapi.listeners.IVoipDataListener;
 
@@ -49,7 +50,24 @@ public interface IBboxApi {
 	 * @return true if authentication has been initiated successfully
 	 */
 	public boolean authenticate(String password, IAuthenticationListener authenticationListener);
-
+	
+	/**
+	 * Tell you if you have already authenticated
+	 * 
+	 * @return
+	 */
+	public boolean isAuthenticated();
+	
+	/**
+	 * Logout 
+	 * 
+	 * @param logoutListener
+	 * 		listener called when logout result has been received
+	 * @return
+	 * 		true if logout has been initiated successfully
+	 */
+	public boolean logout(ILogoutListener logoutListener);
+	
 	/**
 	 * Voip data
 	 * 

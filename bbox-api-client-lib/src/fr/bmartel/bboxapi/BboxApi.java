@@ -36,6 +36,7 @@ import fr.bmartel.bboxapi.listeners.IAuthenticationListener;
 import fr.bmartel.bboxapi.listeners.IBboxDeviceListener;
 import fr.bmartel.bboxapi.listeners.IFullCallLogListener;
 import fr.bmartel.bboxapi.listeners.IHostsListener;
+import fr.bmartel.bboxapi.listeners.ILogoutListener;
 import fr.bmartel.bboxapi.listeners.IRequestStatusListener;
 import fr.bmartel.bboxapi.listeners.IVoipDataListener;
 import fr.bmartel.bboxapi.model.ApiSummary;
@@ -63,7 +64,9 @@ import fr.bmartel.protocol.http.utils.ListOfBytes;
 public class BboxApi implements IBboxApi {
 
 	private String token_header = "";
-
+	
+	private boolean authenticated = false;
+	
 	public BboxApi() {
 	}
 
@@ -96,7 +99,9 @@ public class BboxApi implements IBboxApi {
 							token_header = frame.getHeaders().get("set-cookie");
 
 							String token = token_header.substring(8, token_header.indexOf(';'));
-
+							
+							authenticated=true;
+							
 							authenticationListener.onAuthenticationSuccess(token);
 						} else {
 							authenticationListener.onAuthenticationError();
@@ -770,6 +775,56 @@ public class BboxApi implements IBboxApi {
 		headers.put("Host", "gestionbbox.lan");
 		headers.put("Cookie", token_header);
 		HttpFrame frameRequest = new HttpFrame(HttpMethod.GET_REQUEST, new HttpVersion(1, 1), headers, "/api/v1/summary", new ListOfBytes(""));
+
+		clientSocket.write(frameRequest.toString().getBytes());
+
+		return false;
+	}
+
+	@Override
+	public boolean isAuthenticated() {
+		return authenticated;
+	}
+
+	/**
+	 * Logout 
+	 * 
+	 * @param logoutListener
+	 * 		listener called when logout result has been received
+	 * @return
+	 * 		true if logout has been initiated successfully
+	 */
+	@Override
+	public boolean logout(final ILogoutListener logoutListener) {
+		
+		ClientSocket clientSocket = new ClientSocket("gestionbbox.lan", 80);
+
+		clientSocket.addClientSocketEventListener(new IHttpClientListener() {
+
+			@Override
+			public void onIncomingHttpFrame(HttpFrame frame, HttpStates httpStates, IClientSocket clientSocket) {
+
+				if (httpStates == HttpStates.HTTP_FRAME_OK && frame.isHttpResponseFrame()) {
+
+					// this is data coming from the server
+					if (frame.getStatusCode() == 200) {
+
+						token_header="";
+						authenticated=false;
+						logoutListener.onLogoutSuccess();
+						
+					} else {
+						logoutListener.onLogoutError();
+					}
+					clientSocket.closeSocket();
+				}
+			}
+		});
+
+		HashMap<String, String> headers = new HashMap<String, String>();
+		headers.put("Accept", "*/*");
+		headers.put("Host", "gestionbbox.lan");
+		HttpFrame frameRequest = new HttpFrame(HttpMethod.POST_REQUEST, new HttpVersion(1, 1), headers, "/api/v1/logout", new ListOfBytes(""));
 
 		clientSocket.write(frameRequest.toString().getBytes());
 

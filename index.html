@@ -24,7 +24,7 @@
 
 <p><a href="http://akinaru.github.io/bbox-api-client">http://akinaru.github.io/bbox-api-client</a></p>
 
-<p><i>Last update on 23/09/2015</i></p>
+<p><i>Last update on 29/09/2015</i></p>
 
 <p>Library for using Bbox Json API opened in end of september 2015 on Bbox Sensation</p>
 
@@ -32,7 +32,7 @@
 
 <p>You must be on the same network as your Bbox to use them</p>
 
-<p>last release : <a href="https://github.com/akinaru/bbox-api-client/releases/tag/1.0">https://github.com/akinaru/bbox-api-client/releases/tag/1.0</a></p>
+<p>last release : <a href="https://github.com/akinaru/bbox-api-client/releases/tag/1.02">https://github.com/akinaru/bbox-api-client/releases/tag/1.02</a></p>
 
 <p>This README may contain inaccurate information about these api due to early release.</p>
 
@@ -238,7 +238,6 @@ BboxApi apiWrapper = new BboxApi();
     public void onAuthenticationSuccess(String token) {
 
         //successfull registration
-
     }
 
     @Override
@@ -251,6 +250,33 @@ BboxApi apiWrapper = new BboxApi();
 </code></pre>
 
 <p>If registration is successful, token is stored in RAM in Bboxapi object. Further call to BboxApi object will integrate a Cookie header with received token.</p>
+
+<h3>
+<a id="logout" class="anchor" href="#logout" aria-hidden="true"><span class="octicon octicon-link"></span></a>Logout</h3>
+
+<p>To logout :</p>
+
+<pre><code>api.logout(new ILogoutListener() {
+
+    @Override
+    public void onLogoutSuccess() {
+
+        //successfull logout
+    }
+
+    @Override
+    public void onLogoutError() {
+
+        //failure logout
+    }
+});
+</code></pre>
+
+<h3>
+<a id="check-authentication" class="anchor" href="#check-authentication" aria-hidden="true"><span class="octicon octicon-link"></span></a>Check authentication</h3>
+
+<pre><code>boolean api.isAuthenticated()
+</code></pre>
 
 <h3>
 <a id="retrieve-bbox-device-info" class="anchor" href="#retrieve-bbox-device-info" aria-hidden="true"><span class="octicon octicon-link"></span></a>Retrieve Bbox device info</h3>
@@ -413,6 +439,240 @@ BboxApi apiWrapper = new BboxApi();
 </tr>
 </tbody>
 </table>
+
+<h3>
+<a id="retrieve-wireless-data" class="anchor" href="#retrieve-wireless-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Retrieve wireless data</h3>
+
+<p>Get information about wireless data</p>
+
+<pre><code>api.getWirelessData(new IWirelessListener() {
+
+    @Override
+    public void onWirelessDataReceived(WirelessData wirelessData) {
+
+        //wireless data request successfull
+
+    }
+
+    @Override
+    public void onWirelessDataFailure() {
+
+        //wireless data request failure
+
+    }
+});
+</code></pre>
+
+<p><code>WirelessData</code> object description </p>
+
+<p>This structure features several map with channel number as key ( radio / ssid / capabilities and wifi type)</p>
+
+<table>
+<thead>
+<tr>
+<th>property</th>
+<th>Type</th>
+<th>comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status</code></td>
+<td>String</td>
+<td>? ("Loaded" static value)</td>
+</tr>
+<tr>
+<td><code>radioList</code></td>
+<td>HashMap</td>
+<td>list of radio information per channel (see below)</td>
+</tr>
+<tr>
+<td><code>ssidList</code></td>
+<td>HashMap</td>
+<td>list of ssid information per channel (see below)</td>
+</tr>
+<tr>
+<td><code>capabilityRadioList</code></td>
+<td>HashMap&gt;</td>
+<td>list of wireless capabilities information per channel (see below)</td>
+</tr>
+<tr>
+<td><code>standardTypeList</code></td>
+<td>HashMap&gt;</td>
+<td>list of wifi types per channel (ex : "802.11a/n")</td>
+</tr>
+</tbody>
+</table>
+
+<p>List object items :</p>
+
+<ul>
+<li>
+<code>RadioObject</code> object description </li>
+</ul>
+
+<table>
+<thead>
+<tr>
+<th>property</th>
+<th>Type</th>
+<th>comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enable</code></td>
+<td>boolean</td>
+<td>is radio enabled</td>
+</tr>
+<tr>
+<td><code>standard</code></td>
+<td>String</td>
+<td>type of wifi (bgnac)</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>int</td>
+<td>state ?</td>
+</tr>
+<tr>
+<td><code>channel</code></td>
+<td>int</td>
+<td>channel used</td>
+</tr>
+<tr>
+<td><code>currentChannel</code></td>
+<td>int</td>
+<td>current channel</td>
+</tr>
+<tr>
+<td><code>dfs</code></td>
+<td>boolean</td>
+<td>using dynamic frequency selection</td>
+</tr>
+<tr>
+<td><code>ht40</code></td>
+<td>boolean</td>
+<td>using 40MHz wide channel</td>
+</tr>
+</tbody>
+</table>
+
+<ul>
+<li>
+<code>SsidObject</code> object description </li>
+</ul>
+
+<table>
+<thead>
+<tr>
+<th>property</th>
+<th>Type</th>
+<th>comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>String</td>
+<td>ssid name</td>
+</tr>
+<tr>
+<td><code>enabled</code></td>
+<td>boolean</td>
+<td>is ssid enabled</td>
+</tr>
+<tr>
+<td><code>hidden</code></td>
+<td>boolean</td>
+<td>is ssid hidden</td>
+</tr>
+<tr>
+<td><code>bssid</code></td>
+<td>String</td>
+<td>basic set of service address</td>
+</tr>
+<tr>
+<td><code>wmmenable</code></td>
+<td>boolean</td>
+<td>is Wifi multimedia enabled</td>
+</tr>
+<tr>
+<td><code>wpsenabled</code></td>
+<td>boolean</td>
+<td>is WPS security is enabled</td>
+</tr>
+<tr>
+<td><code>wpsstatus</code></td>
+<td>String</td>
+<td>WPS status</td>
+</tr>
+<tr>
+<td><code>securityDefault</code></td>
+<td>boolean</td>
+<td>security use by default for this ssid</td>
+</tr>
+<tr>
+<td><code>securityProtocol</code></td>
+<td>String</td>
+<td>security protocol used (WPA / WPA2 ...)</td>
+</tr>
+<tr>
+<td><code>securityEncryption</code></td>
+<td>String</td>
+<td>enryption used</td>
+</tr>
+<tr>
+<td><code>securityPassphrase</code></td>
+<td>String</td>
+<td>wifi passphrase</td>
+</tr>
+</tbody>
+</table>
+
+<ul>
+<li>
+<code>WirelessCapability</code> object description</li>
+</ul>
+
+<table>
+<thead>
+<tr>
+<th>property</th>
+<th>Type</th>
+<th>comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>channel</code></td>
+<td>int</td>
+<td>channel num</td>
+</tr>
+<tr>
+<td><code>ht40</code></td>
+<td>String</td>
+<td>channel used (52 to 136 are only available if Dynamic Frequency Selection is enabled)</td>
+</tr>
+<tr>
+<td><code>nodfs</code></td>
+<td>boolean</td>
+<td>no dynamic frequency selection used</td>
+</tr>
+<tr>
+<td><code>cactime</code></td>
+<td>int</td>
+<td>channel availability check time</td>
+</tr>
+<tr>
+<td><code>cactime40</code></td>
+<td>int</td>
+<td>channel availability check time for 40MHz wide band</td>
+</tr>
+</tbody>
+</table>
+
+<p><b>to know if wireless is enabled, use  <code>WirelessData.isRadioEnabled()</code></b></p>
 
 <h3>
 <a id="retrieve-voip-data" class="anchor" href="#retrieve-voip-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Retrieve voip data</h3>
@@ -653,6 +913,26 @@ BboxApi apiWrapper = new BboxApi();
 <hr>
 
 <h2>
+<a id="android-integration" class="anchor" href="#android-integration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Android integration</h2>
+
+<p>To integrate with Android add Internet permission to manifest : </p>
+
+<pre><code>&lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+</code></pre>
+
+<p>To include jar :</p>
+
+<pre><code>repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+</code></pre>
+
+<h2>
 <a id="testing-bbox-apis" class="anchor" href="#testing-bbox-apis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Testing Bbox APIs</h2>
 
 <ul>
@@ -660,7 +940,7 @@ BboxApi apiWrapper = new BboxApi();
 </ul>
 
 <pre><code>cd ./bbox-api-client-test/release
-java -jar bbox-api-client-test-1.0.jar
+java -jar bbox-api-client-test-1.02.jar
 </code></pre>
 
 <ul>

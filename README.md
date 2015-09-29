@@ -279,6 +279,9 @@ List object items :
 |``cactime`` | int    | channel availability check time     |
 |``cactime40`` | int    | channel availability check time for 40MHz wide band     |
 
+
+<b>to know if wireless is enabled, use  ``WirelessData.isRadioEnabled()``</b>
+
 <h3>Retrieve voip data</h3>
 
 Get voip information

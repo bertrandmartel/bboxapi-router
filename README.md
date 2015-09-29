@@ -9,7 +9,7 @@ These apis are used by Bbox management interface in hostname : gestionbbox.lan p
 
 You must be on the same network as your Bbox to use them
 
-last release : https://github.com/akinaru/bbox-api-client/releases/tag/1.0
+last release : https://github.com/akinaru/bbox-api-client/releases/tag/1.01
 
 This README may contain inaccurate information about these api due to early release.
 
@@ -94,7 +94,6 @@ api.authenticate("your_password", new IAuthenticationListener() {
 	public void onAuthenticationSuccess(String token) {
 		
 		//successfull registration
-		
 	}
 
 	@Override
@@ -107,6 +106,31 @@ api.authenticate("your_password", new IAuthenticationListener() {
 ```
 
 If registration is successful, token is stored in RAM in Bboxapi object. Further call to BboxApi object will integrate a Cookie header with received token.
+
+<h3>Logout</h3>
+
+To logout :
+```
+api.logout(new ILogoutListener() {
+	
+	@Override
+	public void onLogoutSuccess() {
+	
+		//successfull logout
+	}
+	
+	@Override
+	public void onLogoutError() {
+	
+		//failure logout
+	}
+});
+```
+<h3>Check authentication</h3>
+
+```
+boolean api.isAuthenticated()
+```
 
 <h3>Retrieve Bbox device info</h3>
 

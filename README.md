@@ -9,7 +9,7 @@ These apis are used by Bbox management interface in hostname : gestionbbox.lan p
 
 You must be on the same network as your Bbox to use them
 
-last release : https://github.com/akinaru/bbox-api-client/releases/tag/1.01
+last release : https://github.com/akinaru/bbox-api-client/releases/tag/1.02
 
 This README may contain inaccurate information about these api due to early release.
 
@@ -204,6 +204,81 @@ Result is a list of ``Host`` object define as following :
 |``lease`` | int    | lease time for this host     |
 |``active`` | boolean    |  define if host is active |
 
+<h3>Retrieve wireless data</h3>
+
+Get information about wireless data
+
+```
+api.getWirelessData(new IWirelessListener() {
+
+	@Override
+	public void onWirelessDataReceived(WirelessData wirelessData) {
+
+		//wireless data request successfull
+
+	}
+
+	@Override
+	public void onWirelessDataFailure() {
+
+		//wireless data request failure
+
+	}
+});
+```
+
+``WirelessData`` object description 
+
+This structure features several map with channel number as key ( radio / ssid / capabilities and wifi type)
+
+| property             | Type              | comment
+|--------------|--------------|------------------------|
+|``status`` | String    | ? ("Loaded" static value)      |
+|``radioList`` | HashMap<Integer, RadioObject>    | list of radio information per channel (see below)   |
+|``ssidList`` | HashMap<Integer, SsidObject>    | list of ssid information per channel (see below)   |
+|``capabilityRadioList`` | HashMap<Integer, List<WirelessCapability>>    | list of wireless capabilities information per channel (see below)   |
+|``standardTypeList`` | HashMap<Integer, List<String>>    | list of wifi types per channel (ex : "802.11a/n")   |
+
+List object items :
+
+* ``RadioObject`` object description 
+
+| property             | Type              | comment
+|--------------|--------------|------------------------|
+|``enable`` | boolean    | is radio enabled      |
+|``standard`` | String    | type of wifi (bgnac)      |
+|``state`` | int    | state ?     |
+|``channel`` | int    | channel used     |
+|``currentChannel`` | int    | current channel      |
+|``dfs`` | boolean    | using dynamic frequency selection      |
+|``ht40`` | boolean    | using 40MHz wide channel     |
+
+* ``SsidObject`` object description 
+
+| property             | Type              | comment
+|--------------|--------------|------------------------|
+|``id`` | String    | ssid name     |
+|``enabled`` | boolean    | is ssid enabled     |
+|``hidden`` | boolean    | is ssid hidden     |
+|``bssid`` | String    | basic set of service address     |
+|``wmmenable`` | boolean    | is Wifi multimedia enabled     |
+|``wpsenabled`` | boolean    | is WPS security is enabled     |
+|``wpsstatus`` | String    | WPS status     |
+|``securityDefault`` | boolean    | security use by default for this ssid     |
+|``securityProtocol`` | String    | security protocol used (WPA / WPA2 ...)    |
+|``securityEncryption`` | String    | enryption used   |
+|``securityPassphrase`` | String    | wifi passphrase    |
+
+* ``WirelessCapability`` object description
+
+| property             | Type              | comment
+|--------------|--------------|------------------------|
+|``channel`` | int    | channel num     |
+|``ht40`` | String    | channel used (52 to 136 are only available if Dynamic Frequency Selection is enabled)     |
+|``nodfs`` | boolean    | no dynamic frequency selection used     |
+|``cactime`` | int    | channel availability check time     |
+|``cactime40`` | int    | channel availability check time for 40MHz wide band     |
+
 <h3>Retrieve voip data</h3>
 
 Get voip information
@@ -383,7 +458,7 @@ dependencies {
 
 ```
 cd ./bbox-api-client-test/release
-java -jar bbox-api-client-test-1.01.jar
+java -jar bbox-api-client-test-1.02.jar
 ```
 
 * You can test Bbox API with a Linux Bash script ``bboxapi-curl.sh`` script accomplishing authentication, request voip data and dial a number.

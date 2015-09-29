@@ -25,7 +25,9 @@ package fr.bmartel.bboxapi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -39,6 +41,7 @@ import fr.bmartel.bboxapi.listeners.IHostsListener;
 import fr.bmartel.bboxapi.listeners.ILogoutListener;
 import fr.bmartel.bboxapi.listeners.IRequestStatusListener;
 import fr.bmartel.bboxapi.listeners.IVoipDataListener;
+import fr.bmartel.bboxapi.listeners.IWirelessListener;
 import fr.bmartel.bboxapi.model.ApiSummary;
 import fr.bmartel.bboxapi.model.BBoxDevice;
 import fr.bmartel.bboxapi.model.Host;
@@ -46,6 +49,10 @@ import fr.bmartel.bboxapi.model.Voip;
 import fr.bmartel.bboxapi.voip.CallLog;
 import fr.bmartel.bboxapi.voip.CallState;
 import fr.bmartel.bboxapi.voip.CallType;
+import fr.bmartel.bboxapi.wireless.RadioObject;
+import fr.bmartel.bboxapi.wireless.SsidObject;
+import fr.bmartel.bboxapi.wireless.WirelessCapability;
+import fr.bmartel.bboxapi.wireless.WirelessData;
 import fr.bmartel.protocol.http.ClientSocket;
 import fr.bmartel.protocol.http.HttpFrame;
 import fr.bmartel.protocol.http.HttpVersion;
@@ -64,9 +71,9 @@ import fr.bmartel.protocol.http.utils.ListOfBytes;
 public class BboxApi implements IBboxApi {
 
 	private String token_header = "";
-	
+
 	private boolean authenticated = false;
-	
+
 	public BboxApi() {
 	}
 
@@ -99,9 +106,9 @@ public class BboxApi implements IBboxApi {
 							token_header = frame.getHeaders().get("set-cookie");
 
 							String token = token_header.substring(8, token_header.indexOf(';'));
-							
-							authenticated=true;
-							
+
+							authenticated = true;
+
 							authenticationListener.onAuthenticationSuccess(token);
 						} else {
 							authenticationListener.onAuthenticationError();
@@ -291,18 +298,17 @@ public class BboxApi implements IBboxApi {
 									int status = Integer.parseInt(sub_item.get("status").toString());
 									int bootNumber = Integer.parseInt(sub_item.get("numberofboots").toString());
 									String modelname = sub_item.get("modelname").toString();
-									
+
 									int user_configured = Integer.parseInt(sub_item.get("user_configured").toString());
-									boolean userConfig = (user_configured==0) ? false : true;
-									
+									boolean userConfig = (user_configured == 0) ? false : true;
+
 									JSONObject display = (JSONObject) sub_item.get("display");
 									int displayLuminosity = Integer.parseInt(display.get("luminosity").toString());
-									boolean displayState = (displayLuminosity==100) ? true : false;
+									boolean displayState = (displayLuminosity == 100) ? true : false;
 
 									String firstusedate = sub_item.get("firstusedate").toString();
-									
-									BBoxDevice device = new BBoxDevice(status, bootNumber, modelname, userConfig, displayState,
-											firstusedate);
+
+									BBoxDevice device = new BBoxDevice(status, bootNumber, modelname, userConfig, displayState, firstusedate);
 
 									if (sub_item.containsKey("serialnumber")) {
 										device.setSerialNumber(sub_item.get("serialnumber").toString());
@@ -459,7 +465,7 @@ public class BboxApi implements IBboxApi {
 					if (frame.getStatusCode() == 200) {
 
 						String data = new String(frame.getBody().getBytes());
-						
+
 						JSONArray obj = (JSONArray) JSONValue.parse(data);
 
 						if (obj.size() > 0) {
@@ -657,8 +663,8 @@ public class BboxApi implements IBboxApi {
 
 									displayState = true;
 									luminosity = Integer.parseInt(displayObj.get("luminosity").toString());
-									if (luminosity==0)
-										displayState=false;
+									if (luminosity == 0)
+										displayState = false;
 								}
 
 								int internetState = 0;
@@ -787,16 +793,15 @@ public class BboxApi implements IBboxApi {
 	}
 
 	/**
-	 * Logout 
+	 * Logout
 	 * 
 	 * @param logoutListener
-	 * 		listener called when logout result has been received
-	 * @return
-	 * 		true if logout has been initiated successfully
+	 *            listener called when logout result has been received
+	 * @return true if logout has been initiated successfully
 	 */
 	@Override
 	public boolean logout(final ILogoutListener logoutListener) {
-		
+
 		ClientSocket clientSocket = new ClientSocket("gestionbbox.lan", 80);
 
 		clientSocket.addClientSocketEventListener(new IHttpClientListener() {
@@ -809,10 +814,10 @@ public class BboxApi implements IBboxApi {
 					// this is data coming from the server
 					if (frame.getStatusCode() == 200) {
 
-						token_header="";
-						authenticated=false;
+						token_header = "";
+						authenticated = false;
 						logoutListener.onLogoutSuccess();
-						
+
 					} else {
 						logoutListener.onLogoutError();
 					}
@@ -825,6 +830,236 @@ public class BboxApi implements IBboxApi {
 		headers.put("Accept", "*/*");
 		headers.put("Host", "gestionbbox.lan");
 		HttpFrame frameRequest = new HttpFrame(HttpMethod.POST_REQUEST, new HttpVersion(1, 1), headers, "/api/v1/logout", new ListOfBytes(""));
+
+		clientSocket.write(frameRequest.toString().getBytes());
+
+		return false;
+	}
+
+	@Override
+	public boolean getWirelessData(final IWirelessListener wirelessListener) {
+
+		ClientSocket clientSocket = new ClientSocket("gestionbbox.lan", 80);
+
+		clientSocket.addClientSocketEventListener(new IHttpClientListener() {
+
+			@Override
+			public void onIncomingHttpFrame(HttpFrame frame, HttpStates httpStates, IClientSocket clientSocket) {
+
+				if (httpStates == HttpStates.HTTP_FRAME_OK && frame.isHttpResponseFrame()) {
+
+					// this is data coming from the server
+					if (frame.getStatusCode() == 200) {
+
+						String data = new String(frame.getBody().getBytes());
+
+						JSONArray obj = (JSONArray) JSONValue.parse(data);
+
+						if (obj.size() > 0) {
+
+							JSONObject item = (JSONObject) obj.get(0);
+							if (item.containsKey("wireless")) {
+
+								JSONObject sub_item_first_element = (JSONObject) item.get("wireless");
+
+								if (sub_item_first_element.containsKey("status") && sub_item_first_element.containsKey("radio")
+										&& sub_item_first_element.containsKey("ssid") && sub_item_first_element.containsKey("capabilities")
+										&& sub_item_first_element.containsKey("standard")) {
+
+									String status = sub_item_first_element.get("status").toString();
+
+									JSONObject radioItem = (JSONObject) sub_item_first_element.get("radio");
+
+									Iterator it = radioItem.entrySet().iterator();
+
+									HashMap<Integer, RadioObject> radioList = new HashMap<Integer, RadioObject>();
+									HashMap<Integer, SsidObject> ssidList = new HashMap<Integer, SsidObject>();
+
+									while (it.hasNext()) {
+
+										Map.Entry<String, Object> pair = (Map.Entry) it.next();
+
+										JSONObject subItem = (JSONObject) pair.getValue();
+
+										boolean enable = false;
+										String standard = "";
+										int state = 0;
+										int channel = 0;
+										int currentChannel = 0;
+										boolean dfs = false;
+										boolean ht40 = false;
+
+										if (subItem.containsKey("enable"))
+											enable = Integer.parseInt(subItem.get("enable").toString()) == 1 ? true : false;
+										if (subItem.containsKey("standard"))
+											standard = subItem.get("standard").toString();
+										if (subItem.containsKey("state"))
+											state = Integer.parseInt(subItem.get("state").toString());
+										if (subItem.containsKey("channel"))
+											channel = Integer.parseInt(subItem.get("channel").toString());
+										if (subItem.containsKey("current_channel"))
+											currentChannel = Integer.parseInt(subItem.get("current_channel").toString());
+										if (subItem.containsKey("dfs"))
+											dfs = Integer.parseInt(subItem.get("dfs").toString()) == 1 ? true : false;
+										if (subItem.containsKey("ht40")) {
+											JSONObject ht40Object = (JSONObject) subItem.get("ht40");
+											if (ht40Object.containsKey("enable"))
+												ht40 = Integer.parseInt(subItem.get("enable").toString()) == 1 ? true : false;
+										}
+
+										radioList.put(Integer.parseInt(pair.getKey()), new RadioObject(enable, standard, state, channel, currentChannel, dfs,
+												ht40));
+									}
+
+									JSONObject ssidItem = (JSONObject) sub_item_first_element.get("ssid");
+
+									Iterator it2 = ssidItem.entrySet().iterator();
+
+									while (it2.hasNext()) {
+
+										Map.Entry<String, Object> pair = (Map.Entry) it2.next();
+
+										JSONObject subItem = (JSONObject) pair.getValue();
+
+										String id = "";
+										boolean enabled = false;
+										boolean hidden = false;
+										String bssid = "";
+										boolean wmmenable = false;
+										boolean wpsenabled = false;
+										String wpsstatus = "";
+										boolean securityDefault = false;
+										String securityProtocol = "";
+										String securityEncryption = "";
+										String securityPassphrase = "";
+
+										if (subItem.containsKey("id"))
+											id = subItem.get("id").toString();
+										if (subItem.containsKey("enable"))
+											enabled = Integer.parseInt(subItem.get("enable").toString()) == 1 ? true : false;
+										if (subItem.containsKey("hidden"))
+											hidden = Integer.parseInt(subItem.get("hidden").toString()) == 1 ? true : false;
+										if (subItem.containsKey("bssid"))
+											bssid = subItem.get("bssid").toString();
+										if (subItem.containsKey("wmmenable"))
+											wmmenable = Integer.parseInt(subItem.get("wmmenable").toString()) == 1 ? true : false;
+										if (subItem.containsKey("wps")) {
+
+											JSONObject wpsObject = (JSONObject) subItem.get("wps");
+
+											if (wpsObject.containsKey("enable"))
+												wpsenabled = Integer.parseInt(wpsObject.get("enable").toString()) == 1 ? true : false;
+											if (wpsObject.containsKey("status"))
+												wpsstatus = wpsObject.get("status").toString();
+										}
+										if (subItem.containsKey("security")) {
+
+											JSONObject securityObject = (JSONObject) subItem.get("security");
+
+											if (securityObject.containsKey("isdefault"))
+												securityDefault = Integer.parseInt(securityObject.get("isdefault").toString()) == 1 ? true : false;
+											if (securityObject.containsKey("protocol"))
+												securityProtocol = securityObject.get("protocol").toString();
+											if (securityObject.containsKey("encryption"))
+												securityEncryption = securityObject.get("encryption").toString();
+											if (securityObject.containsKey("passphrase"))
+												securityPassphrase = securityObject.get("passphrase").toString();
+
+										}
+
+										ssidList.put(Integer.parseInt(pair.getKey()), new SsidObject(id, enabled, hidden, bssid, wmmenable, wpsenabled,
+												wpsstatus, securityDefault, securityProtocol, securityEncryption, securityPassphrase));
+									}
+
+									JSONObject capabilityItems = (JSONObject) sub_item_first_element.get("capabilities");
+
+									Iterator it3 = capabilityItems.entrySet().iterator();
+
+									HashMap<Integer, List<WirelessCapability>> capabilityRadioList = new HashMap<Integer, List<WirelessCapability>>();
+
+									while (it3.hasNext()) {
+
+										Map.Entry<String, Object> pair = (Map.Entry) it3.next();
+
+										JSONArray subItem = (JSONArray) pair.getValue();
+
+										List<WirelessCapability> wirelessCapabilityList = new ArrayList<WirelessCapability>();
+
+										for (int i = 0; i < subItem.size(); i++) {
+
+											JSONObject capabilityObj = (JSONObject) subItem.get(i);
+
+											int channel = 0;
+											String ht40 = "";
+											boolean nodfs = false;
+											int cactime = 0;
+											int cactime40 = 0;
+
+											if (capabilityObj.containsKey("channel"))
+												channel = Integer.parseInt(capabilityObj.get("channel").toString());
+											if (capabilityObj.containsKey("ht40"))
+												ht40 = capabilityObj.get("ht40").toString();
+											if (capabilityObj.containsKey("nodfs"))
+												nodfs = Boolean.valueOf(capabilityObj.get("nodfs").toString());
+											if (capabilityObj.containsKey("cactime"))
+												cactime = Integer.parseInt(capabilityObj.get("cactime").toString());
+											if (capabilityObj.containsKey("cactime40"))
+												cactime40 = Integer.parseInt(capabilityObj.get("cactime40").toString());
+
+											wirelessCapabilityList.add(new WirelessCapability(channel, ht40, nodfs, cactime, cactime40));
+										}
+
+										capabilityRadioList.put(Integer.parseInt(pair.getKey()), wirelessCapabilityList);
+
+									}
+
+									JSONObject standardItems = (JSONObject) sub_item_first_element.get("standard");
+
+									Iterator it4 = standardItems.entrySet().iterator();
+
+									HashMap<Integer, List<String>> standardTypeList = new HashMap<Integer, List<String>>();
+
+									while (it4.hasNext()) {
+
+										Map.Entry<String, Object> pair = (Map.Entry) it4.next();
+
+										JSONArray subItem = (JSONArray) pair.getValue();
+
+										List<String> typeList = new ArrayList<String>();
+
+										for (int i = 0; i < subItem.size(); i++) {
+
+											JSONObject typeOject = (JSONObject) subItem.get(i);
+
+											if (typeOject.containsKey("value"))
+												typeList.add(typeOject.get("value").toString());
+										}
+
+										standardTypeList.put(Integer.parseInt(pair.getKey()), typeList);
+									}
+
+									WirelessData wirelessData = new WirelessData(status, radioList, ssidList, capabilityRadioList, standardTypeList);
+
+									wirelessListener.onWirelessDataReceived(wirelessData);
+									clientSocket.closeSocket();
+									return;
+								}
+
+							}
+						}
+					}
+					wirelessListener.onWirelessDataFailure();
+					clientSocket.closeSocket();
+				}
+			}
+		});
+
+		HashMap<String, String> headers = new HashMap<String, String>();
+
+		headers.put("Accept", "*/*");
+		headers.put("Host", "gestionbbox.lan");
+		headers.put("Cookie", token_header);
+		HttpFrame frameRequest = new HttpFrame(HttpMethod.GET_REQUEST, new HttpVersion(1, 1), headers, "/api/v1/wireless", new ListOfBytes(""));
 
 		clientSocket.write(frameRequest.toString().getBytes());
 

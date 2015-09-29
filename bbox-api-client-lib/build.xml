@@ -4,7 +4,7 @@
 	
 	<property name="project-name" value="bbox-api-client"/>
 	
-	<property name="version" value="1.01" />
+	<property name="version" value="1.02" />
 
 	<path id="master-classpath">
 	  <fileset dir="${basedir}/libs">

@@ -33,11 +33,13 @@ import fr.bmartel.bboxapi.listeners.IFullCallLogListener;
 import fr.bmartel.bboxapi.listeners.IHostsListener;
 import fr.bmartel.bboxapi.listeners.IRequestStatusListener;
 import fr.bmartel.bboxapi.listeners.IVoipDataListener;
+import fr.bmartel.bboxapi.listeners.IWirelessListener;
 import fr.bmartel.bboxapi.model.ApiSummary;
 import fr.bmartel.bboxapi.model.BBoxDevice;
 import fr.bmartel.bboxapi.model.Host;
 import fr.bmartel.bboxapi.model.Voip;
 import fr.bmartel.bboxapi.voip.CallLog;
+import fr.bmartel.bboxapi.wireless.WirelessData;
 
 /**
  * 
@@ -49,36 +51,39 @@ import fr.bmartel.bboxapi.voip.CallLog;
 public class BboxApiTest {
 
 	public static void main(String[] args) {
-		
-		/* instantiate bbox api object*/
+
+		/* instantiate bbox api object */
 		final BboxApi api = new BboxApi();
-		
+
 		/* retrieve summary api result (summaru api is public) */
 		api.getSummary(new IApiSummaryListener() {
-			
+
 			@Override
 			public void onApiSummaryReceived(ApiSummary summary) {
-				
+
 				summary.displayInfo();
-				
+
 			}
-			
+
 			@Override
 			public void onApiSummaryFailure() {
-				
+
 				System.out.println("summary api failure");
-				
+
 			}
 		});
-		
-		/* authenticate and process further api testing if authentication is successfull */
+
+		/*
+		 * authenticate and process further api testing if authentication is
+		 * successfull
+		 */
 		api.authenticate("your_password", new IAuthenticationListener() {
 
 			@Override
 			public void onAuthenticationSuccess(String token) {
-				
+
 				System.out.println("authentication success. Received token : " + token);
-				
+
 				api.voipData(new IVoipDataListener() {
 
 					@Override
@@ -91,28 +96,23 @@ public class BboxApiTest {
 					public void onVoipDataFailure() {
 						System.out.println("voip api failure");
 					}
-					
+
 				});
-				
+
 				/*
-				api.voipDial(1,"0666666666",new IRequestStatusListener() {
-					
-					@Override
-					public void onSuccess() {
-						System.out.println("Voip dial success");
-					}
-					
-					@Override
-					public void onFailure() {
-						System.out.println("Voip dial failure");
-					}
-				});
-				*/
+				 * api.voipDial(1,"0666666666",new IRequestStatusListener() {
+				 * 
+				 * @Override public void onSuccess() {
+				 * System.out.println("Voip dial success"); }
+				 * 
+				 * @Override public void onFailure() {
+				 * System.out.println("Voip dial failure"); } });
+				 */
 				api.bboxDevice(new IBboxDeviceListener() {
 
 					@Override
 					public void onBboxDeviceReceived(BBoxDevice device) {
-						
+
 						device.displayInfo();
 					}
 
@@ -120,16 +120,16 @@ public class BboxApiTest {
 					public void onBboxDeviceFailure() {
 						System.out.println("bbox device failure");
 					}
-					
+
 				});
-				
+
 				api.setBboxDisplayState(true, new IRequestStatusListener() {
-					
+
 					@Override
 					public void onSuccess() {
 						System.out.println("box display set success");
 					}
-					
+
 					@Override
 					public void onFailure() {
 						System.out.println("box display set failure");
@@ -137,52 +137,69 @@ public class BboxApiTest {
 				});
 
 				api.setWifiState(true, new IRequestStatusListener() {
-					
+
 					@Override
 					public void onSuccess() {
 						System.out.println("box wifi set status success");
 					}
-					
+
 					@Override
 					public void onFailure() {
 						System.out.println("box wifi set status failure");
 					}
 				});
-				
+
 				api.getFullCallLog(new IFullCallLogListener() {
-					
+
 					@Override
 					public void onFullCallLogFailure() {
-						
+
 						System.out.println("call log failure");
 					}
 
 					@Override
 					public void onFullCallLogReceived(List<CallLog> callLogList) {
-						
-						for (int i = 0; i  < callLogList.size();i++){
-							System.out.println("Log list item " + i );
+
+						for (int i = 0; i < callLogList.size(); i++) {
+							System.out.println("Log list item " + i);
 							callLogList.get(i).displayInfo();
 						}
 					}
 				});
-				
+
 				api.getHosts(new IHostsListener() {
-					
+
 					@Override
 					public void onHostsReceived(List<Host> hostList) {
-						
-						for (int i = 0; i  < hostList.size();i++){
-							System.out.println("Host list item " + i );
+
+						for (int i = 0; i < hostList.size(); i++) {
+							System.out.println("Host list item " + i);
 							hostList.get(i).displayInfo();
 						}
 					}
-					
+
 					@Override
 					public void onHostsFailure() {
-						
+
 						System.out.println("host failure");
-						
+
+					}
+				});
+
+				api.getWirelessData(new IWirelessListener() {
+
+					@Override
+					public void onWirelessDataReceived(WirelessData wirelessData) {
+
+						wirelessData.displayInfo();
+
+					}
+
+					@Override
+					public void onWirelessDataFailure() {
+
+						System.out.println("wireless data request failure");
+
 					}
 				});
 			}
@@ -191,10 +208,9 @@ public class BboxApiTest {
 			public void onAuthenticationError() {
 				System.out.println("authentication error");
 			}
-			
+
 		});
-		
-		
+
 	}
 
 }

@@ -31,6 +31,7 @@ import fr.bmartel.bboxapi.listeners.IHostsListener;
 import fr.bmartel.bboxapi.listeners.ILogoutListener;
 import fr.bmartel.bboxapi.listeners.IRequestStatusListener;
 import fr.bmartel.bboxapi.listeners.IVoipDataListener;
+import fr.bmartel.bboxapi.listeners.IWirelessListener;
 
 /**
  * Set of Bbox api retrieved from Bbox management interface
@@ -57,6 +58,15 @@ public interface IBboxApi {
 	 * @return
 	 */
 	public boolean isAuthenticated();
+	
+	/**
+	 * Retrieve wireless information
+	 * 
+	 * @param wirelessListener
+	 * 		listener called when wireless result has been received
+	 * @return true if request has been successfully initiated
+	 */
+	public boolean getWirelessData(IWirelessListener wirelessListener);
 	
 	/**
 	 * Logout 

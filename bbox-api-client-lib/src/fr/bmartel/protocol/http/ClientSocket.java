@@ -306,26 +306,38 @@ public class ClientSocket implements IClientSocket {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			triggerFailure();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			triggerFailure();
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			triggerFailure();
 		} catch (UnrecoverableKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			triggerFailure();
 		} catch (KeyStoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			triggerFailure();
 		} catch (CertificateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			triggerFailure();
 		} catch (KeyManagementException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			triggerFailure();
 		}
 	}
 
+	public void triggerFailure(){
+		for (int i = 0; i < clientListenerList.size(); i++) {
+			clientListenerList.get(i).onSocketError();
+		}
+	}
 	/**
 	 * Set timeout for this socket
 	 * 

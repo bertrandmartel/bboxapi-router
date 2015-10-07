@@ -119,6 +119,13 @@ public class BboxApi implements IBboxApi {
 					clientSocket.closeSocket();
 				}
 			}
+
+			@Override
+			public void onSocketError() {
+				
+				authenticationListener.onAuthenticationError();
+				
+			}
 		});
 
 		HashMap<String, String> headers = new HashMap<String, String>();
@@ -199,6 +206,12 @@ public class BboxApi implements IBboxApi {
 					clientSocket.closeSocket();
 				}
 			}
+
+			@Override
+			public void onSocketError() {
+				
+				voipDataListener.onVoipDataFailure();
+			}
 		});
 
 		HashMap<String, String> headers = new HashMap<String, String>();
@@ -241,6 +254,13 @@ public class BboxApi implements IBboxApi {
 					}
 					clientSocket.closeSocket();
 				}
+			}
+
+			@Override
+			public void onSocketError() {
+			
+				requestStatus.onFailure();
+				
 			}
 		});
 
@@ -325,6 +345,13 @@ public class BboxApi implements IBboxApi {
 					clientSocket.closeSocket();
 				}
 			}
+
+			@Override
+			public void onSocketError() {
+				
+				deviceListener.onBboxDeviceFailure();
+				
+			}
 		});
 
 		HashMap<String, String> headers = new HashMap<String, String>();
@@ -369,6 +396,13 @@ public class BboxApi implements IBboxApi {
 					}
 					clientSocket.closeSocket();
 				}
+			}
+
+			@Override
+			public void onSocketError() {
+				
+				requestStatus.onFailure();
+				
 			}
 		});
 
@@ -420,6 +454,13 @@ public class BboxApi implements IBboxApi {
 					}
 					clientSocket.closeSocket();
 				}
+			}
+
+			@Override
+			public void onSocketError() {
+				
+				requestStatus.onFailure();
+				
 			}
 		});
 
@@ -510,6 +551,13 @@ public class BboxApi implements IBboxApi {
 					listener.onFullCallLogFailure();
 					clientSocket.closeSocket();
 				}
+			}
+
+			@Override
+			public void onSocketError() {
+				
+				listener.onFullCallLogFailure();
+				
 			}
 		});
 
@@ -603,6 +651,13 @@ public class BboxApi implements IBboxApi {
 					listener.onHostsFailure();
 					clientSocket.closeSocket();
 				}
+			}
+
+			@Override
+			public void onSocketError() {
+				
+				listener.onHostsFailure();
+				
 			}
 		});
 
@@ -773,6 +828,13 @@ public class BboxApi implements IBboxApi {
 					clientSocket.closeSocket();
 				}
 			}
+
+			@Override
+			public void onSocketError() {
+				
+				listener.onApiSummaryFailure();
+				
+			}
 		});
 
 		HashMap<String, String> headers = new HashMap<String, String>();
@@ -823,6 +885,13 @@ public class BboxApi implements IBboxApi {
 					}
 					clientSocket.closeSocket();
 				}
+			}
+
+			@Override
+			public void onSocketError() {
+				
+				logoutListener.onLogoutError();
+				
 			}
 		});
 
@@ -1051,6 +1120,12 @@ public class BboxApi implements IBboxApi {
 					wirelessListener.onWirelessDataFailure();
 					clientSocket.closeSocket();
 				}
+			}
+
+			@Override
+			public void onSocketError() {
+				
+				wirelessListener.onWirelessDataFailure();
 			}
 		});
 

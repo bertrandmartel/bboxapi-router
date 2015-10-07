@@ -22,4 +22,6 @@ public interface IHttpClientListener {
 	 */
 	public void onIncomingHttpFrame(HttpFrame frame, HttpStates httpStates,
 			IClientSocket clientSocket);
+	
+	public void onSocketError();
 }

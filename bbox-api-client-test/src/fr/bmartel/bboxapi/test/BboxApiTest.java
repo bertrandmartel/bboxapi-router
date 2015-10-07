@@ -202,7 +202,8 @@ public class BboxApiTest {
 
 					}
 				});
-			}
+				
+			};
 
 			@Override
 			public void onAuthenticationError() {

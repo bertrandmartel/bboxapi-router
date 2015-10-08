@@ -9,7 +9,7 @@ These apis are used by Bbox management interface in hostname : gestionbbox.lan p
 
 You must be on the same network as your Bbox to use them
 
-last release : https://github.com/akinaru/bbox-api-client/releases/tag/1.03
+last release : https://github.com/akinaru/bbox-api-client/releases/tag/1.04
 
 This README may contain inaccurate information about these api due to early release.
 

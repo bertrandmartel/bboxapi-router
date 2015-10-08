@@ -76,7 +76,7 @@ apiWrapper.getSummary(new IApiSummaryListener() {
 |``iptvReceipt`` | int    | -      |
 |``iptvNumber`` | int    | -     |
 |``voipStatus`` | String    | voip status ("Up" if online)  |
-|``callState`` | CallState    | voip callstate (IDLE,INCALL,OFFHOOK,OUTCALL)  |
+|``callState`` | CallState    | voip callstate (IDLE,INCALL,RINGING,OFFHOOK) |
 |``message`` | int    | number of vocal message  |
 |``notanswered`` | int    | number of not answered call  |
 |``internetState`` | int    | -  |
@@ -312,7 +312,7 @@ Result is a list of ``Voip`` object define as following :
 |--------------|--------------|------------------------|
 |``id`` | int    | -      |
 |``status`` | String    | voip status ("Up" if online)  |
-|``callState`` | CallState    | voip callstate (IDLE,INCALL,OFFHOOK,OUTCALL)  |
+|``callState`` | CallState    | voip callstate (IDLE,INCALL,RINGING,OFFHOOK)  |
 |``uri`` | String    | SIP phone line |
 |``blockState`` | int    | number of blocked call (to verify) |
 |``anoncallState`` | int    | number of anonymous call |

@@ -55,7 +55,7 @@ public class BboxApiTest {
 		/* instantiate bbox api object */
 		final BboxApi api = new BboxApi();
 
-		/* retrieve summary api result (summaru api is public) */
+		/* retrieve summary api result (summary api is public) */
 		api.getSummary(new IApiSummaryListener() {
 
 			@Override

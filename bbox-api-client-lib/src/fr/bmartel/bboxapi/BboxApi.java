@@ -88,7 +88,7 @@ public class BboxApi implements IBboxApi {
 	 */
 	@Override
 	public boolean authenticate(String password, final IAuthenticationListener authenticationListener) {
-
+		
 		ClientSocket clientSocket = new ClientSocket("gestionbbox.lan", 80);
 
 		clientSocket.addClientSocketEventListener(new IHttpClientListener() {
@@ -135,7 +135,7 @@ public class BboxApi implements IBboxApi {
 				+ "&remember=1"));
 
 		clientSocket.write(frameRequest.toString().getBytes());
-
+		
 		return false;
 	}
 

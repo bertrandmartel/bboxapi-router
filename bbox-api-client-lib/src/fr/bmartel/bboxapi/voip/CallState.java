@@ -26,31 +26,34 @@ package fr.bmartel.bboxapi.voip;
 /**
  * Call state enum for voip api
  *
- * IDLE    : normal state
- * INCALL  : incoming call 
- * OUTCALL : calling to outside
- * OFFHOOK : phone is offhook
+ * IDLE       : normal state
+ * INCALL     : call 
+ * RINGING    : phone is ringing
+ * CALLINGOUT : calling to outside
+ * OFFHOOK    : phone is offhook
  * 
  * @author Bertrand Martel
  *
  */
 public enum CallState {
 
-	IDLE,INCALL,OFFHOOK,OUTCALL,UNKNOWN;
+	IDLE,INCALL,RINGING,OFFHOOK,CALLINGOUT,UNKNOWN;
 	
 	public static CallState getValue(String value){
+		
 		if (value.equals("Idle")){
 			return IDLE;
 		}
 		else if (value.equals("InCall")){
 			return INCALL;
 		}
+		else if (value.equals("Ringing")){
+			return RINGING;
+		}
 		else if (value.equals("OffHook")){
 			return OFFHOOK;
 		}
-		else if (value.equals("connecting")){
-			return OUTCALL;
-		}
+		
 		return UNKNOWN;
 	}
 }

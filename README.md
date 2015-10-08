@@ -1,7 +1,7 @@
 # Bbox Api client library #
 http://akinaru.github.io/bbox-api-client
 
-<i>Last update on 29/09/2015</i>
+<i>Last update on 08/10/2015</i>
 
 Library for using Bbox Json API opened in end of september 2015 on Bbox Sensation
 

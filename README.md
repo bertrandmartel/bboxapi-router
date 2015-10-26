@@ -320,6 +320,8 @@ Result is a list of ``Voip`` object define as following :
 |``messageCount`` | int    | number of messages |
 |``notanswered`` | int    | number of call not answered |
 
+<i>Note : ``notanswered`` number is auto incremented when phone rings (ie ``callState``=RINGING). If call is answered, ``notanswered`` is decremented and got to its initial value. If call is not answered it keeps the incremented value.</i>
+
 <h3>Retrieve list of call log</h3>
 
 Get full list of call log since last reboot

@@ -4,3 +4,5 @@
 .settings
 .recommenders
 bin/
+/bbox-api-client-lib/release
+/bbox-api-client-test/release

@@ -30,6 +30,26 @@ This README may contain inaccurate information about these api due to early rele
 | set led state | ``setBboxDisplayState(boolean state, IRequestStatusListener requestStatus)`` |  private    | set Bbox led display ON/OFF      |
 | dial | ``voipDial(int lineNumber, String phone, IRequestStatusListener requestStatus)`` |  private    | dial a phone number on a line      |
 
+## Include into your project
+
+* Gradle
+
+Grab from Bintray maven repository :
+
+```
+repositories {
+    maven {
+        url 'https://dl.bintray.com/akinaru/maven/'
+    }
+}
+ 
+...
+ 
+dependencies {
+    compile 'akinaru:bbox-api-client:1.04'
+}
+```
+
 ## How to use ?
 
 Instanciate BboxApi class

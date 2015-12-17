@@ -37,17 +37,7 @@ This README may contain inaccurate information about these api due to early rele
 Grab from Bintray maven repository :
 
 ```
-repositories {
-    maven {
-        url 'https://dl.bintray.com/akinaru/maven/'
-    }
-}
- 
-...
- 
-dependencies {
-    compile 'akinaru:bbox-api-client:1.04'
-}
+compile 'akinaru:bbox-api-client:1.04'
 ```
 
 ## How to use ?

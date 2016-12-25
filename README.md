@@ -1,10 +1,10 @@
 # Bbox Api client library #
 
-[![Build Status](https://travis-ci.org/akinaru/bbox-api-client.svg)](https://travis-ci.org/akinaru/bbox-api-client)
-[![Download](https://api.bintray.com/packages/akinaru/maven/bbox-api-client/images/download.svg) ](https://bintray.com/akinaru/maven/bbox-api-client/_latestVersion)
+[![Build Status](https://travis-ci.org/bertrandmartel/bbox-api-client.svg)](https://travis-ci.org/bertrandmartel/bbox-api-client)
+[![Download](https://api.bintray.com/packages/bertrandmartel/maven/bbox-api-client/images/download.svg) ](https://bintray.com/bertrandmartel/maven/bbox-api-client/_latestVersion)
 [![License](http://img.shields.io/:license-mit-blue.svg)](LICENSE.md)
 
-http://akinaru.github.io/bbox-api-client
+http://bertrandmartel.github.io/bbox-api-client
 
 <hr/>
 
@@ -489,6 +489,6 @@ Usage :
 
 * json-simple  : http://code.google.com/p/json-simple/
 
-* clientsocket : https://github.com/akinaru/socket-multiplatform/tree/master/client/socket-client/java
+* clientsocket : https://github.com/bertrandmartel/socket-multiplatform/tree/master/client/socket-client/java
 
-* http-endec   : https://github.com/akinaru/http-endec-java
+* http-endec   : https://github.com/bertrandmartel/http-endec-java

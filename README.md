@@ -37,7 +37,7 @@ This README may contain inaccurate information about these api due to early rele
 Grab from Bintray maven repository :
 
 ```
-compile 'akinaru:bbox-api-client:1.04'
+compile 'fr.bmartel:bbox-api-client:1.04'
 ```
 
 ## How to use ?

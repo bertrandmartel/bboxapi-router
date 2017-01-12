@@ -1,19 +1,22 @@
 # Bbox Api client library #
-http://akinaru.github.io/bbox-api-client
 
-<i>Last update on 29/09/2015</i>
+[![Build Status](https://travis-ci.org/bertrandmartel/bbox-api-client.svg)](https://travis-ci.org/bertrandmartel/bbox-api-client)
+[![Download](https://api.bintray.com/packages/bertrandmartel/maven/bbox-api-client/images/download.svg) ](https://bintray.com/bertrandmartel/maven/bbox-api-client/_latestVersion)
+[![License](http://img.shields.io/:license-mit-blue.svg)](LICENSE.md)
 
-Library for using Bbox Json API opened in end of september 2015 on Bbox Sensation
+http://bertrandmartel.github.io/bbox-api-client
 
-These apis are used by Bbox management interface in hostname : gestionbbox.lan port 80
+<hr/>
+
+Java library client for Bbox Json API released in end of september 2015 on Bbox Sensation
+
+These apis are used by Bbox management interface in hostname : http://gestionbbox.lan
 
 You must be on the same network as your Bbox to use them
 
-last release : https://github.com/akinaru/bbox-api-client/releases/tag/1.02
-
 This README may contain inaccurate information about these api due to early release.
 
-<h3>List of API implemented</h3>
+## List of API implemented
 
 | api     | prototype        |   access      | comment
 |--------------|---------|-----|------------------------|
@@ -27,7 +30,17 @@ This README may contain inaccurate information about these api due to early rele
 | set led state | ``setBboxDisplayState(boolean state, IRequestStatusListener requestStatus)`` |  private    | set Bbox led display ON/OFF      |
 | dial | ``voipDial(int lineNumber, String phone, IRequestStatusListener requestStatus)`` |  private    | dial a phone number on a line      |
 
-<h3>How to use ?</h3>
+## Include into your project
+
+* Gradle
+
+Grab from Bintray maven repository :
+
+```
+compile 'fr.bmartel:bbox-api-client:1.04'
+```
+
+## How to use ?
 
 Instanciate BboxApi class
 
@@ -39,7 +52,7 @@ import fr.bmartel.bboxapi.BboxApi;
 BboxApi apiWrapper = new BboxApi();
 ```
 
-<h3>Retrieve summary info</h3>
+## Retrieve summary info
 
 Summary information contains basic information about Bbox
 
@@ -76,14 +89,14 @@ apiWrapper.getSummary(new IApiSummaryListener() {
 |``iptvReceipt`` | int    | -      |
 |``iptvNumber`` | int    | -     |
 |``voipStatus`` | String    | voip status ("Up" if online)  |
-|``callState`` | CallState    | voip callstate (IDLE,INCALL,OFFHOOK,OUTCALL)  |
+|``callState`` | CallState    | voip callstate (IDLE,INCALL,RINGING,OFFHOOK) |
 |``message`` | int    | number of vocal message  |
 |``notanswered`` | int    | number of not answered call  |
 |``internetState`` | int    | -  |
 |``authenticated`` | int    | 0 if not authenticated / 1 if authenticated |
 |``displayState`` | boolean    | true if Bbox led is ON / false for OFF |
 
-<h3>Authentication</h3>
+## Authentication
 
 To request private api, you have to authenticate with your bbox management interface password :
 
@@ -107,7 +120,7 @@ api.authenticate("your_password", new IAuthenticationListener() {
 
 If registration is successful, token is stored in RAM in Bboxapi object. Further call to BboxApi object will integrate a Cookie header with received token.
 
-<h3>Logout</h3>
+## Logout
 
 To logout :
 ```
@@ -126,13 +139,14 @@ api.logout(new ILogoutListener() {
 	}
 });
 ```
-<h3>Check authentication</h3>
+
+## Check authentication
 
 ```
 boolean api.isAuthenticated()
 ```
 
-<h3>Retrieve Bbox device info</h3>
+## Retrieve Bbox device info
 
 Some information about Bbox : 
 
@@ -166,7 +180,7 @@ api.bboxDevice(new IBboxDeviceListener() {
 |``firstuseDate`` | String    | date of bbox first use |
 |``serialNumber`` | String    | bbox serial number |
 
-<h3>Retrieve known host list</h3>
+## Retrieve known host list
 
 Get list of all host known by Bbox with firstseen and lastseen date
 
@@ -204,7 +218,7 @@ Result is a list of ``Host`` object define as following :
 |``lease`` | int    | lease time for this host     |
 |``active`` | boolean    |  define if host is active |
 
-<h3>Retrieve wireless data</h3>
+## Retrieve wireless data
 
 Get information about wireless data
 
@@ -282,7 +296,7 @@ List object items :
 
 <b>to know if wireless is enabled, use  ``WirelessData.isRadioEnabled()``</b>
 
-<h3>Retrieve voip data</h3>
+## Retrieve voip data
 
 Get voip information
 
@@ -312,7 +326,7 @@ Result is a list of ``Voip`` object define as following :
 |--------------|--------------|------------------------|
 |``id`` | int    | -      |
 |``status`` | String    | voip status ("Up" if online)  |
-|``callState`` | CallState    | voip callstate (IDLE,INCALL,OFFHOOK,OUTCALL)  |
+|``callState`` | CallState    | voip callstate (IDLE,INCALL,RINGING,OFFHOOK)  |
 |``uri`` | String    | SIP phone line |
 |``blockState`` | int    | number of blocked call (to verify) |
 |``anoncallState`` | int    | number of anonymous call |
@@ -320,7 +334,9 @@ Result is a list of ``Voip`` object define as following :
 |``messageCount`` | int    | number of messages |
 |``notanswered`` | int    | number of call not answered |
 
-<h3>Retrieve list of call log</h3>
+<i>Note : ``notanswered`` number is auto incremented when phone rings (ie ``callState``=RINGING). If call is answered, ``notanswered`` is decremented and got to its initial value. If call is not answered it keeps the incremented value.</i>
+
+## Retrieve list of call log
 
 Get full list of call log since last reboot
 
@@ -356,7 +372,7 @@ Result is a list of ``CallLog`` object define as following :
 
 <hr/>
 
-<h3>Dial a phone number - Trigger phone ring before call</h3>
+## Dial a phone number - Trigger phone ring before call
 
 Dial a specified phone number. Phone will ring and call will be processed once user hookoff
 
@@ -385,7 +401,7 @@ Input  :
 * phone number (String) : number to call
 * task completion listener (IRequestStatusListener) : retrieve asynchronous task completion or failure
 
-<h3>Set Bbox led state</h3>
+## Set Bbox led state
 
 
 Switch led display to ON / OFF on Bbox 
@@ -410,7 +426,7 @@ Input :
 * task completion listener (IRequestStatusListener) :  retrieve asynchronous task completion or failure
 
 
-<h3>Set Wifi state</h3>
+## Set Wifi state
 
 Switch Wifi to ON/OFF 
 
@@ -434,9 +450,7 @@ Input :
 * wifi state (boolean) 
 * task completion listener (IRequestStatusListener) :  retrieve asynchronous task completion or failure
 
-<hr/>
-
-<h2>Android integration</h2>
+## Android integration
 
 To integrate with Android add Internet permission to manifest : 
 ```
@@ -455,7 +469,7 @@ dependencies {
 }
 ```
 
-<h2>Testing Bbox APIs</h2>
+## Testing Bbox APIs
 
 * You can test all previous API in java project bbox-api-client-test :
 
@@ -471,17 +485,10 @@ Usage :
 ./bboxapi-curl.sh <your_password> <phone_number>
 ```
 
-<hr/>
-
-<b>External JAVA Library</b>
+## External Library
 
 * json-simple  : http://code.google.com/p/json-simple/
 
-* clientsocket : https://github.com/akinaru/socket-multiplatform/tree/master/client/socket-client/java
+* clientsocket : https://github.com/bertrandmartel/socket-multiplatform/tree/master/client/socket-client/java
 
-* http-endec   : https://github.com/akinaru/http-endec-java
-
-<b>TODO</b>
-
-* authentication session timeout
-* more APIs left to implement
+* http-endec   : https://github.com/bertrandmartel/http-endec-java

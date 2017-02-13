@@ -23,7 +23,7 @@ These APIs are used by Bbox management interface on : http://gestionbbox.lan
 | set led state | ``setBboxDisplayState(boolean state)`` |  private    | set Bbox led display ON/OFF      |
 | dial | ``voipDial(int lineNumber, String phone)`` |  private    | dial a phone number on a line      |
 
-All APIs needs authentication (admin password) except Summary API
+All APIs need authentication (admin password) except Summary API
 
 ## Include into your project
 
@@ -61,7 +61,7 @@ DeviceInfoResponse deviceInfoResponse = api.getDeviceInfo();
 
 ## Hosts
 
-Get list of all host known by Bbox :
+Get list of all hosts known by Bbox :
 
 ```
 BboxApi api = new BboxApi();
@@ -152,7 +152,7 @@ api.setPassword("password");
 // turn on Wifi
 api.setWifiState(true);
 
-// run off Wifi
+// turn off Wifi
 api.setWifiState(false);
 ```
 
@@ -250,7 +250,7 @@ The following examples will prompt user for password and execute specified reque
 ./gradlew wireless
 ```
 
-You can test Bbox API with a Linux Bash script ``bboxapi-curl.sh`` script accomplishing authentication, request voip data and dial a number.
+You can test Bbox API with a Linux Bash script ``bboxapi-curl.sh`` script performing authentication, request voip data and dial a number.
 
 Usage :
 ```

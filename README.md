@@ -22,6 +22,7 @@ These APIs are used by Bbox management interface on : http://gestionbbox.lan
 | set wifi state | ``setWifiState(boolean state)`` |  private    | set Wifi ON/OFF      |
 | set led state | ``setBboxDisplayState(boolean state)`` |  private    | set Bbox led display ON/OFF      |
 | dial | ``voipDial(int lineNumber, String phone)`` |  private    | dial a phone number on a line      |
+| wireless | `getWirelessData()` | private | get wireless info |
 
 All APIs need authentication (admin password) except Summary API
 

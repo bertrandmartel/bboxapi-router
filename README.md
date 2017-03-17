@@ -23,6 +23,7 @@ These APIs are used by Bbox management interface on : http://gestionbbox.lan
 | set led state | ``setBboxDisplayState(boolean state)`` |  private    | set Bbox led display ON/OFF      |
 | dial | ``voipDial(int lineNumber, String phone)`` |  private    | dial a phone number on a line      |
 | wireless | `getWirelessData()` | private | get wireless info |
+| reboot | `reboot()` | private | reboot Bbox |
 
 All APIs need authentication (admin password) except Summary API
 
@@ -30,7 +31,7 @@ All APIs need authentication (admin password) except Summary API
 
 * with Gradle, from JCenter or MavenCentral :
 
-```
+```java
 compile 'fr.bmartel:bboxapi-router:1.3'
 ```
 
@@ -40,7 +41,7 @@ compile 'fr.bmartel:bboxapi-router:1.3'
 
 Retrieve some basic information about Bbox :
 
-```
+```java
 BboxApi api = new BboxApi();
 
 SummaryResponse summaryResponse = api.getDeviceSummary();
@@ -52,7 +53,7 @@ This API is public (doesn't require authentication), for more precise info see D
 
 Get more information about Bbox : 
 
-```
+```java
 BboxApi api = new BboxApi();
 
 api.setPassword("password");
@@ -64,7 +65,7 @@ DeviceInfoResponse deviceInfoResponse = api.getDeviceInfo();
 
 Get list of all hosts known by Bbox :
 
-```
+```java
 BboxApi api = new BboxApi();
 
 api.setPassword("password");
@@ -76,7 +77,7 @@ HostsResponse hostResponse = api.getHosts();
 
 Get information about wireless :
 
-```
+```java
 BboxApi api = new BboxApi();
 
 api.setPassword("password");
@@ -88,7 +89,7 @@ WirelessResponse wirelessResponse = api.getWirelessData();
 
 Get voip information :
 
-```
+```java
 BboxApi api = new BboxApi();
 
 api.setPassword("password");
@@ -100,7 +101,7 @@ VoipResponse voipResponse = api.getVoipData();
 
 Get full list of call log since last reboot :
 
-```
+```java
 BboxApi api = new BboxApi();
 
 api.setPassword("password");
@@ -112,7 +113,7 @@ CallLogResponse callLogResponse = api.getFullCallLog();
 
 Dial a specified phone number. Phone will ring and call will be processed once user hookoff
 
-```
+```java
 BboxApi api = new BboxApi();
 
 api.setPassword("password");
@@ -129,7 +130,7 @@ Input  :
 
 Switch led display to ON / OFF on Bbox 
 
-```
+```java
 BboxApi api = new BboxApi();
 
 api.setPassword("password");
@@ -145,7 +146,7 @@ api.setBboxDisplayState(true);
 
 Switch Wifi to ON/OFF 
 
-```
+```java
 BboxApi api = new BboxApi();
 
 api.setPassword("password");
@@ -157,24 +158,35 @@ api.setWifiState(true);
 api.setWifiState(false);
 ```
 
+## Reboot Bbox
+
+```java
+BboxApi api = new BboxApi();
+
+api.setPassword("password");
+
+// reboot Bbox
+api.reboot();
+```
+
 ## Android integration
 
 * add `bboxapi-router` & `httpcomponents` lib depedency to `build.gradle` : 
 
-```
+```java
 compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
 compile 'fr.bmartel:bboxapi-router:1.3'
 ```
 
 * add Internet permission to manifest :
 
-```
+```java
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
 * use an AsyncTask to call Bbox Router API :
 
-```
+```java
 public class BboxApiTask extends AsyncTask<Void, Void, String> {
 
     @Override

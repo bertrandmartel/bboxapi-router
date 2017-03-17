@@ -32,6 +32,7 @@ task findConventions << {
 }
 
 task callLog(type: JavaExec) {
+    standardInput = System.in
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources
     main = "fr.bmartel.bboxapi.examples.request.CallLog"
@@ -39,6 +40,7 @@ task callLog(type: JavaExec) {
 }
 
 task deviceInfo(type: JavaExec) {
+    standardInput = System.in
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources
     main = "fr.bmartel.bboxapi.examples.request.DeviceInfo"
@@ -46,6 +48,7 @@ task deviceInfo(type: JavaExec) {
 }
 
 task dial(type: JavaExec) {
+    standardInput = System.in
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources
     main = "fr.bmartel.bboxapi.examples.action.Dial"
@@ -53,6 +56,7 @@ task dial(type: JavaExec) {
 }
 
 task display(type: JavaExec) {
+    standardInput = System.in
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources
     main = "fr.bmartel.bboxapi.examples.action.Display"
@@ -68,6 +72,7 @@ task reboot(type: JavaExec) {
 }
 
 task hosts(type: JavaExec) {
+    standardInput = System.in
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources
     main = "fr.bmartel.bboxapi.examples.request.Hosts"
@@ -75,6 +80,7 @@ task hosts(type: JavaExec) {
 }
 
 task logout(type: JavaExec) {
+    standardInput = System.in
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources
     main = "fr.bmartel.bboxapi.examples.action.Logout"
@@ -82,6 +88,7 @@ task logout(type: JavaExec) {
 }
 
 task summary(type: JavaExec) {
+    standardInput = System.in
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources
     main = "fr.bmartel.bboxapi.examples.request.Summary"
@@ -89,6 +96,7 @@ task summary(type: JavaExec) {
 }
 
 task voip(type: JavaExec) {
+    standardInput = System.in
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources
     main = "fr.bmartel.bboxapi.examples.request.Voip"
@@ -96,6 +104,7 @@ task voip(type: JavaExec) {
 }
 
 task wifi(type: JavaExec) {
+    standardInput = System.in
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources
     main = "fr.bmartel.bboxapi.examples.action.Wifi"
@@ -103,6 +112,7 @@ task wifi(type: JavaExec) {
 }
 
 task wireless(type: JavaExec) {
+    standardInput = System.in
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources
     main = "fr.bmartel.bboxapi.examples.request.Wireless"

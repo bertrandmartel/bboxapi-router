@@ -38,6 +38,8 @@ public class RouterApiUtils {
                 return HttpStatus.OK;
             case 401:
                 return HttpStatus.UNAUTHORIZED;
+            case 403:
+                return HttpStatus.FORBIDDEN;
             case 429:
                 return HttpStatus.TOO_MANY_REQUEST;
             case 404:

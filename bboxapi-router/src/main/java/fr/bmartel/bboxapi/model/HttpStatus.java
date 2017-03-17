@@ -32,6 +32,7 @@ public enum HttpStatus {
     OK,
     TOO_MANY_REQUEST,
     UNAUTHORIZED,
+    FORBIDDEN,
     NO_COOKIE,
     NOT_FOUND,
     UNKNOWN

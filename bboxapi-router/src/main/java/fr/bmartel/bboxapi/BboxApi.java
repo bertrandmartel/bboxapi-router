@@ -26,6 +26,7 @@ package fr.bmartel.bboxapi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import fr.bmartel.bboxapi.model.token.BboxDevice;
 import fr.bmartel.bboxapi.response.*;
 import fr.bmartel.bboxapi.model.summary.ApiSummary;
 import fr.bmartel.bboxapi.model.device.BboxDeviceEntry;
@@ -76,6 +77,8 @@ public class BboxApi {
     private final static String LOGOUT_URI = "http://" + BBOX_HOST + "/api/v1/logout";
     private final static String HOSTS_URI = "http://" + BBOX_HOST + "/api/v1/hosts";
     private final static String CALLLOG_URI = "http://" + BBOX_HOST + "/api/v1/voip/fullcalllog/1";
+    private final static String REBOOT_URI = "http://" + BBOX_HOST + "/api/v1/device/reboot";
+    private final static String TOKEN_URI = "http://" + BBOX_HOST + "/api/v1/device/token";
 
     private final static String BBOX_COOKIE_NAME = "BBOX_ID";
 
@@ -146,6 +149,7 @@ public class BboxApi {
         SUMMARY,
         GET_HOSTS,
         CALL_LOG,
+        BBOX_TOKEN,
         WIRELESS_DATA;
     }
 
@@ -175,7 +179,6 @@ public class BboxApi {
 
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     Gson gson = gsonBuilder.create();
-
 
                     switch (type) {
                         case VOIP:
@@ -214,6 +217,12 @@ public class BboxApi {
                                     }.getType());
 
                             return new WirelessResponse(wirelessList, HttpStatus.OK, statusLine);
+                        case BBOX_TOKEN:
+                            List<BboxDevice> deviceList = gson.fromJson(result,
+                                    new TypeToken<List<BboxDevice>>() {
+                                    }.getType());
+
+                            return new BboxTokenResponse(deviceList, HttpStatus.OK, statusLine);
                     }
 
                 } else if (response.getStatusLine().getStatusCode() == 401 && needAuth) {
@@ -333,6 +342,28 @@ public class BboxApi {
         HttpPut wifiRequest = new HttpPut(WIRELESS_URI + "?radio.enable=" + status);
 
         return executeRequest(wifiRequest);
+    }
+
+    /**
+     * Reboot bbox
+     *
+     * @return
+     */
+    public HttpStatus reboot() {
+
+        BboxTokenResponse response = (BboxTokenResponse) executeGetRequest(RequestType.BBOX_TOKEN, TOKEN_URI, true);
+
+        if (response.getStatus() == HttpStatus.OK) {
+
+            if (response.getDeviceList().size() > 0 && response.getDeviceList().get(0).getBboxToken().getToken() !=
+                    null) {
+                HttpPost rebootRequest = new HttpPost(REBOOT_URI + "?btoken=" + response.getDeviceList().get(0)
+                        .getBboxToken().getToken());
+
+                return executeRequest(rebootRequest);
+            }
+        }
+        return response.getStatus();
     }
 
     /**

@@ -59,6 +59,14 @@ task display(type: JavaExec) {
     args ""
 }
 
+task reboot(type: JavaExec) {
+    standardInput = System.in
+    classpath = sourceSets.main.runtimeClasspath
+    classpath += sourceSets.main.resources
+    main = "fr.bmartel.bboxapi.examples.action.Reboot"
+    args ""
+}
+
 task hosts(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     classpath += sourceSets.main.resources

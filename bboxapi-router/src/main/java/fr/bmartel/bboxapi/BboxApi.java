@@ -302,7 +302,7 @@ public class BboxApi {
                     return HttpStatus.UNAUTHORIZED;
                 }
                 mRetry = 0;
-            } else {
+            } else if (!auth) {
                 mCookieStore.clear();
             }
         }

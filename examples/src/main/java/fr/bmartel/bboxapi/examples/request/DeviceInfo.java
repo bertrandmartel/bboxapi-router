@@ -50,14 +50,9 @@ public class DeviceInfo {
 
         BboxApi api = new BboxApi();
 
-        String pass = ExampleUtils.getPassword();
-
-        api.setPassword(pass);
-
         DeviceInfoResponse deviceInfoResponse = api.getDeviceInfo();
 
         if (deviceInfoResponse.getStatus() == HttpStatus.OK) {
-
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.setPrettyPrinting().create();
             Type listOfTestObject = new TypeToken<List<BboxDeviceEntry>>() {

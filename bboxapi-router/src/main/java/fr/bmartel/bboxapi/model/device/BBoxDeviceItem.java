@@ -25,6 +25,9 @@ package fr.bmartel.bboxapi.model.device;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Bbox device info.
  *
@@ -145,6 +148,11 @@ public class BBoxDeviceItem {
         return mLdr2;
     }
 
+    private static int getVersionPattern(String input, int index) {
+        Matcher match = Pattern.compile("(\\d+).(\\d+).(\\d+)").matcher(input);
+        return match.matches() ? Integer.parseInt(match.group(index)) : -1;
+    }
+
     public class Versionning {
 
         @SerializedName("version")
@@ -155,6 +163,18 @@ public class BBoxDeviceItem {
 
         public String getVersion() {
             return mVersion;
+        }
+
+        public int getMajor() {
+            return getVersionPattern(mVersion, 1);
+        }
+
+        public int getMinor() {
+            return getVersionPattern(mVersion, 2);
+        }
+
+        public int getPatch() {
+            return getVersionPattern(mVersion, 3);
         }
 
         public String getDate() {

@@ -47,6 +47,11 @@ public class ExampleUtils {
         return userRequest();
     }
 
+    public static String getPincode() {
+        LOGGER.debug("enter pincode (last 3 number of serial number) : ");
+        return userRequest();
+    }
+
     public static String getPhoenNumber() {
         LOGGER.debug("enter phone number to call : ");
         return userRequest();

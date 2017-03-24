@@ -303,7 +303,6 @@ public class BboxApi {
                 }
                 mRetry = 0;
             } else {
-
                 mCookieStore.clear();
             }
         }
@@ -321,9 +320,7 @@ public class BboxApi {
                 }
                 mRetry = 0;
             } else {
-
                 storeCookie(response);
-
                 try {
                     return RouterApiUtils.gethttpStatus(response.getStatusLine().getStatusCode());
                 } finally {
@@ -473,15 +470,15 @@ public class BboxApi {
     /**
      * Bbox device api
      */
-    public DeviceInfoResponse getDeviceInfo() {
-        return (DeviceInfoResponse) executeGetRequest(RequestType.DEVICE_INFO, DEVICE_URI, false);
+    public DeviceInfoResponse getDeviceInfo(boolean useAuth) {
+        return (DeviceInfoResponse) executeGetRequest(RequestType.DEVICE_INFO, DEVICE_URI, !useAuth);
     }
 
     /**
      * Retrieve summary api result
      */
-    public SummaryResponse getDeviceSummary() {
-        return (SummaryResponse) executeGetRequest(RequestType.SUMMARY, SUMMARY_URI, false);
+    public SummaryResponse getDeviceSummary(boolean useAuth) {
+        return (SummaryResponse) executeGetRequest(RequestType.SUMMARY, SUMMARY_URI, !useAuth);
     }
 
     /**
@@ -515,6 +512,6 @@ public class BboxApi {
         mAuthenticated = false;
         mCookieStore.clear();
 
-        return executeRequest(logoutRequest, true, false);
+        return executeRequest(logoutRequest, false, false);
     }
 }

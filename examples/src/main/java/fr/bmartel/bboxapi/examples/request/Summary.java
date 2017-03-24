@@ -49,7 +49,7 @@ public class Summary {
 
         BboxApi api = new BboxApi();
 
-        SummaryResponse summaryResponse = api.getDeviceSummary();
+        SummaryResponse summaryResponse = api.getDeviceSummary(false);
 
         if (summaryResponse.getStatus() == HttpStatus.OK) {
 

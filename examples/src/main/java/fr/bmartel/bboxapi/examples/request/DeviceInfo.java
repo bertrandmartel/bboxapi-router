@@ -50,7 +50,7 @@ public class DeviceInfo {
 
         BboxApi api = new BboxApi();
 
-        DeviceInfoResponse deviceInfoResponse = api.getDeviceInfo();
+        DeviceInfoResponse deviceInfoResponse = api.getDeviceInfo(false);
 
         if (deviceInfoResponse.getStatus() == HttpStatus.OK) {
             GsonBuilder gsonBuilder = new GsonBuilder();

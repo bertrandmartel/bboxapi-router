@@ -68,7 +68,7 @@ public class BboxApi {
 
     private String mPassword;
 
-    private static int AUTH_MAX_RETRY = 2;
+    private static int AUTH_MAX_RETRY = 0;
 
     private int mRetry;
 
@@ -258,6 +258,7 @@ public class BboxApi {
                     mAuthenticated = false;
                     if (mRetry < (AUTH_MAX_RETRY + 1)) {
                         mRetry++;
+                        response.close();
                         return executeGetRequest(type, uri, false);
                     }
                     mRetry = 0;

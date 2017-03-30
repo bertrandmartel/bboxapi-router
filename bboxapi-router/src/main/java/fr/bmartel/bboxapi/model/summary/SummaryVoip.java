@@ -70,4 +70,8 @@ public class SummaryVoip {
     public int getNotanswered() {
         return mNotanswered;
     }
+
+    public void setNotAnswered(int notAnswered) {
+        mNotanswered = notAnswered;
+    }
 }

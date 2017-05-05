@@ -241,6 +241,7 @@ public class BboxApi {
 
                             return new WirelessResponse(wirelessList, HttpStatus.OK, statusLine);
                         case VERIFY_PASSWORD_RECOVERY:
+                            storeCookie(response);
                             List<VerifyRecovery> verifyList = gson.fromJson(result,
                                     new TypeToken<List<VerifyRecovery>>() {
                                     }.getType());

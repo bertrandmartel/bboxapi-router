@@ -7,11 +7,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Created by akinaru on 24/03/17.
+ * Setup Password for main version < 12
  */
-public class PincodeVerify {
+public class SetupPincode {
 
-    private final static Logger LOGGER = LogManager.getLogger(PincodeVerify.class.getName());
+    private final static Logger LOGGER = LogManager.getLogger(SetupPincode.class.getName());
 
     public static void main(String[] args) {
 

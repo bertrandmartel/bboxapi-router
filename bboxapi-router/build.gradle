@@ -2,7 +2,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 group 'fr.bmartel'
-version '1.55'
+version '1.56'
 
 apply plugin: 'java'
 targetCompatibility = '1.7'

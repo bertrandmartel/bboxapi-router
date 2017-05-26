@@ -218,6 +218,13 @@ public class BboxApiTask extends AsyncTask<Void, Void, String> {
 
 Execute it with : `new BboxApiTask().execute();`
 
+* proguard config (keep model & response packages) :
+
+```
+-keep class fr.bmartel.bboxapi.model.** { *; }
+-keep class fr.bmartel.bboxapi.response.** { *; }
+```
+
 ## Examples
 
 The following examples will prompt user for password and execute specified request (except for summary which doesnt require authentication) :

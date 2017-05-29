@@ -316,6 +316,7 @@ public class BboxApi {
                 mAuthenticated = false;
                 if (mRetry < (AUTH_MAX_RETRY + 1)) {
                     mRetry++;
+                    response.close();
                     return executeRequest(request, auth, skipAuth);
                 }
                 mRetry = 0;

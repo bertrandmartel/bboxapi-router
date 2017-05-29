@@ -182,8 +182,6 @@ public class BboxApi {
                     return getDefaultResponse(type, authResponse.getStatus(), authResponse.getStatusLine());
                 }
                 mRetry = 0;
-            } else {
-                mCookieStore.clear();
             }
         }
 

@@ -50,4 +50,7 @@ public class SummaryHost {
         return mIpaddress;
     }
 
+    public void setHostname(String hostname) {
+        mHostname = hostname;
+    }
 }

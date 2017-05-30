@@ -176,4 +176,8 @@ public class Host {
     public int isActive() {
         return mActive;
     }
+
+    public void setHostname(String hostname) {
+        mHostname = hostname;
+    }
 }

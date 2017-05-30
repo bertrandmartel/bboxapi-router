@@ -50,10 +50,6 @@ public class Hosts {
 
         BboxApi api = new BboxApi();
 
-        String pass = ExampleUtils.getPassword();
-
-        api.setPassword(pass);
-
         HostsResponse hostResponse = api.getHosts();
 
         if (hostResponse.getStatus() == HttpStatus.OK) {

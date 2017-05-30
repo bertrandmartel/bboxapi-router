@@ -486,7 +486,7 @@ public class BboxApi {
      * Retrieve all hosts
      */
     public HostsResponse getHosts() {
-        return (HostsResponse) executeGetRequest(RequestType.GET_HOSTS, HOSTS_URI, false);
+        return (HostsResponse) executeGetRequest(RequestType.GET_HOSTS, HOSTS_URI, true);
     }
 
 

@@ -16,9 +16,9 @@ These APIs are used by Bbox management interface on : http://gestionbbox.lan
 |--------------|---------|-----|------------------------|
 | summary | ``getDeviceSummary()`` |  public    | get some information about Bbox      |
 | voip | ``getVoipData()`` |  private    | request voip data      |
-| device information | ``getDeviceInfo()`` |  private    | request specific information about box      |
+| device information | ``getDeviceInfo()`` |  public/private    | request specific information about box. Unauthenticated use won't give serialnumber field  |
 | full call log | ``getFullCallLog()`` |  private    | get call log since last reboot      |
-| hosts | ``getHosts()`` |  private    | request list of known hosts      |
+| hosts | ``getHosts()`` |  public    | request list of known hosts      |
 | set wifi state | ``setWifiState(boolean state)`` |  private    | set Wifi ON/OFF      |
 | set led state | ``setBboxDisplayState(boolean state)`` |  private    | set Bbox led display ON/OFF      |
 | dial | ``voipDial(int lineNumber, String phone)`` |  private    | dial a phone number on a line      |

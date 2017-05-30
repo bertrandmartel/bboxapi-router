@@ -24,6 +24,7 @@ These APIs are used by Bbox management interface on : http://gestionbbox.lan
 | dial | ``voipDial(int lineNumber, String phone)`` |  private    | dial a phone number on a line      |
 | wireless | `getWirelessData()` | private | get wireless info |
 | reboot | `reboot()` | private | reboot Bbox |
+| xdsl info | `getXdslInfo()` | public | get XDSL information |
 
 All APIs need authentication (admin password) except Summary API
 
@@ -32,7 +33,7 @@ All APIs need authentication (admin password) except Summary API
 * with Gradle, from JCenter or MavenCentral :
 
 ```java
-compile 'fr.bmartel:bboxapi-router:1.60.0'
+compile 'fr.bmartel:bboxapi-router:1.60.1'
 ```
 
 ## Usage
@@ -169,13 +170,21 @@ api.setPassword("password");
 api.reboot();
 ```
 
+## Get XDSL information
+
+```java
+BboxApi api = new BboxApi();
+
+WanXdslResponse xdslResponse = api.getXdslInfo();
+```
+
 ## Android integration
 
 * add `bboxapi-router` & `httpcomponents` lib depedency to `build.gradle` : 
 
 ```java
 compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
-compile 'fr.bmartel:bboxapi-router:1.3'
+compile 'fr.bmartel:bboxapi-router:1.60.1'
 ```
 
 * add Internet permission to manifest :

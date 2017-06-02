@@ -79,6 +79,7 @@ public class BboxApi {
     private final static String DIAL_URI = "http://" + BBOX_HOST + "/api/v1/voip/dial";
     private final static String DISPLAY_STATE_URI = "http://" + BBOX_HOST + "/api/v1/device/display";
     private final static String WIRELESS_URI = "http://" + BBOX_HOST + "/api/v1/wireless";
+    private final static String WIRELESS_ACL_URI = "http://" + BBOX_HOST + "/api/v1/wireless/acl";
     private final static String DEVICE_URI = "http://" + BBOX_HOST + "/api/v1/device";
     private final static String SUMMARY_URI = "http://" + BBOX_HOST + "/api/v1/summary";
     private final static String LOGOUT_URI = "http://" + BBOX_HOST + "/api/v1/logout";
@@ -372,6 +373,21 @@ public class BboxApi {
         int status = state ? 1 : 0;
 
         HttpPut wifiRequest = new HttpPut(WIRELESS_URI + "?radio.enable=" + status);
+
+        return executeRequest(wifiRequest, true, false);
+    }
+
+    /**
+     * Enable/Disable Wifi Mac filtering.
+     *
+     * @param state state of Mac filtering
+     * @return request status
+     */
+    public HttpStatus setWifiMacFilter(boolean state) {
+
+        int status = state ? 1 : 0;
+
+        HttpPut wifiRequest = new HttpPut(WIRELESS_ACL_URI + "?enable=" + status);
 
         return executeRequest(wifiRequest, true, false);
     }

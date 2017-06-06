@@ -21,20 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.model;
+package fr.bmartel.bboxapi.examples.request;
+
+import fr.bmartel.bboxapi.BboxApi;
+import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
+import fr.bmartel.bboxapi.model.HttpStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * Status returned by HttpResponse object.
+ * delete Wireless ACL rule.
  *
  * @author Bertrand Martel
  */
-public enum HttpStatus {
-    OK,
-    CREATED,
-    TOO_MANY_REQUEST,
-    UNAUTHORIZED,
-    FORBIDDEN,
-    NO_COOKIE,
-    NOT_FOUND,
-    UNKNOWN
+public class WirelessAclRuleRemove {
+
+    private final static Logger LOGGER = LogManager.getLogger(WirelessAclRuleRemove.class.getName());
+
+    public static void main(String[] args) {
+
+        BboxApi api = new BboxApi();
+
+        String pass = ExampleUtils.getPassword();
+
+        api.setPassword(pass);
+
+        HttpStatus response = api.deleteMacFilterRule(2);
+
+        if (response == HttpStatus.OK) {
+            LOGGER.debug(response);
+        } else {
+            LOGGER.error("http error  : " + response);
+        }
+    }
 }

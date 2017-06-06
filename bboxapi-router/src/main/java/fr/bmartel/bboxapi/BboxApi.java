@@ -29,6 +29,7 @@ import com.google.gson.reflect.TypeToken;
 import fr.bmartel.bboxapi.model.recovery.VerifyRecovery;
 import fr.bmartel.bboxapi.model.token.BboxDevice;
 import fr.bmartel.bboxapi.model.wan.WanItem;
+import fr.bmartel.bboxapi.model.wireless.AclItem;
 import fr.bmartel.bboxapi.response.*;
 import fr.bmartel.bboxapi.model.summary.ApiSummary;
 import fr.bmartel.bboxapi.model.device.BboxDeviceEntry;
@@ -80,6 +81,7 @@ public class BboxApi {
     private final static String DISPLAY_STATE_URI = "http://" + BBOX_HOST + "/api/v1/device/display";
     private final static String WIRELESS_URI = "http://" + BBOX_HOST + "/api/v1/wireless";
     private final static String WIRELESS_ACL_URI = "http://" + BBOX_HOST + "/api/v1/wireless/acl";
+    private final static String WIRELESS_ACL_RULES = "http://" + BBOX_HOST + "/api/v1/wireless/acl/rules";
     private final static String DEVICE_URI = "http://" + BBOX_HOST + "/api/v1/device";
     private final static String SUMMARY_URI = "http://" + BBOX_HOST + "/api/v1/summary";
     private final static String LOGOUT_URI = "http://" + BBOX_HOST + "/api/v1/logout";
@@ -174,7 +176,8 @@ public class BboxApi {
         CALL_LOG,
         BBOX_TOKEN,
         WIRELESS_DATA,
-        VERIFY_PASSWORD_RECOVERY;
+        VERIFY_PASSWORD_RECOVERY,
+        GET_WIFI_MAC_FILTER;
     }
 
     private HttpResponse executeGetRequest(RequestType type, String uri, boolean skipAuth) {
@@ -248,6 +251,12 @@ public class BboxApi {
                                     }.getType());
 
                             return new WirelessResponse(wirelessList, HttpStatus.OK, statusLine);
+                        case GET_WIFI_MAC_FILTER:
+                            List<AclItem> aclList = gson.fromJson(result,
+                                    new TypeToken<List<AclItem>>() {
+                                    }.getType());
+
+                            return new WirelessAclResponse(aclList, HttpStatus.OK, statusLine);
                         case VERIFY_PASSWORD_RECOVERY:
                             storeCookie(response);
                             List<VerifyRecovery> verifyList = gson.fromJson(result,
@@ -305,7 +314,7 @@ public class BboxApi {
         return new VoipResponse(null, HttpStatus.UNKNOWN, null);
     }
 
-    private HttpStatus executeRequest(HttpEntityEnclosingRequestBase request, boolean auth, boolean skipAuth) {
+    private HttpStatus executeRequest(HttpRequestBase request, boolean auth, boolean skipAuth) {
 
         if (!skipAuth) {
             if (!mAuthenticated && auth) {
@@ -390,6 +399,81 @@ public class BboxApi {
         HttpPut wifiRequest = new HttpPut(WIRELESS_ACL_URI + "?enable=" + status);
 
         return executeRequest(wifiRequest, true, false);
+    }
+
+    /**
+     * Delete ACL rule.
+     *
+     * @param ruleIndex number of rule
+     * @return request status
+     */
+    public HttpStatus deleteMacFilterRule(int ruleIndex) {
+        HttpDelete wifiRequest = new HttpDelete(WIRELESS_ACL_RULES + "/" + ruleIndex);
+        return executeRequest(wifiRequest, true, false);
+    }
+
+    /**
+     * Update Wifi Mac filtering Rule.
+     *
+     * @param state state of Mac filtering
+     * @return request status
+     */
+    public HttpStatus updateWifiMacFilterRule(int ruleIndex, boolean state, String macAddress, String ip) {
+
+        int status = state ? 1 : 0;
+
+        HttpPut wifiUpdate = new HttpPut(WIRELESS_ACL_RULES + "/" + ruleIndex);
+
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        nameValuePairs.add(new BasicNameValuePair("enable", String.valueOf(status)));
+        nameValuePairs.add(new BasicNameValuePair("macaddress", macAddress));
+        nameValuePairs.add(new BasicNameValuePair("device", ip));
+
+        try {
+            wifiUpdate.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return executeRequest(wifiUpdate, true, false);
+    }
+
+    /**
+     * Create Wifi Mac filtering rules.
+     *
+     * @param enable     enable rule
+     * @param macAddress mac address to filter
+     * @return request status
+     */
+    public HttpStatus createWifiMacFilterRule(boolean enable, String macAddress, String ip) {
+
+        BboxTokenResponse response = (BboxTokenResponse) executeGetRequest(RequestType.BBOX_TOKEN, TOKEN_URI, false);
+
+        if (response.getStatus() == HttpStatus.OK) {
+
+            if (response.getDeviceList().size() > 0 && response.getDeviceList().get(0).getBboxToken().getToken() !=
+                    null) {
+                HttpPost wifiMacFilterReq = new HttpPost(WIRELESS_ACL_RULES + "?btoken=" + response.getDeviceList()
+                        .get(0)
+                        .getBboxToken().getToken());
+
+                int status = enable ? 1 : 0;
+
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+                nameValuePairs.add(new BasicNameValuePair("enable", String.valueOf(status)));
+                nameValuePairs.add(new BasicNameValuePair("macaddress", macAddress));
+                nameValuePairs.add(new BasicNameValuePair("device", ip));
+
+                try {
+                    wifiMacFilterReq.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                return executeRequest(wifiMacFilterReq, true, false);
+            }
+        }
+        return response.getStatus();
     }
 
     /**
@@ -500,6 +584,15 @@ public class BboxApi {
      */
     public DeviceInfoResponse getDeviceInfo(boolean useAuth) {
         return (DeviceInfoResponse) executeGetRequest(RequestType.DEVICE_INFO, DEVICE_URI, !useAuth);
+    }
+
+    /**
+     * Get wifi mac filter information.
+     *
+     * @return request status
+     */
+    public WirelessAclResponse getWifiMacFilterInfo() {
+        return (WirelessAclResponse) executeGetRequest(RequestType.GET_WIFI_MAC_FILTER, WIRELESS_ACL_URI, false);
     }
 
     /**

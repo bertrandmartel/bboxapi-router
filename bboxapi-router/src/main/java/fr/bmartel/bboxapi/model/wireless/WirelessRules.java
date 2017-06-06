@@ -21,26 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.examples.action;
+package fr.bmartel.bboxapi.model.wireless;
 
-import fr.bmartel.bboxapi.BboxApi;
-import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 /**
- * Enable/Disable Wifi MAC filtering.
+ * Wireless Rules object.
  *
  * @author Bertrand Martel
  */
-public class WifiMacFiltering {
+public class WirelessRules {
 
-    public static void main(String[] args) {
+    @SerializedName("enable")
+    private int mEnable;
 
-        BboxApi api = new BboxApi();
+    @SerializedName("rules")
+    private List<Rules> mRuleList;
 
-        String pass = ExampleUtils.getPassword();
+    public int isEnable() {
+        return mEnable;
+    }
 
-        api.setPassword(pass);
-
-        api.setWifiMacFilter(false);
+    public List<Rules> getRuleList() {
+        return mRuleList;
     }
 }

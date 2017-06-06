@@ -36,6 +36,8 @@ public class RouterApiUtils {
         switch (status) {
             case 200:
                 return HttpStatus.OK;
+            case 201:
+                return HttpStatus.CREATED;
             case 401:
                 return HttpStatus.UNAUTHORIZED;
             case 403:

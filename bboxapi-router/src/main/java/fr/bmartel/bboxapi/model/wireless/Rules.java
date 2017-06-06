@@ -21,20 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.model;
+package fr.bmartel.bboxapi.model.wireless;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Status returned by HttpResponse object.
+ * Rules Object.
  *
  * @author Bertrand Martel
  */
-public enum HttpStatus {
-    OK,
-    CREATED,
-    TOO_MANY_REQUEST,
-    UNAUTHORIZED,
-    FORBIDDEN,
-    NO_COOKIE,
-    NOT_FOUND,
-    UNKNOWN
+public class Rules {
+
+    @SerializedName("id")
+    private int mId;
+
+    @SerializedName("enable")
+    private int mEnable;
+
+    @SerializedName("name")
+    private String mName;
+
+    @SerializedName("macaddress")
+    private String mMacAddress;
+
+    public int getId() {
+        return mId;
+    }
+
+    public int isEnable() {
+        return mEnable;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public String getMacAddress() {
+        return mMacAddress;
+    }
 }

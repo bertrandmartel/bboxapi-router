@@ -21,20 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.model;
+package fr.bmartel.bboxapi.response;
+
+import fr.bmartel.bboxapi.model.HttpStatus;
+import fr.bmartel.bboxapi.model.wireless.AclItem;
+import org.apache.http.StatusLine;
+
+import java.util.List;
 
 /**
- * Status returned by HttpResponse object.
+ * Response to Wireless ACL request : mac filter information.
  *
  * @author Bertrand Martel
  */
-public enum HttpStatus {
-    OK,
-    CREATED,
-    TOO_MANY_REQUEST,
-    UNAUTHORIZED,
-    FORBIDDEN,
-    NO_COOKIE,
-    NOT_FOUND,
-    UNKNOWN
+public class WirelessAclResponse extends HttpResponse {
+
+    private List<AclItem> mAcl;
+
+    public WirelessAclResponse(List<AclItem> aclList, HttpStatus status, StatusLine statusLine) {
+        super(status, statusLine);
+        mAcl = aclList;
+    }
+
+    public List<AclItem> getAclResponse() {
+        return mAcl;
+    }
 }

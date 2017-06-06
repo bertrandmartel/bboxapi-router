@@ -23,28 +23,24 @@
  */
 package fr.bmartel.bboxapi.examples.request;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
-import fr.bmartel.bboxapi.model.wireless.WirelessItem;
-import fr.bmartel.bboxapi.response.WirelessResponse;
+import fr.bmartel.bboxapi.model.wireless.Rules;
+import fr.bmartel.bboxapi.response.WirelessAclResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * Wireless data request example.
+ * Remove all Wifi MAC filter rules.
  *
  * @author Bertrand Martel
  */
-public class Wireless {
+public class WirelessAclRemoveAllRules {
 
-    private final static Logger LOGGER = LogManager.getLogger(Wireless.class.getName());
+    private final static Logger LOGGER = LogManager.getLogger(WirelessAclInfo.class.getName());
 
     public static void main(String[] args) {
 
@@ -54,17 +50,26 @@ public class Wireless {
 
         api.setPassword(pass);
 
-        WirelessResponse wirelessResponse = api.getWirelessData();
+        WirelessAclResponse wirelessResponse = api.getWifiMacFilterInfo();
 
         if (wirelessResponse.getStatus() == HttpStatus.OK) {
 
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.setPrettyPrinting().create();
-            Type listOfTestObject = new TypeToken<List<WirelessItem>>() {
-            }.getType();
-            String wireless = gson.toJson(wirelessResponse.getWirelessList(), listOfTestObject);
+            if (wirelessResponse.getAclResponse().size() > 0) {
 
-            LOGGER.debug(wireless);
+                List<Rules> ruleList = wirelessResponse.getAclResponse().get(0).getAclRules().getRuleList();
+
+                for (int i = 0; i < ruleList.size(); i++) {
+                    LOGGER.error("delete rule with id " + ruleList.get(i).getId());
+                    HttpStatus status = api.deleteMacFilterRule(ruleList.get(i).getId());
+                    if (status == HttpStatus.OK) {
+                        LOGGER.error("successfully deleted rules : " + ruleList.get(i).getId());
+                    } else {
+                        LOGGER.error("failed to delete rules : " + ruleList.get(i).getId());
+                    }
+                }
+            } else {
+                LOGGER.error("wireless acl rules empty");
+            }
         } else {
             LOGGER.error("http error  : " + wirelessResponse.getStatus());
         }

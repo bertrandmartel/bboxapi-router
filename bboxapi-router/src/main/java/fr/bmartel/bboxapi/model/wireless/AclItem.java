@@ -21,20 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.model;
+package fr.bmartel.bboxapi.model.wireless;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Status returned by HttpResponse object.
+ * Acl object.
  *
  * @author Bertrand Martel
  */
-public enum HttpStatus {
-    OK,
-    CREATED,
-    TOO_MANY_REQUEST,
-    UNAUTHORIZED,
-    FORBIDDEN,
-    NO_COOKIE,
-    NOT_FOUND,
-    UNKNOWN
+public class AclItem {
+
+    @SerializedName("acl")
+    private WirelessRules mAclRules;
+
+    public WirelessRules getAclRules() {
+        return mAclRules;
+    }
 }

@@ -30,7 +30,7 @@ import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.wireless.WirelessItem;
-import fr.bmartel.bboxapi.response.WirelessResponse;
+import fr.bmartel.bboxapi.response.WirelessAclResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,13 +38,13 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * Wireless data request example.
+ * Wireless ACL information request example.
  *
  * @author Bertrand Martel
  */
-public class Wireless {
+public class WirelessAclInfo {
 
-    private final static Logger LOGGER = LogManager.getLogger(Wireless.class.getName());
+    private final static Logger LOGGER = LogManager.getLogger(WirelessAclInfo.class.getName());
 
     public static void main(String[] args) {
 
@@ -54,7 +54,7 @@ public class Wireless {
 
         api.setPassword(pass);
 
-        WirelessResponse wirelessResponse = api.getWirelessData();
+        WirelessAclResponse wirelessResponse = api.getWifiMacFilterInfo();
 
         if (wirelessResponse.getStatus() == HttpStatus.OK) {
 
@@ -62,7 +62,7 @@ public class Wireless {
             Gson gson = gsonBuilder.setPrettyPrinting().create();
             Type listOfTestObject = new TypeToken<List<WirelessItem>>() {
             }.getType();
-            String wireless = gson.toJson(wirelessResponse.getWirelessList(), listOfTestObject);
+            String wireless = gson.toJson(wirelessResponse.getAclResponse(), listOfTestObject);
 
             LOGGER.debug(wireless);
         } else {

@@ -21,20 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.model;
+package fr.bmartel.bboxapi.examples.action;
+
+import fr.bmartel.bboxapi.BboxApi;
+import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 
 /**
- * Status returned by HttpResponse object.
+ * Enable/Disable Wifi MAC filtering.
  *
  * @author Bertrand Martel
  */
-public enum HttpStatus {
-    OK,
-    CREATED,
-    TOO_MANY_REQUEST,
-    UNAUTHORIZED,
-    FORBIDDEN,
-    NO_COOKIE,
-    NOT_FOUND,
-    UNKNOWN
+public class WifiMacFilteringEnable {
+
+    public static void main(String[] args) {
+
+        BboxApi api = new BboxApi();
+
+        String pass = ExampleUtils.getPassword();
+
+        api.setPassword(pass);
+
+        api.setWifiMacFilter(false);
+    }
 }

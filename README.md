@@ -33,7 +33,7 @@ All APIs need authentication (admin password) except Summary API
 * with Gradle, from JCenter or MavenCentral :
 
 ```java
-compile 'fr.bmartel:bboxapi-router:1.60.1'
+compile 'fr.bmartel:bboxapi-router:1.60.3'
 ```
 
 ## Usage

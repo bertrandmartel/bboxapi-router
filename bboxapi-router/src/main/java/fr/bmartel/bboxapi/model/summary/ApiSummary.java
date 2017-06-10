@@ -50,6 +50,9 @@ public class ApiSummary {
     @SerializedName("voip")
     private List<SummaryVoip> mVoip;
 
+    @SerializedName("iptv")
+    private List<SummaryIptv> mIptv;
+
     @SerializedName("wireless")
     private SummaryWireless mWireless;
 
@@ -103,5 +106,9 @@ public class ApiSummary {
 
     public Wan getWan() {
         return mWan;
+    }
+
+    public List<SummaryIptv> getIptv() {
+        return mIptv;
     }
 }

@@ -54,6 +54,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -558,7 +559,8 @@ public class BboxApi {
      */
     public HttpStatus voipDial(int lineNumber, String phoneNumber) {
 
-        HttpPut dialRequest = new HttpPut(DIAL_URI + "?line=" + lineNumber + "&number=" + phoneNumber);
+        HttpPut dialRequest = new HttpPut(DIAL_URI + "?line=" + lineNumber + "&number=" +
+                URLEncoder.encode(phoneNumber.replaceAll("\\s+", "").replaceAll("\\+", "00")));
 
         return executeRequest(dialRequest, true, false);
     }

@@ -28,6 +28,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import fr.bmartel.bboxapi.model.recovery.VerifyRecovery;
 import fr.bmartel.bboxapi.model.token.BboxDevice;
+import fr.bmartel.bboxapi.model.wan.WanIp;
 import fr.bmartel.bboxapi.model.wan.WanItem;
 import fr.bmartel.bboxapi.model.wireless.AclItem;
 import fr.bmartel.bboxapi.response.*;
@@ -95,6 +96,7 @@ public class BboxApi {
     private final static String PINCODE_VERIFY = "http://" + BBOX_HOST + "/api/v1/pincode/verify";
     private final static String RESET_PASSWORD = "http://" + BBOX_HOST + "/api/v1/reset-password";
     private final static String WAN_XDSL_URI = "http://" + BBOX_HOST + "/api/v1/wan/xdsl";
+    private final static String WAN_IP_URI = "http://" + BBOX_HOST + "/api/v1/wan/ip";
 
     private final static String BBOX_COOKIE_NAME = "BBOX_ID";
 
@@ -174,6 +176,7 @@ public class BboxApi {
         SUMMARY,
         GET_HOSTS,
         GET_XDSL_INFO,
+        GET_IP_INFO,
         CALL_LOG,
         BBOX_TOKEN,
         WIRELESS_DATA,
@@ -240,6 +243,12 @@ public class BboxApi {
                                     }.getType());
 
                             return new WanXdslResponse(xdslInfo, HttpStatus.OK, statusLine);
+                        case GET_IP_INFO:
+                            List<WanIp> ipInfo = gson.fromJson(result,
+                                    new TypeToken<List<WanIp>>() {
+                                    }.getType());
+
+                            return new WanIpResponse(ipInfo, HttpStatus.OK, statusLine);
                         case CALL_LOG:
                             List<CallLogList> callLog = gson.fromJson(result,
                                     new TypeToken<List<CallLogList>>() {
@@ -311,6 +320,8 @@ public class BboxApi {
                 return new WirelessResponse(null, status, statusLine);
             case GET_XDSL_INFO:
                 return new WanXdslResponse(null, status, statusLine);
+            case GET_IP_INFO:
+                return new WanIpResponse(null, status, statusLine);
         }
         return new VoipResponse(null, HttpStatus.UNKNOWN, null);
     }
@@ -616,6 +627,13 @@ public class BboxApi {
      */
     public WanXdslResponse getXdslInfo() {
         return (WanXdslResponse) executeGetRequest(RequestType.GET_XDSL_INFO, WAN_XDSL_URI, true);
+    }
+
+    /**
+     * Get IP information.
+     */
+    public WanIpResponse getIpInfo() {
+        return (WanIpResponse) executeGetRequest(RequestType.GET_IP_INFO, WAN_IP_URI, true);
     }
 
     /**

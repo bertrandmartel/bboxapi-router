@@ -26,6 +26,7 @@ package fr.bmartel.bboxapi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import fr.bmartel.bboxapi.model.profile.ProfileEntry;
 import fr.bmartel.bboxapi.model.recovery.VerifyRecovery;
 import fr.bmartel.bboxapi.model.token.BboxDevice;
 import fr.bmartel.bboxapi.model.wan.WanIp;
@@ -77,26 +78,28 @@ public class BboxApi {
     private int mRetry;
 
     private final static String BBOX_HOST = "gestionbbox.lan";
-    private final static String LOGIN_URI = "http://" + BBOX_HOST + "/api/v1/login";
-    private final static String VOIP_URI = "http://" + BBOX_HOST + "/api/v1/voip";
-    private final static String DIAL_URI = "http://" + BBOX_HOST + "/api/v1/voip/dial";
-    private final static String DISPLAY_STATE_URI = "http://" + BBOX_HOST + "/api/v1/device/display";
-    private final static String WIRELESS_URI = "http://" + BBOX_HOST + "/api/v1/wireless";
-    private final static String WIRELESS_ACL_URI = "http://" + BBOX_HOST + "/api/v1/wireless/acl";
-    private final static String WIRELESS_ACL_RULES = "http://" + BBOX_HOST + "/api/v1/wireless/acl/rules";
-    private final static String DEVICE_URI = "http://" + BBOX_HOST + "/api/v1/device";
-    private final static String SUMMARY_URI = "http://" + BBOX_HOST + "/api/v1/summary";
-    private final static String LOGOUT_URI = "http://" + BBOX_HOST + "/api/v1/logout";
-    private final static String HOSTS_URI = "http://" + BBOX_HOST + "/api/v1/hosts";
-    private final static String CALLLOG_URI = "http://" + BBOX_HOST + "/api/v1/voip/fullcalllog/1";
-    private final static String REBOOT_URI = "http://" + BBOX_HOST + "/api/v1/device/reboot";
-    private final static String TOKEN_URI = "http://" + BBOX_HOST + "/api/v1/device/token";
-    private final static String PASSWORD_RECOV_URI = "http://" + BBOX_HOST + "/api/v1/password-recovery";
-    private final static String PASSWORD_RECOV_VERIFY_URI = "http://" + BBOX_HOST + "/api/v1/password-recovery/verify";
-    private final static String PINCODE_VERIFY = "http://" + BBOX_HOST + "/api/v1/pincode/verify";
-    private final static String RESET_PASSWORD = "http://" + BBOX_HOST + "/api/v1/reset-password";
-    private final static String WAN_XDSL_URI = "http://" + BBOX_HOST + "/api/v1/wan/xdsl";
-    private final static String WAN_IP_URI = "http://" + BBOX_HOST + "/api/v1/wan/ip";
+    private final static String URL_PREFIX = "http://" + BBOX_HOST;
+    private final static String LOGIN_URI = URL_PREFIX + "/api/v1/login";
+    private final static String VOIP_URI = URL_PREFIX + "/api/v1/voip";
+    private final static String DIAL_URI = URL_PREFIX + "/api/v1/voip/dial";
+    private final static String DISPLAY_STATE_URI = URL_PREFIX + "/api/v1/device/display";
+    private final static String WIRELESS_URI = URL_PREFIX + "/api/v1/wireless";
+    private final static String WIRELESS_ACL_URI = URL_PREFIX + "/api/v1/wireless/acl";
+    private final static String WIRELESS_ACL_RULES = URL_PREFIX + "/api/v1/wireless/acl/rules";
+    private final static String DEVICE_URI = URL_PREFIX + "/api/v1/device";
+    private final static String SUMMARY_URI = URL_PREFIX + "/api/v1/summary";
+    private final static String LOGOUT_URI = URL_PREFIX + "/api/v1/logout";
+    private final static String HOSTS_URI = URL_PREFIX + "/api/v1/hosts";
+    private final static String CALLLOG_URI = URL_PREFIX + "/api/v1/voip/fullcalllog/1";
+    private final static String REBOOT_URI = URL_PREFIX + "/api/v1/device/reboot";
+    private final static String TOKEN_URI = URL_PREFIX + "/api/v1/device/token";
+    private final static String PASSWORD_RECOV_URI = URL_PREFIX + "/api/v1/password-recovery";
+    private final static String PASSWORD_RECOV_VERIFY_URI = URL_PREFIX + "/api/v1/password-recovery/verify";
+    private final static String PINCODE_VERIFY = URL_PREFIX + "/api/v1/pincode/verify";
+    private final static String RESET_PASSWORD = URL_PREFIX + "/api/v1/reset-password";
+    private final static String WAN_XDSL_URI = URL_PREFIX + "/api/v1/wan/xdsl";
+    private final static String WAN_IP_URI = URL_PREFIX + "/api/v1/wan/ip";
+    private final static String PROFILE_CONSUMPTION_URI = URL_PREFIX + "/api/v1/profile/consumption";
 
     private final static String BBOX_COOKIE_NAME = "BBOX_ID";
 
@@ -181,7 +184,8 @@ public class BboxApi {
         BBOX_TOKEN,
         WIRELESS_DATA,
         VERIFY_PASSWORD_RECOVERY,
-        GET_WIFI_MAC_FILTER;
+        GET_WIFI_MAC_FILTER,
+        PROFILE_CONSUMPTION;
     }
 
     private HttpResponse executeGetRequest(RequestType type, String uri, boolean skipAuth) {
@@ -219,6 +223,12 @@ public class BboxApi {
                                     }.getType());
 
                             return new VoipResponse(voipList, HttpStatus.OK, statusLine);
+                        case PROFILE_CONSUMPTION:
+                            List<ProfileEntry> consumptionList = gson.fromJson(result,
+                                    new TypeToken<List<ProfileEntry>>() {
+                                    }.getType());
+
+                            return new ConsumptionResponse(consumptionList, HttpStatus.OK, statusLine);
                         case DEVICE_INFO:
                             List<BboxDeviceEntry> deviceInfoList = gson.fromJson(result,
                                     new TypeToken<List<BboxDeviceEntry>>() {
@@ -308,6 +318,8 @@ public class BboxApi {
         switch (type) {
             case VOIP:
                 return new VoipResponse(null, status, statusLine);
+            case PROFILE_CONSUMPTION:
+                return new ConsumptionResponse(null, status, statusLine);
             case DEVICE_INFO:
                 return new DeviceInfoResponse(null, status, statusLine);
             case SUMMARY:
@@ -590,6 +602,13 @@ public class BboxApi {
      */
     public VoipResponse getVoipData() {
         return (VoipResponse) executeGetRequest(RequestType.VOIP, VOIP_URI, false);
+    }
+
+    /**
+     * Profile Consumption.
+     */
+    public ConsumptionResponse getConsumptionData() {
+        return (ConsumptionResponse) executeGetRequest(RequestType.PROFILE_CONSUMPTION, PROFILE_CONSUMPTION_URI, false);
     }
 
     /**

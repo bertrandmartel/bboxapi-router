@@ -25,6 +25,9 @@ These APIs are used by Bbox management interface on : http://gestionbbox.lan
 | wireless | `getWirelessData()` | private | get wireless info |
 | reboot | `reboot()` | private | reboot Bbox |
 | xdsl info | `getXdslInfo()` | public | get XDSL information |
+| consumption info (profile) | `getConsumptionData()` | private | get Profile consumption info |
+| voice mail | `getVoiceMailData()` | private | get voice mail list |
+| delete voice mail | `deleteVoiceMail(int id)` | private | delete voice message by id |
 
 All APIs need authentication (admin password) except Summary API
 
@@ -33,7 +36,7 @@ All APIs need authentication (admin password) except Summary API
 * with Gradle, from JCenter or MavenCentral :
 
 ```java
-compile 'fr.bmartel:bboxapi-router:1.60.3'
+compile 'fr.bmartel:bboxapi-router:1.60.8'
 ```
 
 ## Usage

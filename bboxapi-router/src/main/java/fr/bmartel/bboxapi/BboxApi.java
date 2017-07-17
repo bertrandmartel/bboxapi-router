@@ -29,6 +29,7 @@ import com.google.gson.reflect.TypeToken;
 import fr.bmartel.bboxapi.model.profile.ProfileEntry;
 import fr.bmartel.bboxapi.model.recovery.VerifyRecovery;
 import fr.bmartel.bboxapi.model.token.BboxDevice;
+import fr.bmartel.bboxapi.model.voip.voicemail.VoiceMailEntry;
 import fr.bmartel.bboxapi.model.wan.WanIp;
 import fr.bmartel.bboxapi.model.wan.WanItem;
 import fr.bmartel.bboxapi.model.wireless.AclItem;
@@ -100,6 +101,7 @@ public class BboxApi {
     private final static String WAN_XDSL_URI = URL_PREFIX + "/api/v1/wan/xdsl";
     private final static String WAN_IP_URI = URL_PREFIX + "/api/v1/wan/ip";
     private final static String PROFILE_CONSUMPTION_URI = URL_PREFIX + "/api/v1/profile/consumption";
+    private final static String VOIP_VOICEMAIL_URI = URL_PREFIX + "/api/v1/voip/voicemail";
 
     private final static String BBOX_COOKIE_NAME = "BBOX_ID";
 
@@ -185,7 +187,8 @@ public class BboxApi {
         WIRELESS_DATA,
         VERIFY_PASSWORD_RECOVERY,
         GET_WIFI_MAC_FILTER,
-        PROFILE_CONSUMPTION;
+        PROFILE_CONSUMPTION,
+        VOIP_VOICEMAIL;
     }
 
     private HttpResponse executeGetRequest(RequestType type, String uri, boolean skipAuth) {
@@ -229,6 +232,12 @@ public class BboxApi {
                                     }.getType());
 
                             return new ConsumptionResponse(consumptionList, HttpStatus.OK, statusLine);
+                        case VOIP_VOICEMAIL:
+                            List<VoiceMailEntry> voiceMailList = gson.fromJson(result,
+                                    new TypeToken<List<VoiceMailEntry>>() {
+                                    }.getType());
+
+                            return new VoiceMailResponse(voiceMailList, HttpStatus.OK, statusLine);
                         case DEVICE_INFO:
                             List<BboxDeviceEntry> deviceInfoList = gson.fromJson(result,
                                     new TypeToken<List<BboxDeviceEntry>>() {
@@ -313,6 +322,52 @@ public class BboxApi {
         return getDefaultResponse(type, HttpStatus.UNKNOWN, null);
     }
 
+    private HttpResponse executeDeleteRequest(RequestType type, String uri, boolean skipAuth) {
+
+        if (!skipAuth) {
+            if (!mAuthenticated && mPassword != null && !mPassword.equals("")) {
+                AuthResponse authResponse = authenticate();
+                if (authResponse.getStatus() != HttpStatus.OK) {
+                    return getDefaultResponse(type, authResponse.getStatus(), authResponse.getStatusLine());
+                }
+                mRetry = 0;
+            }
+        }
+
+        HttpDelete request = new HttpDelete(uri);
+
+        CloseableHttpResponse response = null;
+        try {
+
+            response = mHttpClient.execute(request);
+
+            StatusLine statusLine = response.getStatusLine();
+
+            try {
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    return getDefaultResponse(type, HttpStatus.OK, null);
+                } else if (response.getStatusLine().getStatusCode() == 401) {
+                    // authenticate & retry
+                    mAuthenticated = false;
+                    if (mRetry < (AUTH_MAX_RETRY + 1)) {
+                        mRetry++;
+                        response.close();
+                        return executeDeleteRequest(type, uri, false);
+                    }
+                    mRetry = 0;
+                } else {
+                    return getDefaultResponse(type, RouterApiUtils.gethttpStatus(response.getStatusLine()
+                            .getStatusCode()), statusLine);
+                }
+            } finally {
+                response.close();
+            }
+        } catch (IOException e) {
+            //ignored
+        }
+        return getDefaultResponse(type, HttpStatus.UNKNOWN, null);
+    }
+
     private HttpResponse getDefaultResponse(RequestType type, HttpStatus status, StatusLine statusLine) {
 
         switch (type) {
@@ -320,6 +375,8 @@ public class BboxApi {
                 return new VoipResponse(null, status, statusLine);
             case PROFILE_CONSUMPTION:
                 return new ConsumptionResponse(null, status, statusLine);
+            case VOIP_VOICEMAIL:
+                return new VoiceMailResponse(null, status, statusLine);
             case DEVICE_INFO:
                 return new DeviceInfoResponse(null, status, statusLine);
             case SUMMARY:
@@ -609,6 +666,17 @@ public class BboxApi {
      */
     public ConsumptionResponse getConsumptionData() {
         return (ConsumptionResponse) executeGetRequest(RequestType.PROFILE_CONSUMPTION, PROFILE_CONSUMPTION_URI, false);
+    }
+
+    /**
+     * Get Voice mail.
+     */
+    public VoiceMailResponse getVoiceMailData() {
+        return (VoiceMailResponse) executeGetRequest(RequestType.VOIP_VOICEMAIL, VOIP_VOICEMAIL_URI, false);
+    }
+
+    public HttpResponse deleteVoiceMail(final int id) {
+        return executeDeleteRequest(RequestType.VOIP_VOICEMAIL, VOIP_VOICEMAIL_URI + "/1/" + id, false);
     }
 
     /**

@@ -1,494 +1,309 @@
-# Bbox Api client library #
+# BboxApi Router client library #
 
-[![Build Status](https://travis-ci.org/bertrandmartel/bbox-api-client.svg)](https://travis-ci.org/bertrandmartel/bbox-api-client)
-[![Download](https://api.bintray.com/packages/bertrandmartel/maven/bbox-api-client/images/download.svg) ](https://bintray.com/bertrandmartel/maven/bbox-api-client/_latestVersion)
+[![Build Status](https://travis-ci.org/bertrandmartel/bboxapi-router.svg)](https://travis-ci.org/bertrandmartel/bboxapi-router)
+[![Download](https://api.bintray.com/packages/bertrandmartel/maven/bboxapi-router/images/download.svg) ](https://bintray.com/bertrandmartel/maven/bboxapi-router/_latestVersion)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.bmartel/bboxapi-router/badge.svg)](https://maven-badges.herokuapp.com/maven-central/fr.bmartel/bboxapi-router)
+[![Javadoc](http://javadoc-badge.appspot.com/fr.bmartel/bboxapi-router.svg?label=javadoc)](http://javadoc-badge.appspot.com/fr.bmartel/bboxapi-router)
 [![License](http://img.shields.io/:license-mit-blue.svg)](LICENSE.md)
 
-http://bertrandmartel.github.io/bbox-api-client
+Java/Android client library for [Bbox Router API](https://api.bbox.fr/v1/doc/apirouter/index.html)
 
-<hr/>
-
-Java library client for Bbox Json API released in end of september 2015 on Bbox Sensation
-
-These apis are used by Bbox management interface in hostname : http://gestionbbox.lan
-
-You must be on the same network as your Bbox to use them
-
-This README may contain inaccurate information about these api due to early release.
+These APIs are used by Bbox management interface on : http://gestionbbox.lan
 
 ## List of API implemented
 
 | api     | prototype        |   access      | comment
 |--------------|---------|-----|------------------------|
-| summary | ``getSummary(IApiSummaryListener listener)`` |  public    | some information about Bbox      |
-| authentication | ``authenticate(String password, IAuthenticationListener authenticationListener)`` |  public    | authenticate to be able to use private API      |
-| voip | ``voipData(IVoipDataListener voipDataListener)`` |  private    | request voip data      |
-| device information | ``bboxDevice(IBboxDeviceListener deviceListener)`` |  private    | request specific information about box      |
-| full call log | ``getFullCallLog(IFullCallLogListener listener)`` |  private    | get call log since last reboot      |
-| hosts | ``getHosts(IHostsListener listener)`` |  private    | request list of known hosts      |
-| set wifi state | ``setWifiState(boolean state, IRequestStatusListener requestStatus)`` |  private    | set Wifi ON/OFF      |
-| set led state | ``setBboxDisplayState(boolean state, IRequestStatusListener requestStatus)`` |  private    | set Bbox led display ON/OFF      |
-| dial | ``voipDial(int lineNumber, String phone, IRequestStatusListener requestStatus)`` |  private    | dial a phone number on a line      |
+| summary | ``getDeviceSummary()`` |  public    | get some information about Bbox      |
+| voip | ``getVoipData()`` |  private    | request voip data      |
+| device information | ``getDeviceInfo()`` |  public/private    | request specific information about box. Unauthenticated use won't give serialnumber field  |
+| full call log | ``getFullCallLog()`` |  private    | get call log since last reboot      |
+| hosts | ``getHosts()`` |  public    | request list of known hosts      |
+| set wifi state | ``setWifiState(boolean state)`` |  private    | set Wifi ON/OFF      |
+| set led state | ``setBboxDisplayState(boolean state)`` |  private    | set Bbox led display ON/OFF      |
+| dial | ``voipDial(int lineNumber, String phone)`` |  private    | dial a phone number on a line      |
+| wireless | `getWirelessData()` | private | get wireless info |
+| reboot | `reboot()` | private | reboot Bbox |
+| xdsl info | `getXdslInfo()` | public | get XDSL information |
+| consumption info (profile) | `getConsumptionData()` | private | get Profile consumption info |
+| voice mail | `getVoiceMailData()` | private | get voice mail list |
+| delete voice mail | `deleteVoiceMail(int id)` | private | delete voice message by id |
+
+All APIs need authentication (admin password) except Summary API
 
 ## Include into your project
 
-* Gradle
+* with Gradle, from JCenter or MavenCentral :
 
-Grab from Bintray maven repository :
-
-```
-compile 'fr.bmartel:bbox-api-client:1.04'
+```java
+compile 'fr.bmartel:bboxapi-router:1.60.8'
 ```
 
-## How to use ?
+## Usage
 
-Instanciate BboxApi class
+### Summary 
 
-```
-import fr.bmartel.bboxapi.BboxApi;
+Retrieve some basic information about Bbox :
 
-.....
+```java
+BboxApi api = new BboxApi();
 
-BboxApi apiWrapper = new BboxApi();
-```
-
-## Retrieve summary info
-
-Summary information contains basic information about Bbox
-
-Request summary information (no authentication required)
-
-```
-apiWrapper.getSummary(new IApiSummaryListener() {
-	
-	@Override
-	public void onApiSummaryReceived(ApiSummary summary) {
-		
-		//summary result received
-		
-	}
-	
-	@Override
-	public void onApiSummaryFailure() {
-		
-		//summary request failure
-		
-	}
-});
+SummaryResponse summaryResponse = api.getDeviceSummary();
 ```
 
-``ApiSummary`` object description 
+This API is public (doesn't require authentication), for more precise info see Device Info API
 
-| property             | Type              | comment
-|--------------|--------------|------------------------|
-|``rxOccupation`` | int    | RX occupation (in %)      |
-|``txOccupation`` | int    | TX occupation (in %)      |
-|``hostList`` | List<Host>    | List of hosts (see host api)      |
-|``iptvAddr`` | String    | IPTV broadcast address      |
-|``iptvIpAddr`` | String    | IPTV receiver address      |
-|``iptvReceipt`` | int    | -      |
-|``iptvNumber`` | int    | -     |
-|``voipStatus`` | String    | voip status ("Up" if online)  |
-|``callState`` | CallState    | voip callstate (IDLE,INCALL,RINGING,OFFHOOK) |
-|``message`` | int    | number of vocal message  |
-|``notanswered`` | int    | number of not answered call  |
-|``internetState`` | int    | -  |
-|``authenticated`` | int    | 0 if not authenticated / 1 if authenticated |
-|``displayState`` | boolean    | true if Bbox led is ON / false for OFF |
+## Device info
 
-## Authentication
+Get more information about Bbox : 
 
-To request private api, you have to authenticate with your bbox management interface password :
+```java
+BboxApi api = new BboxApi();
 
-```
-api.authenticate("your_password", new IAuthenticationListener() {
+api.setPassword("password");
 
-	@Override
-	public void onAuthenticationSuccess(String token) {
-		
-		//successfull registration
-	}
-
-	@Override
-	public void onAuthenticationError() {
-		
-		//failure registration
-	}
-	
-});
+DeviceInfoResponse deviceInfoResponse = api.getDeviceInfo();
 ```
 
-If registration is successful, token is stored in RAM in Bboxapi object. Further call to BboxApi object will integrate a Cookie header with received token.
+## Hosts
 
-## Logout
+Get list of all hosts known by Bbox :
 
-To logout :
-```
-api.logout(new ILogoutListener() {
-	
-	@Override
-	public void onLogoutSuccess() {
-	
-		//successfull logout
-	}
-	
-	@Override
-	public void onLogoutError() {
-	
-		//failure logout
-	}
-});
+```java
+BboxApi api = new BboxApi();
+
+api.setPassword("password");
+
+HostsResponse hostResponse = api.getHosts();
 ```
 
-## Check authentication
+## Wireless
 
-```
-boolean api.isAuthenticated()
-```
+Get information about wireless :
 
-## Retrieve Bbox device info
+```java
+BboxApi api = new BboxApi();
 
-Some information about Bbox : 
+api.setPassword("password");
 
-```
-api.bboxDevice(new IBboxDeviceListener() {
-
-	@Override
-	public void onBboxDeviceReceived(BBoxDevice device) {
-		
-		//Bbox device request successfulll
-	}
-
-	@Override
-	public void onBboxDeviceFailure() {
-
-		//Bbox device request failure
-	}
-
-});
+WirelessResponse wirelessResponse = api.getWirelessData();
 ```
 
-``BBoxDevice`` object description 
+## Voip
 
-| property             | Type              | comment
-|--------------|--------------|------------------------|
-|``status`` | int    | -      |
-|``bootNumber`` | int    | number of boot  |
-|``modelName`` | String    | Bbox model name  |
-|``userConfigured`` | boolean    | define if user has already logged before  |
-|``displayState`` | boolean    | true if Bbox led is ON / false for OFF |
-|``firstuseDate`` | String    | date of bbox first use |
-|``serialNumber`` | String    | bbox serial number |
+Get voip information :
 
-## Retrieve known host list
+```java
+BboxApi api = new BboxApi();
 
-Get list of all host known by Bbox with firstseen and lastseen date
+api.setPassword("password");
 
-```
-api.getHosts(new IHostsListener() {
-					
-	@Override
-	public void onHostsReceived(List<Host> hostList) {
-		
-		//host request successfull
-	}
-	
-	@Override
-	public void onHostsFailure() {
-		
-		//host request failure
-		
-	}
-});
+VoipResponse voipResponse = api.getVoipData();
 ```
 
-Result is a list of ``Host`` object define as following :
+## Call Log list
 
-| property             | Type              | comment
-|--------------|--------------|------------------------|
-|``id`` | int    | host id (begin from 1)      |
-|``hostname`` | String    | host name     |
-|``macaddress`` | String    | host mac address      |
-|``ipaddress`` | String    | host IP address      |
-|``type`` | String    | "Static" or "STB"      |
-|``link`` | String    | type of link for this host (Wifi 2.4 / Wifi 5 / Offline)    |
-|``devicetype`` | String    | "Device" or "STB"      |
-|``firstseen`` | String    | host was first seen on this date      |
-|``lastseen`` | String    | host was last seen on this date     |
-|``lease`` | int    | lease time for this host     |
-|``active`` | boolean    |  define if host is active |
+Get full list of call log since last reboot :
 
-## Retrieve wireless data
+```java
+BboxApi api = new BboxApi();
 
-Get information about wireless data
+api.setPassword("password");
 
-```
-api.getWirelessData(new IWirelessListener() {
-
-	@Override
-	public void onWirelessDataReceived(WirelessData wirelessData) {
-
-		//wireless data request successfull
-
-	}
-
-	@Override
-	public void onWirelessDataFailure() {
-
-		//wireless data request failure
-
-	}
-});
+CallLogResponse callLogResponse = api.getFullCallLog();
 ```
 
-``WirelessData`` object description 
-
-This structure features several map with channel number as key ( radio / ssid / capabilities and wifi type)
-
-| property             | Type              | comment
-|--------------|--------------|------------------------|
-|``status`` | String    | ? ("Loaded" static value)      |
-|``radioList`` | HashMap<Integer, RadioObject>    | list of radio information per channel (see below)   |
-|``ssidList`` | HashMap<Integer, SsidObject>    | list of ssid information per channel (see below)   |
-|``capabilityRadioList`` | HashMap<Integer, List<WirelessCapability>>    | list of wireless capabilities information per channel (see below)   |
-|``standardTypeList`` | HashMap<Integer, List<String>>    | list of wifi types per channel (ex : "802.11a/n")   |
-
-List object items :
-
-* ``RadioObject`` object description 
-
-| property             | Type              | comment
-|--------------|--------------|------------------------|
-|``enable`` | boolean    | is radio enabled      |
-|``standard`` | String    | type of wifi (bgnac)      |
-|``state`` | int    | state ?     |
-|``channel`` | int    | channel used     |
-|``currentChannel`` | int    | current channel      |
-|``dfs`` | boolean    | using dynamic frequency selection      |
-|``ht40`` | boolean    | using 40MHz wide channel     |
-
-* ``SsidObject`` object description 
-
-| property             | Type              | comment
-|--------------|--------------|------------------------|
-|``id`` | String    | ssid name     |
-|``enabled`` | boolean    | is ssid enabled     |
-|``hidden`` | boolean    | is ssid hidden     |
-|``bssid`` | String    | basic set of service address     |
-|``wmmenable`` | boolean    | is Wifi multimedia enabled     |
-|``wpsenabled`` | boolean    | is WPS security is enabled     |
-|``wpsstatus`` | String    | WPS status     |
-|``securityDefault`` | boolean    | security use by default for this ssid     |
-|``securityProtocol`` | String    | security protocol used (WPA / WPA2 ...)    |
-|``securityEncryption`` | String    | enryption used   |
-|``securityPassphrase`` | String    | wifi passphrase    |
-
-* ``WirelessCapability`` object description
-
-| property             | Type              | comment
-|--------------|--------------|------------------------|
-|``channel`` | int    | channel num     |
-|``ht40`` | String    | channel used (52 to 136 are only available if Dynamic Frequency Selection is enabled)     |
-|``nodfs`` | boolean    | no dynamic frequency selection used     |
-|``cactime`` | int    | channel availability check time     |
-|``cactime40`` | int    | channel availability check time for 40MHz wide band     |
-
-
-<b>to know if wireless is enabled, use  ``WirelessData.isRadioEnabled()``</b>
-
-## Retrieve voip data
-
-Get voip information
-
-```
-api.voipData(new IVoipDataListener() {
-
-	@Override
-	public void onVoipDataReceived(Voip voipData) {
-		
-		//voip request successfull
-
-	}
-
-	@Override
-	public void onVoipDataFailure() {
-		
-		//voip request failure
-
-	}
-	
-});
-```
-
-Result is a list of ``Voip`` object define as following :
-
-| property             | Type              | comment
-|--------------|--------------|------------------------|
-|``id`` | int    | -      |
-|``status`` | String    | voip status ("Up" if online)  |
-|``callState`` | CallState    | voip callstate (IDLE,INCALL,RINGING,OFFHOOK)  |
-|``uri`` | String    | SIP phone line |
-|``blockState`` | int    | number of blocked call (to verify) |
-|``anoncallState`` | int    | number of anonymous call |
-|``mwi`` | int    | number of message waiting |
-|``messageCount`` | int    | number of messages |
-|``notanswered`` | int    | number of call not answered |
-
-<i>Note : ``notanswered`` number is auto incremented when phone rings (ie ``callState``=RINGING). If call is answered, ``notanswered`` is decremented and got to its initial value. If call is not answered it keeps the incremented value.</i>
-
-## Retrieve list of call log
-
-Get full list of call log since last reboot
-
-```
-api.getFullCallLog(new IFullCallLogListener() {
-
-	@Override
-	public void onFullCallLogReceived(List<CallLog> callLogList) {
-		
-		//call log request successfull
-
-	}
-
-	@Override
-	public void onFullCallLogFailure() {
-		
-		//call log request failure
-	}
-
-});
-```
-
-Result is a list of ``CallLog`` object define as following :
-
-| property             | Type              | comment
-|--------------|--------------|------------------------|
-|``id`` | int    | call id      |
-|``number`` | String    | phone number     |
-|``date`` | long    | call date    |
-|``type`` | CallType    | call type (INCALL / OUTCALL)    |
-|``answered`` | boolean    | define if call was answered or not    |
-|``duration`` | int    | call duration (answered or not)  |
-
-<hr/>
-
-## Dial a phone number - Trigger phone ring before call
+## Dial a phone number
 
 Dial a specified phone number. Phone will ring and call will be processed once user hookoff
 
-```
-api.voipDial(1,"0666666666",new IRequestStatusListener() {
-	
-	@Override
-	public void onSuccess() {
-		
-		//voip dial success
+```java
+BboxApi api = new BboxApi();
 
-	}
-	
-	@Override
-	public void onFailure() {
-		
-		//voip dial failure
+api.setPassword("password");
 
-	}
-});
+api.voipDial(1, "0123456789");
 ```
 
 Input  :
 
 * line number (int) : 1 or 2 according to the line on which you plugged your phone
 * phone number (String) : number to call
-* task completion listener (IRequestStatusListener) : retrieve asynchronous task completion or failure
 
 ## Set Bbox led state
 
-
 Switch led display to ON / OFF on Bbox 
 
-```
-api.setBboxDisplayState(true, new IRequestStatusListener() {
-					
-	@Override
-	public void onSuccess() {
-		//box display set success
-	}
-	
-	@Override
-	public void onFailure() {
-		//box display set failure
-	}
-});
-```
+```java
+BboxApi api = new BboxApi();
 
-Input : 
-* display state (boolean) 
-* task completion listener (IRequestStatusListener) :  retrieve asynchronous task completion or failure
+api.setPassword("password");
 
+// turn off led display
+api.setBboxDisplayState(false);
+
+// turn on led display
+api.setBboxDisplayState(true);
+```
 
 ## Set Wifi state
 
 Switch Wifi to ON/OFF 
 
-```
-api.setWifiState(true, new IRequestStatusListener() {
-	
-	@Override
-	public void onSuccess() {
-		//box wifi set status success
-	}
-	
-	@Override
-	public void onFailure() {
-		//box wifi set status failure
-	}
+```java
+BboxApi api = new BboxApi();
 
-});
+api.setPassword("password");
+
+// turn on Wifi
+api.setWifiState(true);
+
+// turn off Wifi
+api.setWifiState(false);
 ```
 
-Input : 
-* wifi state (boolean) 
-* task completion listener (IRequestStatusListener) :  retrieve asynchronous task completion or failure
+## Reboot Bbox
+
+```java
+BboxApi api = new BboxApi();
+
+api.setPassword("password");
+
+// reboot Bbox
+api.reboot();
+```
+
+## Get XDSL information
+
+```java
+BboxApi api = new BboxApi();
+
+WanXdslResponse xdslResponse = api.getXdslInfo();
+```
 
 ## Android integration
 
-To integrate with Android add Internet permission to manifest : 
+* add `bboxapi-router` & `httpcomponents` lib depedency to `build.gradle` : 
+
+```java
+compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
+compile 'fr.bmartel:bboxapi-router:1.60.1'
 ```
+
+* add Internet permission to manifest :
+
+```java
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-To include jar :
-```
-repositories {
-    flatDir {
-        dirs 'libs'
+* use an AsyncTask to call Bbox Router API :
+
+```java
+public class BboxApiTask extends AsyncTask<Void, Void, String> {
+
+    @Override
+    protected String doInBackground(Void... params) {
+
+        BboxApi api = new BboxApi();
+
+        SummaryResponse summaryResponse = api.getDeviceSummary();
+
+        if (summaryResponse.getStatus() == HttpStatus.OK) {
+
+        	// print summary JSON result (deserialized)
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.setPrettyPrinting().create();
+            Type listOfTestObject = new TypeToken<List<ApiSummary>>() {
+            }.getType();
+            String summary = gson.toJson(summaryResponse.getSummary(), listOfTestObject);
+
+            Log.v("bboxapi", summary);
+        } else {
+            Log.e("bboxapi", "http error  : " + summaryResponse.getStatus());
+        }
+
+        return null;
     }
 }
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-}
-```
-
-## Testing Bbox APIs
-
-* You can test all previous API in java project bbox-api-client-test :
 
 ```
-cd ./bbox-api-client-test/release
-java -jar bbox-api-client-test-1.02.jar
+
+Execute it with : `new BboxApiTask().execute();`
+
+* proguard config (keep model & response packages) :
+
+```
+-keep class fr.bmartel.bboxapi.model.** { *; }
+-keep class fr.bmartel.bboxapi.response.** { *; }
 ```
 
-* You can test Bbox API with a Linux Bash script ``bboxapi-curl.sh`` script accomplishing authentication, request voip data and dial a number.
+## Examples
+
+The following examples will prompt user for password and execute specified request (except for summary which doesnt require authentication) :
+
+* Call log :
+```
+./gradlew callLog
+```
+* Device info :
+```
+./gradlew deviceInfo
+```
+* Dial phone number (phone number will be asked) :
+```
+./gradlew dial
+```
+* Toggle ON/OFF led display for 10sec :
+```
+./gradlew display
+```
+* list hosts :
+```
+./gradlew hosts
+```
+* logout :
+```
+./gradlew logout
+```
+* summary request :
+```
+./gradlew summary
+```
+* voip request :
+```
+./gradlew voip
+```
+* set wifi to ON :
+```
+./gradlew wifi
+```
+* request wireless info :
+```
+./gradlew wireless
+```
+
+You can test Bbox API with a Linux Bash script ``bboxapi-curl.sh`` script performing authentication, request voip data and dial a number.
 
 Usage :
 ```
 ./bboxapi-curl.sh <your_password> <phone_number>
 ```
 
+## Issues
+
+If you can't reach http://gestionbbox.lan interface (see picture below) on your local network (Bbox), it means your box doesn't have the latest version and you can't use these APIs right now
+
+![interface](img/admin_interface.png)
+
 ## External Library
 
-* json-simple  : http://code.google.com/p/json-simple/
+* [Apache HttpComponents](https://hc.apache.org)
+* [GSON](https://github.com/google/gson)
 
-* clientsocket : https://github.com/bertrandmartel/socket-multiplatform/tree/master/client/socket-client/java
+## API documentation
 
-* http-endec   : https://github.com/bertrandmartel/http-endec-java
+https://api.bbox.fr/v1/doc/apirouter/index.html
+
+## License
+
+The MIT License (MIT) Copyright (c) 2017 Bertrand Martel

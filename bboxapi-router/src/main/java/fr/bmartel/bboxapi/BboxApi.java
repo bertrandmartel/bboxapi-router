@@ -37,11 +37,13 @@ import fr.bmartel.bboxapi.model.token.BboxDevice;
 import fr.bmartel.bboxapi.model.voip.CallLogList;
 import fr.bmartel.bboxapi.model.voip.VoipEntry;
 import fr.bmartel.bboxapi.model.voip.voicemail.VoiceMailEntry;
+import fr.bmartel.bboxapi.model.voip.voicemail.VoiceMailItem;
 import fr.bmartel.bboxapi.model.wan.WanIp;
 import fr.bmartel.bboxapi.model.wan.WanItem;
 import fr.bmartel.bboxapi.model.wireless.AclItem;
 import fr.bmartel.bboxapi.model.wireless.WirelessItem;
 import fr.bmartel.bboxapi.response.*;
+import fr.bmartel.bboxapi.utils.NetworkUtils;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -57,9 +59,12 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Bbox Router Api client
@@ -673,7 +678,38 @@ public class BboxApi {
      * Get Voice mail.
      */
     public VoiceMailResponse getVoiceMailData() {
-        return (VoiceMailResponse) executeGetRequest(RequestType.VOIP_VOICEMAIL, VOIP_VOICEMAIL_URI, false);
+
+        // call voip/voicemail
+        VoiceMailResponse voiceMailResponse = (VoiceMailResponse) executeGetRequest(RequestType.VOIP_VOICEMAIL,
+                VOIP_VOICEMAIL_URI, false);
+
+        // call profile/consumption to get the session id
+        ConsumptionResponse consumptionResponse = getConsumptionData();
+
+        List<VoiceMailItem> voiceMailList = voiceMailResponse.getVoiceMailList().get(0).getVoiceMailItems();
+
+        for (VoiceMailItem item : voiceMailList) {
+            
+            if (!item.getLinkMsg().contains("id_session")) {
+                try {
+                    URL url = new URL(item.getLinkMsg());
+
+                    Map<String, String> params = NetworkUtils.getQueryMap(url.getQuery());
+
+                    item.setLinkMsg("http://www.espaceclient.bbox.bouyguestelecom.fr/api/api_suivibbox.phtml?" +
+                            "idmsg=" + params.get("idmsg") + "&" +
+                            "uid=" + params.get("uid") + "&" +
+                            "idbal=" + params.get("idbal") + "&" +
+                            "rang_tel=" + params.get("rang_tel") + "&" +
+                            "pg=play_msg&" +
+                            "id_session=" + consumptionResponse.getProfileList().get(0).getProfile().getSession());
+
+                } catch (MalformedURLException e) {
+                }
+            }
+        }
+        return voiceMailResponse;
+
     }
 
     /**

@@ -21,68 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.model.voip.voicemail;
-
-import com.google.gson.annotations.SerializedName;
-import fr.bmartel.bboxapi.model.voip.CallState;
+package fr.bmartel.bboxapi.model.profile;
 
 /**
- * VoiceMailItem API data
+ * Refresh action used in Profile refresh API.
  *
  * @author Bertrand Martel
  */
-public class VoiceMailItem {
+public enum RefreshAction {
 
-    @SerializedName("id")
-    private int mId;
+    CALL_LOG("callLog");
 
-    @SerializedName("callername")
-    private String mCallerName;
+    private String mAction;
 
-    @SerializedName("callernumber")
-    private String mCallerNumber;
-
-    @SerializedName("dateconsult")
-    private String mDateConsult;
-
-    @SerializedName("duration")
-    private String mDuration;
-
-    @SerializedName("linkmsg")
-    private String mLinkMsg;
-
-    @SerializedName("readstatus")
-    private String mReadStatus;
-
-    public int getId() {
-        return mId;
+    RefreshAction(String action) {
+        mAction = action;
     }
 
-    public String getCallerName() {
-        return mCallerName;
-    }
-
-    public String getCallerNumber() {
-        return mCallerNumber;
-    }
-
-    public String getDateConsult() {
-        return mDateConsult;
-    }
-
-    public String getDuration() {
-        return mDuration;
-    }
-
-    public String getLinkMsg() {
-        return mLinkMsg;
-    }
-
-    public String getReadStatus() {
-        return mReadStatus;
-    }
-
-    public void setLinkMsg(String linkMsg) {
-        mLinkMsg = linkMsg;
+    public String getAction() {
+        return mAction;
     }
 }

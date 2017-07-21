@@ -30,6 +30,7 @@ import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.device.BboxDeviceEntry;
 import fr.bmartel.bboxapi.model.host.HostItem;
 import fr.bmartel.bboxapi.model.profile.ProfileEntry;
+import fr.bmartel.bboxapi.model.profile.RefreshAction;
 import fr.bmartel.bboxapi.model.recovery.VerifyRecovery;
 import fr.bmartel.bboxapi.model.summary.ApiSummary;
 import fr.bmartel.bboxapi.model.token.BboxDevice;
@@ -100,6 +101,7 @@ public class BboxApi {
     private final static String WAN_XDSL_URI = URL_PREFIX + "/api/v1/wan/xdsl";
     private final static String WAN_IP_URI = URL_PREFIX + "/api/v1/wan/ip";
     private final static String PROFILE_CONSUMPTION_URI = URL_PREFIX + "/api/v1/profile/consumption";
+    private final static String PROFILE_REFRESH_URI = URL_PREFIX + "/api/v1/profile/refresh";
     private final static String VOIP_VOICEMAIL_URI = URL_PREFIX + "/api/v1/voip/voicemail";
 
     private final static String BBOX_COOKIE_NAME = "BBOX_ID";
@@ -682,6 +684,28 @@ public class BboxApi {
      */
     public HttpResponse deleteVoiceMail(final int id) {
         return executeDeleteRequest(RequestType.VOIP_VOICEMAIL, VOIP_VOICEMAIL_URI + "/1/" + id, false);
+    }
+
+    /**
+     * Refresh profile.
+     *
+     * @param action type of data to refresh
+     * @return
+     */
+    public HttpStatus refreshProfile(RefreshAction action) {
+
+        HttpPut refreshProfile = new HttpPut(PROFILE_REFRESH_URI);
+
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        nameValuePairs.add(new BasicNameValuePair("action", action.getAction()));
+
+        try {
+            refreshProfile.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return executeRequest(refreshProfile, true, false);
     }
 
     /**

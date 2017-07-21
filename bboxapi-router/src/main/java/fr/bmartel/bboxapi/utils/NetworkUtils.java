@@ -21,68 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.model.voip.voicemail;
+package fr.bmartel.bboxapi.utils;
 
-import com.google.gson.annotations.SerializedName;
-import fr.bmartel.bboxapi.model.voip.CallState;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * VoiceMailItem API data
+ * Network utils functions.
  *
  * @author Bertrand Martel
  */
-public class VoiceMailItem {
+public class NetworkUtils {
 
-    @SerializedName("id")
-    private int mId;
-
-    @SerializedName("callername")
-    private String mCallerName;
-
-    @SerializedName("callernumber")
-    private String mCallerNumber;
-
-    @SerializedName("dateconsult")
-    private String mDateConsult;
-
-    @SerializedName("duration")
-    private String mDuration;
-
-    @SerializedName("linkmsg")
-    private String mLinkMsg;
-
-    @SerializedName("readstatus")
-    private String mReadStatus;
-
-    public int getId() {
-        return mId;
+    /**
+     * https://stackoverflow.com/a/11733697/2614364 by @verisimilitude
+     *
+     * @param query
+     * @return
+     */
+    public static Map<String, String> getQueryMap(String query) {
+        String[] params = query.split("&");
+        Map<String, String> map = new HashMap<String, String>();
+        for (String param : params) {
+            String name = param.split("=")[0];
+            String value = param.split("=")[1];
+            map.put(name, value);
+        }
+        return map;
     }
 
-    public String getCallerName() {
-        return mCallerName;
-    }
-
-    public String getCallerNumber() {
-        return mCallerNumber;
-    }
-
-    public String getDateConsult() {
-        return mDateConsult;
-    }
-
-    public String getDuration() {
-        return mDuration;
-    }
-
-    public String getLinkMsg() {
-        return mLinkMsg;
-    }
-
-    public String getReadStatus() {
-        return mReadStatus;
-    }
-
-    public void setLinkMsg(String linkMsg) {
-        mLinkMsg = linkMsg;
-    }
 }

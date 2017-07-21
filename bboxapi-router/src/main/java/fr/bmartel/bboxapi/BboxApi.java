@@ -26,22 +26,21 @@ package fr.bmartel.bboxapi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import fr.bmartel.bboxapi.model.HttpStatus;
+import fr.bmartel.bboxapi.model.device.BboxDeviceEntry;
+import fr.bmartel.bboxapi.model.host.HostItem;
 import fr.bmartel.bboxapi.model.profile.ProfileEntry;
 import fr.bmartel.bboxapi.model.recovery.VerifyRecovery;
+import fr.bmartel.bboxapi.model.summary.ApiSummary;
 import fr.bmartel.bboxapi.model.token.BboxDevice;
+import fr.bmartel.bboxapi.model.voip.CallLogList;
+import fr.bmartel.bboxapi.model.voip.VoipEntry;
 import fr.bmartel.bboxapi.model.voip.voicemail.VoiceMailEntry;
 import fr.bmartel.bboxapi.model.wan.WanIp;
 import fr.bmartel.bboxapi.model.wan.WanItem;
 import fr.bmartel.bboxapi.model.wireless.AclItem;
-import fr.bmartel.bboxapi.response.*;
-import fr.bmartel.bboxapi.model.summary.ApiSummary;
-import fr.bmartel.bboxapi.model.device.BboxDeviceEntry;
-import fr.bmartel.bboxapi.model.HttpStatus;
-import fr.bmartel.bboxapi.model.host.HostItem;
-import fr.bmartel.bboxapi.model.voip.CallLogList;
-import fr.bmartel.bboxapi.model.voip.VoipEntry;
 import fr.bmartel.bboxapi.model.wireless.WirelessItem;
-import fr.bmartel.bboxapi.util.RouterApiUtils;
+import fr.bmartel.bboxapi.response.*;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -140,12 +139,12 @@ public class BboxApi {
                         mAuthenticated = true;
                         return new AuthResponse(token, HttpStatus.OK, statusLine);
                     } else {
-                        return new AuthResponse(null, HttpStatus.NO_COOKIE, statusLine);
+                        return new AuthResponse(null, HttpStatus.INTERNAL_ERROR, statusLine);
                     }
 
                 } else {
                     return new AuthResponse(null,
-                            RouterApiUtils.gethttpStatus(response.getStatusLine().getStatusCode()), statusLine);
+                            HttpStatus.gethttpStatus(response.getStatusLine().getStatusCode()), statusLine);
                 }
             } finally {
                 response.close();
@@ -310,7 +309,7 @@ public class BboxApi {
                     }
                     mRetry = 0;
                 } else {
-                    return getDefaultResponse(type, RouterApiUtils.gethttpStatus(response.getStatusLine()
+                    return getDefaultResponse(type, HttpStatus.gethttpStatus(response.getStatusLine()
                             .getStatusCode()), statusLine);
                 }
             } finally {
@@ -356,7 +355,7 @@ public class BboxApi {
                     }
                     mRetry = 0;
                 } else {
-                    return getDefaultResponse(type, RouterApiUtils.gethttpStatus(response.getStatusLine()
+                    return getDefaultResponse(type, HttpStatus.gethttpStatus(response.getStatusLine()
                             .getStatusCode()), statusLine);
                 }
             } finally {
@@ -425,7 +424,7 @@ public class BboxApi {
             } else {
                 storeCookie(response);
                 try {
-                    return RouterApiUtils.gethttpStatus(response.getStatusLine().getStatusCode());
+                    return HttpStatus.gethttpStatus(response.getStatusLine().getStatusCode());
                 } finally {
                     response.close();
                 }
@@ -675,6 +674,12 @@ public class BboxApi {
         return (VoiceMailResponse) executeGetRequest(RequestType.VOIP_VOICEMAIL, VOIP_VOICEMAIL_URI, false);
     }
 
+    /**
+     * delete voice mail
+     *
+     * @param id voicemail id
+     * @return http response
+     */
     public HttpResponse deleteVoiceMail(final int id) {
         return executeDeleteRequest(RequestType.VOIP_VOICEMAIL, VOIP_VOICEMAIL_URI + "/1/" + id, false);
     }

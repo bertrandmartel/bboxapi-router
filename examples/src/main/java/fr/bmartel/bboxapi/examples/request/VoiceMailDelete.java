@@ -23,20 +23,12 @@
  */
 package fr.bmartel.bboxapi.examples.request;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
-import fr.bmartel.bboxapi.model.voip.voicemail.VoiceMailEntry;
 import fr.bmartel.bboxapi.response.HttpResponse;
-import fr.bmartel.bboxapi.response.VoiceMailResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.lang.reflect.Type;
-import java.util.List;
 
 /**
  * VOiceMail DELETE request example.

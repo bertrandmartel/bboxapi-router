@@ -29,12 +29,32 @@ package fr.bmartel.bboxapi.model;
  * @author Bertrand Martel
  */
 public enum HttpStatus {
-    OK,
-    CREATED,
-    TOO_MANY_REQUEST,
-    UNAUTHORIZED,
-    FORBIDDEN,
-    NO_COOKIE,
-    NOT_FOUND,
-    UNKNOWN
+
+    OK(200),
+    CREATED(201),
+    TOO_MANY_REQUEST(429),
+    UNAUTHORIZED(401),
+    FORBIDDEN(403),
+    NOT_FOUND(404),
+    INTERNAL_ERROR(500),
+    NOT_MODIFIED(304),
+    UNKNOWN(-1);
+
+    private int mStatus;
+
+    HttpStatus(int status) {
+        mStatus = status;
+    }
+
+    public int getCode() {
+        return mStatus;
+    }
+
+    public static HttpStatus gethttpStatus(int status) {
+        for (HttpStatus httpStatus : HttpStatus.values()) {
+            if (status == httpStatus.getCode())
+                return httpStatus;
+        }
+        return HttpStatus.UNKNOWN;
+    }
 }

@@ -13,9 +13,9 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Bertrand Martel
  */
-public class ProfileRefresh {
+public class VoiceMailRefresh {
 
-    private final static Logger LOGGER = LogManager.getLogger(ProfileRefresh.class.getName());
+    private final static Logger LOGGER = LogManager.getLogger(VoiceMailRefresh.class.getName());
 
     public static void main(String[] args) {
 
@@ -25,6 +25,8 @@ public class ProfileRefresh {
 
         api.setPassword(pass);
 
+        long startTime = System.nanoTime();
+
         ConsumptionResponse consumptionResponse = api.getConsumptionData();
 
         if (consumptionResponse.getStatus() == HttpStatus.OK) {
@@ -33,7 +35,7 @@ public class ProfileRefresh {
                     .getChangedDate());
         }
 
-        HttpStatus status = api.refreshProfile(RefreshAction.CALL_LOG);
+        HttpStatus status = api.refreshProfile(RefreshAction.VOICEMAIL);
 
         LOGGER.debug("refreshProfile status : " + status);
 
@@ -51,7 +53,7 @@ public class ProfileRefresh {
                 LOGGER.debug("last modified  : " + checkResponse.getProfileList().get(0).getProfile().getChangedDate());
                 if (state != 0) {
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(300);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         state = 0;
@@ -62,5 +64,9 @@ public class ProfileRefresh {
                 LOGGER.debug("error profile consumption status : " + consumptionResponse.getStatus());
             }
         }
+
+        long endTime = System.nanoTime();
+
+        LOGGER.debug("duration : " + (endTime - startTime) / 1000000 + "ms");
     }
 }

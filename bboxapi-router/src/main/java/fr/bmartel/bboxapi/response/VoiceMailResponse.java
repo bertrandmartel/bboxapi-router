@@ -38,6 +38,8 @@ public class VoiceMailResponse extends HttpResponse {
 
     private List<VoiceMailEntry> mVoiceMailList;
 
+    private boolean mValidSession;
+
     public VoiceMailResponse(List<VoiceMailEntry> voiceMailList, HttpStatus status, StatusLine statusLine) {
         super(status, statusLine);
         mVoiceMailList = voiceMailList;
@@ -45,5 +47,13 @@ public class VoiceMailResponse extends HttpResponse {
 
     public List<VoiceMailEntry> getVoiceMailList() {
         return mVoiceMailList;
+    }
+
+    public boolean isValidSession() {
+        return mValidSession;
+    }
+
+    public void setValidSession(boolean mValidSession) {
+        this.mValidSession = mValidSession;
     }
 }

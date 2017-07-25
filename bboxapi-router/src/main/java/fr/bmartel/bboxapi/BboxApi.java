@@ -683,33 +683,54 @@ public class BboxApi {
         VoiceMailResponse voiceMailResponse = (VoiceMailResponse) executeGetRequest(RequestType.VOIP_VOICEMAIL,
                 VOIP_VOICEMAIL_URI, false);
 
-        // call profile/consumption to get the session id
-        ConsumptionResponse consumptionResponse = getConsumptionData();
-
         List<VoiceMailItem> voiceMailList = voiceMailResponse.getVoiceMailList().get(0).getVoiceMailItems();
 
-        for (VoiceMailItem item : voiceMailList) {
-            
-            if (!item.getLinkMsg().contains("id_session")) {
-                try {
-                    URL url = new URL(item.getLinkMsg());
+        if (voiceMailList.size() > 0) {
 
-                    Map<String, String> params = NetworkUtils.getQueryMap(url.getQuery());
+            //rebuild url in case id_session is missing
+            if (!voiceMailList.get(0).getLinkMsg().contains("id_session")) {
 
-                    item.setLinkMsg("http://www.espaceclient.bbox.bouyguestelecom.fr/api/api_suivibbox.phtml?" +
-                            "idmsg=" + params.get("idmsg") + "&" +
-                            "uid=" + params.get("uid") + "&" +
-                            "idbal=" + params.get("idbal") + "&" +
-                            "rang_tel=" + params.get("rang_tel") + "&" +
-                            "pg=play_msg&" +
-                            "id_session=" + consumptionResponse.getProfileList().get(0).getProfile().getSession());
+                ConsumptionResponse consumptionResponse = getConsumptionData();
 
-                } catch (MalformedURLException e) {
+                for (VoiceMailItem item : voiceMailList) {
+
+                    try {
+                        URL url = new URL(item.getLinkMsg());
+
+                        Map<String, String> params = NetworkUtils.getQueryMap(url.getQuery());
+
+                        item.setLinkMsg("http://www.espaceclient.bbox.bouyguestelecom.fr/api/api_suivibbox.phtml?" +
+                                "idmsg=" + params.get("idmsg") + "&" +
+                                "uid=" + params.get("uid") + "&" +
+                                "idbal=" + params.get("idbal") + "&" +
+                                "rang_tel=" + params.get("rang_tel") + "&" +
+                                "pg=play_msg&" +
+                                "id_session=" + consumptionResponse.getProfileList().get(0).getProfile()
+                                .getSession());
+
+                    } catch (MalformedURLException e) {
+                    }
                 }
+            }
+
+            // check the first URL, set to empty string if not valid
+            HttpHead head = new HttpHead(voiceMailList.get(0).getLinkMsg());
+            try {
+                CloseableHttpResponse response = mHttpClient.execute(head);
+
+                if (response.getStatusLine().getStatusCode() != 200 ||
+                        response.getHeaders("Content-Type")[0].getValue().equals("text/html")) {
+
+                    for (VoiceMailItem item : voiceMailList) {
+                        item.setLinkMsg("");
+                    }
+                } else {
+                    voiceMailResponse.setValidSession(true);
+                }
+            } catch (IOException e) {
             }
         }
         return voiceMailResponse;
-
     }
 
     /**
@@ -720,6 +741,17 @@ public class BboxApi {
      */
     public HttpResponse deleteVoiceMail(final int id) {
         return executeDeleteRequest(RequestType.VOIP_VOICEMAIL, VOIP_VOICEMAIL_URI + "/1/" + id, false);
+    }
+
+    /**
+     * mark voice mail as read.
+     *
+     * @param id voicemail id
+     * @return http response
+     */
+    public HttpStatus readVoiceMail(final int id) {
+        HttpPut voiceMail = new HttpPut(VOIP_VOICEMAIL_URI + "/1/" + id);
+        return executeRequest(voiceMail, true, false);
     }
 
     /**

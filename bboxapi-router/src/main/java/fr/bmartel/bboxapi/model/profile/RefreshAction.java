@@ -30,7 +30,8 @@ package fr.bmartel.bboxapi.model.profile;
  */
 public enum RefreshAction {
 
-    CALL_LOG("callLog");
+    CALL_LOG("callLog"),
+    VOICEMAIL("get_voicemail");
 
     private String mAction;
 

@@ -30,9 +30,7 @@ import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.profile.ProfileEntry;
-import fr.bmartel.bboxapi.model.voip.VoipEntry;
 import fr.bmartel.bboxapi.response.ConsumptionResponse;
-import fr.bmartel.bboxapi.response.VoipResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,6 +65,8 @@ public class Consumption {
             String consumptionList = gson.toJson(consumptionResponse.getProfileList(), listOfTestObject);
 
             LOGGER.debug(consumptionList);
+
+            LOGGER.debug("session valid : " + consumptionResponse.isValidSession());
         } else {
             LOGGER.error("http error  : " + consumptionResponse.getStatus());
         }

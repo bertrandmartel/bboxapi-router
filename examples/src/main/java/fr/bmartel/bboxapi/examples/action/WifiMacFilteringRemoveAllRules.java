@@ -21,9 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.examples.request;
+package fr.bmartel.bboxapi.examples.action;
 
 import fr.bmartel.bboxapi.BboxApi;
+import fr.bmartel.bboxapi.examples.request.WirelessAclInfo;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.wireless.Rules;
@@ -38,7 +39,7 @@ import java.util.List;
  *
  * @author Bertrand Martel
  */
-public class WirelessAclRemoveAllRules {
+public class WifiMacFilteringRemoveAllRules {
 
     private final static Logger LOGGER = LogManager.getLogger(WirelessAclInfo.class.getName());
 

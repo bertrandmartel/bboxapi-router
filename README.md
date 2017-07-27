@@ -12,31 +12,56 @@ These APIs are used by Bbox management interface on : http://gestionbbox.lan
 
 ## List of API implemented
 
-| api     | prototype        |   access      | comment
-|--------------|---------|-----|------------------------|
-| summary | ``getDeviceSummary()`` |  public    | get some information about Bbox      |
-| voip | ``getVoipData()`` |  private    | request voip data      |
-| device information | ``getDeviceInfo()`` |  public/private    | request specific information about box. Unauthenticated use won't give serialnumber field  |
-| full call log | ``getFullCallLog()`` |  private    | get call log since last reboot      |
-| hosts | ``getHosts()`` |  public    | request list of known hosts      |
-| set wifi state | ``setWifiState(boolean state)`` |  private    | set Wifi ON/OFF      |
-| set led state | ``setBboxDisplayState(boolean state)`` |  private    | set Bbox led display ON/OFF      |
-| dial | ``voipDial(int lineNumber, String phone)`` |  private    | dial a phone number on a line      |
-| wireless | `getWirelessData()` | private | get wireless info |
-| reboot | `reboot()` | private | reboot Bbox |
-| xdsl info | `getXdslInfo()` | public | get XDSL information |
-| consumption info (profile) | `getConsumptionData()` | private | get Profile consumption info |
-| voice mail | `getVoiceMailData()` | private | get voice mail list |
-| delete voice mail | `deleteVoiceMail(int id)` | private | delete voice message by id |
+| description     | api          |       
+|--------------|---------|
+| get information about Bbox | [`getDeviceSummary()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/Summary.java) |
+| get voip data | [`getVoipData()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/Voip.java) |   
+| get specific information about box | [`getDeviceInfo()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/DeviceInfo.java) | 
+| get call log  | [`getFullCallLog()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/CallLog.java) | 
+| get list of known hosts  | [`getHosts()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/Hosts.java) |  
+| set wifi state | [`setWifiState(boolean state)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/Wifi.java) |  
+| set led state | [`setBboxDisplayState(boolean state)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/Display.java) | 
+| dial a phone number | [`voipDial(int lineNumber, String phone)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/Dial.java) | 
+| get wireless info | [`getWirelessData()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/Wireless.java) |
+| reboot | [`reboot()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/Reboot.java) |
+| get XDSL information | [`getXdslInfo()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/WanXdsl.java) | 
+| get info about wan type, state and ip  | [`getIpInfo()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/WanIp.java) | 
+| get consumption info (invoice) | [`getConsumptionData()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/Consumption.java) | 
+| get voice mail | [`getVoiceMailData()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/VoiceMail.java) | 
+| delete voice mail | [`deleteVoiceMail(int id)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/VoiceMailDelete.java) | 
+| read voice mail | [`readVoiceMail(int id)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/VoiceMailRead.java) | 
+| get wifi mac filters | [`getWifiMacFilterInfo()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/WirelessAclInfo.java) |
+| delete wifi mac filter | [`deleteMacFilterRule(int id)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/WifiMacFilteringRuleRemove.java) | 
+| create wifi mac filter | [`createWifiMacFilterRule(boolean state,String mac,String ip)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/WifiMacFilteringCreate.java) |
+| enable/disable wifi mac filter | [`setWifiMacFilter(boolean state)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/WifiMacFilteringEnable.java) |
+| update wifi mac filter | [`updateWifiMacFilterRule(int id,boolean state,String mac,String ip)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/WifiMacFilteringUpdate.java) |
 
-All APIs need authentication (admin password) except Summary API
+All APIs need authentication via `setPassword(String password)` except for the following (some info may be missing when unauthenticated) : 
+
+* get summary
+* get XDSL
+* get hosts
+* get wan ip info
+* get device info
+
+The following type of API needs a special token be refresh with `refreshProfile(RefreshAction type)` : 
+
+| API type     | refresh action type          | refresh flow example     
+|--------------|---------|-------------------------------|
+| voicemail | `RefreshAction.VOICEMAIL` |  [voicemail refresh flow](./examples/src/main/java/fr/bmartel/bboxapi/examples/refresh/VoiceMailRefresh.java) |
+| call log | `RefreshAction.CALL_LOG` | [call log refresh flow](./examples/src/main/java/fr/bmartel/bboxapi/examples/refresh/CallLogRefresh.java) |
+| consumption | `RefreshAction.ALL` | [consumption refresh flow](./examples/src/main/java/fr/bmartel/bboxapi/examples/refresh/ConsumptionRefresh.java) |
+
+This refresh flow consists in polling `getConsumptionData()` and check for `getConsumptionData().getProfileList().get(0).getProfile().getState()`. If this field returns a non zero value, the refresh process is not finished. When the state reaches 0, the referenced API bound to the refresh action type are up-to-date.
+
+Note that `RefreshAction.ALL` will refresh voicemail, call log and consumption (there is no refresh action for refreshing only consumption api type). 
 
 ## Include into your project
 
 * with Gradle, from JCenter or MavenCentral :
 
 ```java
-compile 'fr.bmartel:bboxapi-router:1.60.8'
+compile 'fr.bmartel:bboxapi-router:1.60.16'
 ```
 
 ## Usage

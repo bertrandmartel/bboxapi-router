@@ -667,11 +667,14 @@ public class BboxApi {
         return (VoipResponse) executeGetRequest(RequestType.VOIP, VOIP_URI, false);
     }
 
+
     /**
      * Profile Consumption.
      */
     public ConsumptionResponse getConsumptionData() {
-        return (ConsumptionResponse) executeGetRequest(RequestType.PROFILE_CONSUMPTION, PROFILE_CONSUMPTION_URI, false);
+
+        return (ConsumptionResponse) executeGetRequest(
+                RequestType.PROFILE_CONSUMPTION, PROFILE_CONSUMPTION_URI, false);
     }
 
     /**

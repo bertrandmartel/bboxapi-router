@@ -1,4 +1,4 @@
-package fr.bmartel.bboxapi.examples.action;
+package fr.bmartel.bboxapi.examples.refresh;
 
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
@@ -13,9 +13,9 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Bertrand Martel
  */
-public class VoiceMailRefresh {
+public class CallLogRefresh {
 
-    private final static Logger LOGGER = LogManager.getLogger(VoiceMailRefresh.class.getName());
+    private final static Logger LOGGER = LogManager.getLogger(CallLogRefresh.class.getName());
 
     public static void main(String[] args) {
 
@@ -35,7 +35,7 @@ public class VoiceMailRefresh {
                     .getChangedDate());
         }
 
-        HttpStatus status = api.refreshProfile(RefreshAction.VOICEMAIL);
+        HttpStatus status = api.refreshProfile(RefreshAction.CALL_LOG);
 
         LOGGER.debug("refreshProfile status : " + status);
 

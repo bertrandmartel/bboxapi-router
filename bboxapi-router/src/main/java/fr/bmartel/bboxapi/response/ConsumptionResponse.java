@@ -39,6 +39,8 @@ public class ConsumptionResponse extends HttpResponse {
 
     private List<ProfileEntry> mProfileList;
 
+    private boolean mValidSession;
+
     public ConsumptionResponse(List<ProfileEntry> profileList, HttpStatus status, StatusLine statusLine) {
         super(status, statusLine);
         mProfileList = profileList;
@@ -46,5 +48,13 @@ public class ConsumptionResponse extends HttpResponse {
 
     public List<ProfileEntry> getProfileList() {
         return mProfileList;
+    }
+
+    public boolean isValidSession() {
+        return mValidSession;
+    }
+
+    public void setValidSession(boolean validSession) {
+        mValidSession = validSession;
     }
 }

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.examples.request;
+package fr.bmartel.bboxapi.examples.action;
 
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
@@ -34,9 +34,9 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Bertrand Martel
  */
-public class WirelessAclRuleRemove {
+public class WifiMacFilteringRuleRemove {
 
-    private final static Logger LOGGER = LogManager.getLogger(WirelessAclRuleRemove.class.getName());
+    private final static Logger LOGGER = LogManager.getLogger(WifiMacFilteringRuleRemove.class.getName());
 
     public static void main(String[] args) {
 

@@ -45,7 +45,7 @@ public class Invoice {
     private String mDevise;
 
     @SerializedName("id")
-    private long mId;
+    private String mId;
 
     @SerializedName("number")
     private String mNumber;
@@ -66,7 +66,7 @@ public class Invoice {
         return mDevise;
     }
 
-    public long getId() {
+    public String getId() {
         return mId;
     }
 

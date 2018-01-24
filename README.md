@@ -208,11 +208,10 @@ WanXdslResponse xdslResponse = api.getXdslInfo();
 
 ## Android integration
 
-* add `bboxapi-router` & `httpcomponents` lib depedency to `build.gradle` : 
+* add `bboxapi-router` dependency to `build.gradle` :
 
 ```java
-compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
-compile 'fr.bmartel:bboxapi-router:1.60.1'
+compile 'fr.bmartel:bboxapi-router:1.61.0'
 ```
 
 * add Internet permission to manifest :
@@ -318,16 +317,15 @@ Usage :
 
 If you can't reach http://gestionbbox.lan interface (see picture below) on your local network (Bbox), it means your box doesn't have the latest version and you can't use these APIs right now
 
-![interface](img/admin_interface.png)
+![interface](https://user-images.githubusercontent.com/5183022/35354989-30c43cc4-014c-11e8-8258-34b090c81610.png)
 
 ## External Library
 
-* [Apache HttpComponents](https://hc.apache.org)
 * [GSON](https://github.com/google/gson)
 
 ## API documentation
 
-https://api.bbox.fr/v1/doc/apirouter/index.html
+https://api.bbox.fr/doc/apirouter/index.html
 
 ## License
 

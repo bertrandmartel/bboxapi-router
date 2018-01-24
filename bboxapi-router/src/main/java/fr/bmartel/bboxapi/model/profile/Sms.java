@@ -33,7 +33,7 @@ import com.google.gson.annotations.SerializedName;
 public class Sms {
 
     @SerializedName("amount")
-    private int mAmount;
+    private String mAmount;
 
     @SerializedName("smscount")
     private int mSmsCount;
@@ -41,7 +41,7 @@ public class Sms {
     @SerializedName("mmscount")
     private int mMmsCount;
 
-    public int getAmount() {
+    public String getAmount() {
         return mAmount;
     }
 

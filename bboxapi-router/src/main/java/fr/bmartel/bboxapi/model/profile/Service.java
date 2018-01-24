@@ -33,9 +33,9 @@ import com.google.gson.annotations.SerializedName;
 public class Service {
 
     @SerializedName("amount")
-    private int mAmount;
+    private String mAmount;
 
-    public int getAmount() {
+    public String getAmount() {
         return mAmount;
     }
 }

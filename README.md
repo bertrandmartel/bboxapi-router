@@ -6,9 +6,9 @@
 [![Javadoc](http://javadoc-badge.appspot.com/fr.bmartel/bboxapi-router.svg?label=javadoc)](http://javadoc-badge.appspot.com/fr.bmartel/bboxapi-router)
 [![License](http://img.shields.io/:license-mit-blue.svg)](LICENSE.md)
 
-Java/Android client library for [Bbox Router API](https://api.bbox.fr/v1/doc/apirouter/index.html)
+Java/Android client library for [Bbox Router API](https://api.bbox.fr/doc/apirouter/index.html)
 
-These APIs are used by Bbox management interface on : http://gestionbbox.lan
+These APIs are used by Bbox management interface on : http://bbox.lan
 
 ## List of API implemented
 
@@ -315,7 +315,7 @@ Usage :
 
 ## Issues
 
-If you can't reach http://gestionbbox.lan interface (see picture below) on your local network (Bbox), it means your box doesn't have the latest version and you can't use these APIs right now
+If you can't reach http://bbox.lan interface (see picture below) on your local network (Bbox), it means your box doesn't have the latest version and you can't use these APIs right now
 
 ![interface](https://user-images.githubusercontent.com/5183022/35354989-30c43cc4-014c-11e8-8258-34b090c81610.png)
 

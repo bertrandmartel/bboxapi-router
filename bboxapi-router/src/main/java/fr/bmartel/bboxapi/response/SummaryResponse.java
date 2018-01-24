@@ -23,9 +23,8 @@
  */
 package fr.bmartel.bboxapi.response;
 
-import fr.bmartel.bboxapi.model.summary.ApiSummary;
 import fr.bmartel.bboxapi.model.HttpStatus;
-import org.apache.http.StatusLine;
+import fr.bmartel.bboxapi.model.summary.ApiSummary;
 
 import java.util.List;
 
@@ -38,8 +37,8 @@ public class SummaryResponse extends HttpResponse {
 
     private List<ApiSummary> mSummaryList;
 
-    public SummaryResponse(List<ApiSummary> summary, HttpStatus status, StatusLine statusLine) {
-        super(status, statusLine);
+    public SummaryResponse(List<ApiSummary> summary, HttpStatus status) {
+        super(status);
         mSummaryList = summary;
     }
 

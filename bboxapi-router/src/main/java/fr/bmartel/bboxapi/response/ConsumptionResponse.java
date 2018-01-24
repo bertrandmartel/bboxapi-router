@@ -25,8 +25,6 @@ package fr.bmartel.bboxapi.response;
 
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.profile.ProfileEntry;
-import fr.bmartel.bboxapi.model.voip.VoipEntry;
-import org.apache.http.StatusLine;
 
 import java.util.List;
 
@@ -41,8 +39,8 @@ public class ConsumptionResponse extends HttpResponse {
 
     private boolean mValidSession;
 
-    public ConsumptionResponse(List<ProfileEntry> profileList, HttpStatus status, StatusLine statusLine) {
-        super(status, statusLine);
+    public ConsumptionResponse(List<ProfileEntry> profileList, HttpStatus status) {
+        super(status);
         mProfileList = profileList;
     }
 

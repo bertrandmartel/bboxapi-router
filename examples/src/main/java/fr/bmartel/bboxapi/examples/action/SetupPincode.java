@@ -6,6 +6,8 @@ import fr.bmartel.bboxapi.model.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 /**
  * Setup Password for main version < 12
  */
@@ -13,7 +15,7 @@ public class SetupPincode {
 
     private final static Logger LOGGER = LogManager.getLogger(SetupPincode.class.getName());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         BboxApi api = new BboxApi();
 

@@ -36,6 +36,7 @@ import fr.bmartel.bboxapi.response.VoipResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class VoiceMail {
 
     private final static Logger LOGGER = LogManager.getLogger(VoiceMail.class.getName());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         BboxApi api = new BboxApi();
 

@@ -29,6 +29,8 @@ import fr.bmartel.bboxapi.model.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 /**
  * delete Wireless ACL rule.
  *
@@ -38,7 +40,7 @@ public class WifiMacFilteringRuleRemove {
 
     private final static Logger LOGGER = LogManager.getLogger(WifiMacFilteringRuleRemove.class.getName());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         BboxApi api = new BboxApi();
 

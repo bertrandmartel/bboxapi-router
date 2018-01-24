@@ -30,6 +30,8 @@ import fr.bmartel.bboxapi.response.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 /**
  * VOiceMail DELETE request example.
  *
@@ -39,7 +41,7 @@ public class VoiceMailDelete {
 
     private final static Logger LOGGER = LogManager.getLogger(VoiceMailDelete.class.getName());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         BboxApi api = new BboxApi();
 

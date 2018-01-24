@@ -23,9 +23,8 @@
  */
 package fr.bmartel.bboxapi.response;
 
-import fr.bmartel.bboxapi.model.device.BboxDeviceEntry;
 import fr.bmartel.bboxapi.model.HttpStatus;
-import org.apache.http.StatusLine;
+import fr.bmartel.bboxapi.model.device.BboxDeviceEntry;
 
 import java.util.List;
 
@@ -38,8 +37,8 @@ public class DeviceInfoResponse extends HttpResponse {
 
     private List<BboxDeviceEntry> mDeviceList;
 
-    public DeviceInfoResponse(List<BboxDeviceEntry> deviceList, HttpStatus status, StatusLine statusLine) {
-        super(status, statusLine);
+    public DeviceInfoResponse(List<BboxDeviceEntry> deviceList, HttpStatus status) {
+        super(status);
         mDeviceList = deviceList;
     }
 

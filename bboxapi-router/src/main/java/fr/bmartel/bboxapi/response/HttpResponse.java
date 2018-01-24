@@ -24,7 +24,6 @@
 package fr.bmartel.bboxapi.response;
 
 import fr.bmartel.bboxapi.model.HttpStatus;
-import org.apache.http.StatusLine;
 
 /**
  * Http basic response.
@@ -35,19 +34,12 @@ public abstract class HttpResponse {
 
     private HttpStatus mStatus;
 
-    private StatusLine mStatusLine;
-
-    public HttpResponse(HttpStatus status, StatusLine statusLine) {
+    public HttpResponse(HttpStatus status) {
         mStatus = status;
-        mStatusLine = statusLine;
     }
 
     public HttpStatus getStatus() {
         return mStatus;
-    }
-
-    public StatusLine getStatusLine() {
-        return mStatusLine;
     }
 
 }

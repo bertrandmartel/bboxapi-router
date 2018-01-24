@@ -25,7 +25,6 @@ package fr.bmartel.bboxapi.response;
 
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.wan.WanItem;
-import org.apache.http.StatusLine;
 
 import java.util.List;
 
@@ -38,8 +37,8 @@ public class WanXdslResponse extends HttpResponse {
 
     private List<WanItem> mWanXdsl;
 
-    public WanXdslResponse(List<WanItem> wanXdslList, HttpStatus status, StatusLine statusLine) {
-        super(status, statusLine);
+    public WanXdslResponse(List<WanItem> wanXdslList, HttpStatus status) {
+        super(status);
         mWanXdsl = wanXdslList;
     }
 

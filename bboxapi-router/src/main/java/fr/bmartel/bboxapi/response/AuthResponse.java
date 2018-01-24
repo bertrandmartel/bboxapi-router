@@ -24,7 +24,6 @@
 package fr.bmartel.bboxapi.response;
 
 import fr.bmartel.bboxapi.model.HttpStatus;
-import org.apache.http.StatusLine;
 
 /**
  * Response to login request.
@@ -35,8 +34,8 @@ public class AuthResponse extends HttpResponse {
 
     private String mToken;
 
-    public AuthResponse(String token, HttpStatus status, StatusLine statusLine) {
-        super(status, statusLine);
+    public AuthResponse(String token, HttpStatus status) {
+        super(status);
         mToken = token;
     }
 

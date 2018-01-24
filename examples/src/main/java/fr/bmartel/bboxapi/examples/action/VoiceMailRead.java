@@ -8,6 +8,7 @@ import fr.bmartel.bboxapi.response.VoiceMailResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public class VoiceMailRead {
 
     private final static Logger LOGGER = LogManager.getLogger(VoiceMailRead.class.getName());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         BboxApi api = new BboxApi();
 

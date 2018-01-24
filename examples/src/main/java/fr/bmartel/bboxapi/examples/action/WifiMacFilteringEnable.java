@@ -26,6 +26,8 @@ package fr.bmartel.bboxapi.examples.action;
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 
+import java.io.IOException;
+
 /**
  * Enable/Disable Wifi MAC filtering.
  *
@@ -33,7 +35,7 @@ import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
  */
 public class WifiMacFilteringEnable {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         BboxApi api = new BboxApi();
 

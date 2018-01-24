@@ -25,7 +25,6 @@ package fr.bmartel.bboxapi.response;
 
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.wireless.AclItem;
-import org.apache.http.StatusLine;
 
 import java.util.List;
 
@@ -38,8 +37,8 @@ public class WirelessAclResponse extends HttpResponse {
 
     private List<AclItem> mAcl;
 
-    public WirelessAclResponse(List<AclItem> aclList, HttpStatus status, StatusLine statusLine) {
-        super(status, statusLine);
+    public WirelessAclResponse(List<AclItem> aclList, HttpStatus status) {
+        super(status);
         mAcl = aclList;
     }
 

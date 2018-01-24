@@ -25,7 +25,6 @@ package fr.bmartel.bboxapi.response;
 
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.host.HostItem;
-import org.apache.http.StatusLine;
 
 import java.util.List;
 
@@ -38,8 +37,8 @@ public class HostsResponse extends HttpResponse {
 
     private List<HostItem> mHostList;
 
-    public HostsResponse(List<HostItem> hostList, HttpStatus status, StatusLine statusLine) {
-        super(status, statusLine);
+    public HostsResponse(List<HostItem> hostList, HttpStatus status) {
+        super(status);
         mHostList = hostList;
     }
 

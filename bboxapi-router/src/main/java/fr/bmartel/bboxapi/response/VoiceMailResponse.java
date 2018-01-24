@@ -25,7 +25,6 @@ package fr.bmartel.bboxapi.response;
 
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.voip.voicemail.VoiceMailEntry;
-import org.apache.http.StatusLine;
 
 import java.util.List;
 
@@ -40,8 +39,8 @@ public class VoiceMailResponse extends HttpResponse {
 
     private boolean mValidSession;
 
-    public VoiceMailResponse(List<VoiceMailEntry> voiceMailList, HttpStatus status, StatusLine statusLine) {
-        super(status, statusLine);
+    public VoiceMailResponse(List<VoiceMailEntry> voiceMailList, HttpStatus status) {
+        super(status);
         mVoiceMailList = voiceMailList;
     }
 

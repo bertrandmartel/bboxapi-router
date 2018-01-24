@@ -25,7 +25,6 @@ package fr.bmartel.bboxapi.response;
 
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.voip.VoipEntry;
-import org.apache.http.StatusLine;
 
 import java.util.List;
 
@@ -38,8 +37,8 @@ public class VoipResponse extends HttpResponse {
 
     private List<VoipEntry> mVoipList;
 
-    public VoipResponse(List<VoipEntry> voipList, HttpStatus status, StatusLine statusLine) {
-        super(status, statusLine);
+    public VoipResponse(List<VoipEntry> voipList, HttpStatus status) {
+        super(status);
         mVoipList = voipList;
     }
 

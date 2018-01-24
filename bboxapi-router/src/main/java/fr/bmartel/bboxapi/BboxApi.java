@@ -26,6 +26,7 @@ package fr.bmartel.bboxapi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import fr.bmartel.bboxapi.model.HttpConnection;
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.device.BboxDeviceEntry;
 import fr.bmartel.bboxapi.model.host.HostItem;
@@ -43,26 +44,14 @@ import fr.bmartel.bboxapi.model.wan.WanItem;
 import fr.bmartel.bboxapi.model.wireless.AclItem;
 import fr.bmartel.bboxapi.model.wireless.WirelessItem;
 import fr.bmartel.bboxapi.response.*;
+import fr.bmartel.bboxapi.utils.HttpUtils;
 import fr.bmartel.bboxapi.utils.NetworkUtils;
-import org.apache.http.Header;
-import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.*;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.io.InputStream;
+import java.net.*;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,11 +68,7 @@ public class BboxApi {
 
     private String mPassword;
 
-    private static int AUTH_MAX_RETRY = 0;
-
-    private int mRetry;
-
-    private final static String BBOX_HOST = "gestionbbox.lan";
+    private final static String BBOX_HOST = "bbox.lan";
     private final static String URL_PREFIX = "http://" + BBOX_HOST;
     private final static String LOGIN_URI = URL_PREFIX + "/api/v1/login";
     private final static String VOIP_URI = URL_PREFIX + "/api/v1/voip";
@@ -111,11 +96,8 @@ public class BboxApi {
 
     private final static String BBOX_COOKIE_NAME = "BBOX_ID";
 
-    private CookieStore mCookieStore = new BasicCookieStore();
-
-    private CloseableHttpClient mHttpClient = HttpClients.custom()
-            .setDefaultCookieStore(mCookieStore)
-            .build();
+    private CookieManager mCookieManager = new CookieManager();
+    private final static String COOKIE_HEADER = "Set-Cookie";
 
     public void setPassword(String pass) {
         mPassword = pass;
@@ -126,57 +108,43 @@ public class BboxApi {
      *
      * @return true if authentication has been initiated successfully
      */
-    private AuthResponse authenticate() {
+    private AuthResponse authenticate() throws IOException {
 
-        HttpUriRequest request = new HttpPost(LOGIN_URI + "?password=" + mPassword + "&remember=1");
-
-        CloseableHttpResponse response = null;
+        HttpConnection conn = HttpUtils.httpRequest("POST", LOGIN_URI + "?password=" + mPassword + "&remember=1");
 
         try {
-            response = mHttpClient.execute(request);
+            conn.write();
+            if (conn.getResponseCode() == 200) {
 
-            StatusLine statusLine = response.getStatusLine();
+                String token = storeCookie(conn);
 
-            try {
-                if (response.getStatusLine().getStatusCode() == 200) {
-
-                    String token = storeCookie(response);
-
-                    if (token != null) {
-                        mAuthenticated = true;
-                        return new AuthResponse(token, HttpStatus.OK, statusLine);
-                    } else {
-                        return new AuthResponse(null, HttpStatus.INTERNAL_ERROR, statusLine);
-                    }
-
+                if (token != null) {
+                    mAuthenticated = true;
+                    return new AuthResponse(token, HttpStatus.gethttpStatus(conn.getResponseCode()));
                 } else {
-                    return new AuthResponse(null,
-                            HttpStatus.gethttpStatus(response.getStatusLine().getStatusCode()), statusLine);
+                    return new AuthResponse(null, HttpStatus.gethttpStatus(conn.getResponseCode()));
                 }
-            } finally {
-                response.close();
+
+            } else {
+                return new AuthResponse(null, HttpStatus.gethttpStatus(conn.getResponseCode()));
             }
-        } catch (IOException e) {
-            //ignored
+        } finally {
+            conn.disconnect();
         }
-        return new AuthResponse(null, HttpStatus.UNKNOWN, null);
     }
 
-    private String storeCookie(CloseableHttpResponse response) {
+    private String storeCookie(HttpConnection conn) {
+        Map<String, List<String>> headerFields = conn.getConn().getHeaderFields();
+        List<String> cookiesHeader = headerFields.get(COOKIE_HEADER);
 
-        Header cookieHeader = response.getFirstHeader("set-cookie");
-
-        if (cookieHeader != null) {
-            mTokenHeader = cookieHeader.getValue();
-            String token = mTokenHeader.substring(8, mTokenHeader.indexOf(';'));
-            mCookieStore.clear();
-
-            BasicClientCookie cookie = new BasicClientCookie(BBOX_COOKIE_NAME, token);
-
-            cookie.setDomain(BBOX_HOST);
-            mCookieStore.addCookie(cookie);
-
-            return token;
+        if (cookiesHeader != null && cookiesHeader.size() > 0) {
+            String cookie = HttpCookie.parse(cookiesHeader.get(0)).get(0).toString().replace("\"", "");
+            try {
+                mCookieManager.getCookieStore().add(new URI(BBOX_HOST), HttpCookie.parse(cookiesHeader.get(0)).get(0));
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            return cookie.indexOf(";") != -1 ? cookie.substring(0, cookie.indexOf(";")).split("=")[1] : "";
         }
         return null;
     }
@@ -197,247 +165,221 @@ public class BboxApi {
         VOIP_VOICEMAIL;
     }
 
-    private HttpResponse executeGetRequest(RequestType type, String uri, boolean skipAuth) {
+    private String isToString(InputStream is) throws IOException {
+        int ch;
+        StringBuilder sb = new StringBuilder();
+        while ((ch = is.read()) != -1)
+            sb.append((char) ch);
+        return sb.toString();
+    }
+
+    private HttpResponse executeGetRequest(RequestType type, String uri, boolean skipAuth) throws IOException {
 
         if (!skipAuth) {
             if (!mAuthenticated && mPassword != null && !mPassword.equals("")) {
                 AuthResponse authResponse = authenticate();
                 if (authResponse.getStatus() != HttpStatus.OK) {
-                    return getDefaultResponse(type, authResponse.getStatus(), authResponse.getStatusLine());
+                    return getDefaultResponse(type, authResponse.getStatus());
                 }
-                mRetry = 0;
             }
         }
 
-        HttpGet voipRequest = new HttpGet(uri);
+        HttpConnection conn = HttpUtils.httpRequest("GET", uri);
 
-        CloseableHttpResponse response = null;
         try {
-
-            response = mHttpClient.execute(voipRequest);
-
-            StatusLine statusLine = response.getStatusLine();
-
-            try {
-                if (response.getStatusLine().getStatusCode() == 200) {
-
-                    String result = EntityUtils.toString(response.getEntity());
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
-
-                    switch (type) {
-                        case VOIP:
-                            List<VoipEntry> voipList = gson.fromJson(result,
-                                    new TypeToken<List<VoipEntry>>() {
-                                    }.getType());
-
-                            return new VoipResponse(voipList, HttpStatus.OK, statusLine);
-                        case PROFILE_CONSUMPTION:
-                            List<ProfileEntry> consumptionList = gson.fromJson(result,
-                                    new TypeToken<List<ProfileEntry>>() {
-                                    }.getType());
-
-                            return new ConsumptionResponse(consumptionList, HttpStatus.OK, statusLine);
-                        case VOIP_VOICEMAIL:
-                            List<VoiceMailEntry> voiceMailList = gson.fromJson(result,
-                                    new TypeToken<List<VoiceMailEntry>>() {
-                                    }.getType());
-
-                            return new VoiceMailResponse(voiceMailList, HttpStatus.OK, statusLine);
-                        case DEVICE_INFO:
-                            List<BboxDeviceEntry> deviceInfoList = gson.fromJson(result,
-                                    new TypeToken<List<BboxDeviceEntry>>() {
-                                    }.getType());
-
-                            return new DeviceInfoResponse(deviceInfoList, HttpStatus.OK, statusLine);
-                        case SUMMARY:
-                            List<ApiSummary> summary = gson.fromJson(result,
-                                    new TypeToken<List<ApiSummary>>() {
-                                    }.getType());
-
-                            return new SummaryResponse(summary, HttpStatus.OK, statusLine);
-                        case GET_HOSTS:
-                            List<HostItem> hosts = gson.fromJson(result,
-                                    new TypeToken<List<HostItem>>() {
-                                    }.getType());
-
-                            return new HostsResponse(hosts, HttpStatus.OK, statusLine);
-                        case GET_XDSL_INFO:
-                            List<WanItem> xdslInfo = gson.fromJson(result,
-                                    new TypeToken<List<WanItem>>() {
-                                    }.getType());
-
-                            return new WanXdslResponse(xdslInfo, HttpStatus.OK, statusLine);
-                        case GET_IP_INFO:
-                            List<WanIp> ipInfo = gson.fromJson(result,
-                                    new TypeToken<List<WanIp>>() {
-                                    }.getType());
-
-                            return new WanIpResponse(ipInfo, HttpStatus.OK, statusLine);
-                        case CALL_LOG:
-                            List<CallLogList> callLog = gson.fromJson(result,
-                                    new TypeToken<List<CallLogList>>() {
-                                    }.getType());
-
-                            return new CallLogResponse(callLog, HttpStatus.OK, statusLine);
-                        case WIRELESS_DATA:
-                            List<WirelessItem> wirelessList = gson.fromJson(result,
-                                    new TypeToken<List<WirelessItem>>() {
-                                    }.getType());
-
-                            return new WirelessResponse(wirelessList, HttpStatus.OK, statusLine);
-                        case GET_WIFI_MAC_FILTER:
-                            List<AclItem> aclList = gson.fromJson(result,
-                                    new TypeToken<List<AclItem>>() {
-                                    }.getType());
-
-                            return new WirelessAclResponse(aclList, HttpStatus.OK, statusLine);
-                        case VERIFY_PASSWORD_RECOVERY:
-                            storeCookie(response);
-                            List<VerifyRecovery> verifyList = gson.fromJson(result,
-                                    new TypeToken<List<VerifyRecovery>>() {
-                                    }.getType());
-                            return new VerifyRecoveryResponse(verifyList, HttpStatus.OK, statusLine);
-                        case BBOX_TOKEN:
-                            List<BboxDevice> deviceList = gson.fromJson(result,
-                                    new TypeToken<List<BboxDevice>>() {
-                                    }.getType());
-
-                            return new BboxTokenResponse(deviceList, HttpStatus.OK, statusLine);
-                    }
-
-                } else if (response.getStatusLine().getStatusCode() == 401) {
-                    // authenticate & retry
-                    mAuthenticated = false;
-                    if (mRetry < (AUTH_MAX_RETRY + 1)) {
-                        mRetry++;
-                        response.close();
-                        return executeGetRequest(type, uri, false);
-                    }
-                    mRetry = 0;
-                } else {
-                    return getDefaultResponse(type, HttpStatus.gethttpStatus(response.getStatusLine()
-                            .getStatusCode()), statusLine);
-                }
-            } finally {
-                response.close();
+            if (!skipAuth && mCookieManager.getCookieStore().getCookies().size() > 0) {
+                HttpUtils.addCookies(conn, mCookieManager);
             }
-        } catch (IOException e) {
-            //ignored
+
+            if (conn.getResponseCode() == 200) {
+
+                InputStream in = new BufferedInputStream(conn.getConn().getInputStream());
+                String result = isToString(in);
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+
+                switch (type) {
+                    case VOIP:
+                        List<VoipEntry> voipList = gson.fromJson(result,
+                                new TypeToken<List<VoipEntry>>() {
+                                }.getType());
+
+                        return new VoipResponse(voipList, HttpStatus.OK);
+                    case PROFILE_CONSUMPTION:
+                        List<ProfileEntry> consumptionList = gson.fromJson(result,
+                                new TypeToken<List<ProfileEntry>>() {
+                                }.getType());
+
+                        return new ConsumptionResponse(consumptionList, HttpStatus.OK);
+                    case VOIP_VOICEMAIL:
+                        List<VoiceMailEntry> voiceMailList = gson.fromJson(result,
+                                new TypeToken<List<VoiceMailEntry>>() {
+                                }.getType());
+
+                        return new VoiceMailResponse(voiceMailList, HttpStatus.OK);
+                    case DEVICE_INFO:
+                        List<BboxDeviceEntry> deviceInfoList = gson.fromJson(result,
+                                new TypeToken<List<BboxDeviceEntry>>() {
+                                }.getType());
+
+                        return new DeviceInfoResponse(deviceInfoList, HttpStatus.OK);
+                    case SUMMARY:
+                        List<ApiSummary> summary = gson.fromJson(result,
+                                new TypeToken<List<ApiSummary>>() {
+                                }.getType());
+
+                        return new SummaryResponse(summary, HttpStatus.OK);
+                    case GET_HOSTS:
+                        List<HostItem> hosts = gson.fromJson(result,
+                                new TypeToken<List<HostItem>>() {
+                                }.getType());
+
+                        return new HostsResponse(hosts, HttpStatus.OK);
+                    case GET_XDSL_INFO:
+                        List<WanItem> xdslInfo = gson.fromJson(result,
+                                new TypeToken<List<WanItem>>() {
+                                }.getType());
+
+                        return new WanXdslResponse(xdslInfo, HttpStatus.OK);
+                    case GET_IP_INFO:
+                        List<WanIp> ipInfo = gson.fromJson(result,
+                                new TypeToken<List<WanIp>>() {
+                                }.getType());
+
+                        return new WanIpResponse(ipInfo, HttpStatus.OK);
+                    case CALL_LOG:
+                        List<CallLogList> callLog = gson.fromJson(result,
+                                new TypeToken<List<CallLogList>>() {
+                                }.getType());
+
+                        return new CallLogResponse(callLog, HttpStatus.OK);
+                    case WIRELESS_DATA:
+                        List<WirelessItem> wirelessList = gson.fromJson(result,
+                                new TypeToken<List<WirelessItem>>() {
+                                }.getType());
+
+                        return new WirelessResponse(wirelessList, HttpStatus.OK);
+                    case GET_WIFI_MAC_FILTER:
+                        List<AclItem> aclList = gson.fromJson(result,
+                                new TypeToken<List<AclItem>>() {
+                                }.getType());
+
+                        return new WirelessAclResponse(aclList, HttpStatus.OK);
+                    case VERIFY_PASSWORD_RECOVERY:
+                        storeCookie(conn);
+                        List<VerifyRecovery> verifyList = gson.fromJson(result,
+                                new TypeToken<List<VerifyRecovery>>() {
+                                }.getType());
+                        return new VerifyRecoveryResponse(verifyList, HttpStatus.OK);
+                    case BBOX_TOKEN:
+                        List<BboxDevice> deviceList = gson.fromJson(result,
+                                new TypeToken<List<BboxDevice>>() {
+                                }.getType());
+
+                        return new BboxTokenResponse(deviceList, HttpStatus.OK);
+                }
+
+            } else if (conn.getResponseCode() == 401) {
+                // authenticate & retry
+                mAuthenticated = false;
+            } else {
+                return getDefaultResponse(type, HttpStatus.gethttpStatus(conn.getResponseCode()));
+            }
+        } finally {
+            conn.disconnect();
         }
-        return getDefaultResponse(type, HttpStatus.UNKNOWN, null);
+        return getDefaultResponse(type, HttpStatus.UNKNOWN);
     }
 
-    private HttpResponse executeDeleteRequest(RequestType type, String uri, boolean skipAuth) {
+    private HttpResponse executeDeleteRequest(RequestType type, String uri, boolean skipAuth) throws IOException {
 
         if (!skipAuth) {
             if (!mAuthenticated && mPassword != null && !mPassword.equals("")) {
                 AuthResponse authResponse = authenticate();
                 if (authResponse.getStatus() != HttpStatus.OK) {
-                    return getDefaultResponse(type, authResponse.getStatus(), authResponse.getStatusLine());
+                    return getDefaultResponse(type, authResponse.getStatus());
                 }
-                mRetry = 0;
             }
         }
 
-        HttpDelete request = new HttpDelete(uri);
+        HttpConnection conn = HttpUtils.httpRequest("DELETE", uri);
 
-        CloseableHttpResponse response = null;
         try {
-
-            response = mHttpClient.execute(request);
-
-            StatusLine statusLine = response.getStatusLine();
-
-            try {
-                if (response.getStatusLine().getStatusCode() == 200) {
-                    return getDefaultResponse(type, HttpStatus.OK, null);
-                } else if (response.getStatusLine().getStatusCode() == 401) {
-                    // authenticate & retry
-                    mAuthenticated = false;
-                    if (mRetry < (AUTH_MAX_RETRY + 1)) {
-                        mRetry++;
-                        response.close();
-                        return executeDeleteRequest(type, uri, false);
-                    }
-                    mRetry = 0;
-                } else {
-                    return getDefaultResponse(type, HttpStatus.gethttpStatus(response.getStatusLine()
-                            .getStatusCode()), statusLine);
-                }
-            } finally {
-                response.close();
+            if (!skipAuth && mCookieManager.getCookieStore().getCookies().size() > 0) {
+                HttpUtils.addCookies(conn, mCookieManager);
             }
-        } catch (IOException e) {
-            //ignored
+
+            conn.write();
+
+            if (conn.getResponseCode() == 200) {
+                return getDefaultResponse(type, HttpStatus.OK);
+            } else if (conn.getResponseCode() == 401) {
+                // authenticate & retry
+                mAuthenticated = false;
+            } else {
+                return getDefaultResponse(type, HttpStatus.gethttpStatus(conn.getResponseCode()));
+            }
+        } finally {
+            conn.disconnect();
         }
-        return getDefaultResponse(type, HttpStatus.UNKNOWN, null);
+        return getDefaultResponse(type, HttpStatus.UNKNOWN);
     }
 
-    private HttpResponse getDefaultResponse(RequestType type, HttpStatus status, StatusLine statusLine) {
+    private HttpResponse getDefaultResponse(RequestType type, HttpStatus status) {
 
         switch (type) {
             case VOIP:
-                return new VoipResponse(null, status, statusLine);
+                return new VoipResponse(null, status);
             case PROFILE_CONSUMPTION:
-                return new ConsumptionResponse(null, status, statusLine);
+                return new ConsumptionResponse(null, status);
             case VOIP_VOICEMAIL:
-                return new VoiceMailResponse(null, status, statusLine);
+                return new VoiceMailResponse(null, status);
             case DEVICE_INFO:
-                return new DeviceInfoResponse(null, status, statusLine);
+                return new DeviceInfoResponse(null, status);
             case SUMMARY:
-                return new SummaryResponse(null, status, statusLine);
+                return new SummaryResponse(null, status);
             case GET_HOSTS:
-                return new HostsResponse(null, status, statusLine);
+                return new HostsResponse(null, status);
             case CALL_LOG:
-                return new CallLogResponse(null, status, statusLine);
+                return new CallLogResponse(null, status);
             case WIRELESS_DATA:
-                return new WirelessResponse(null, status, statusLine);
+                return new WirelessResponse(null, status);
             case GET_XDSL_INFO:
-                return new WanXdslResponse(null, status, statusLine);
+                return new WanXdslResponse(null, status);
             case GET_IP_INFO:
-                return new WanIpResponse(null, status, statusLine);
+                return new WanIpResponse(null, status);
         }
-        return new VoipResponse(null, HttpStatus.UNKNOWN, null);
+        return new VoipResponse(null, HttpStatus.UNKNOWN);
     }
 
-    private HttpStatus executeRequest(HttpRequestBase request, boolean auth, boolean skipAuth) {
-
-        if (!skipAuth) {
-            if (!mAuthenticated && auth) {
-                AuthResponse authResponse = authenticate();
-                if (authResponse.getStatus() != HttpStatus.OK) {
-                    return HttpStatus.UNAUTHORIZED;
-                }
-                mRetry = 0;
-            } else if (!auth) {
-                mCookieStore.clear();
-            }
-        }
-
-        CloseableHttpResponse response = null;
+    private HttpStatus executeRequest(HttpConnection conn, boolean auth, boolean skipAuth) throws IOException {
         try {
-            response = mHttpClient.execute(request);
+            if (!skipAuth) {
+                if (!mAuthenticated && auth) {
+                    AuthResponse authResponse = authenticate();
+                    if (authResponse.getStatus() != HttpStatus.OK) {
+                        return HttpStatus.UNAUTHORIZED;
+                    }
+                } else if (!auth) {
+                    mCookieManager.getCookieStore().removeAll();
+                }
+            }
 
-            if (response.getStatusLine().getStatusCode() == 401 && auth) {
+            if (!skipAuth && mCookieManager.getCookieStore().getCookies().size() > 0) {
+                HttpUtils.addCookies(conn, mCookieManager);
+            }
+
+            conn.write();
+
+            if (conn.getResponseCode() == 401 && auth) {
                 // authenticate & retry
                 mAuthenticated = false;
-                if (mRetry < (AUTH_MAX_RETRY + 1)) {
-                    mRetry++;
-                    response.close();
-                    return executeRequest(request, auth, skipAuth);
-                }
-                mRetry = 0;
             } else {
-                storeCookie(response);
-                try {
-                    return HttpStatus.gethttpStatus(response.getStatusLine().getStatusCode());
-                } finally {
-                    response.close();
-                }
+                storeCookie(conn);
+                return HttpStatus.gethttpStatus(conn.getResponseCode());
             }
-        } catch (IOException e) {
-            //ignored
+        } finally {
+            conn.disconnect();
         }
         return HttpStatus.UNKNOWN;
     }
@@ -448,13 +390,10 @@ public class BboxApi {
      * @param state ON/OFF
      * @return true if request has been successfully initiated
      */
-    public HttpStatus setBboxDisplayState(boolean state) {
-
+    public HttpStatus setBboxDisplayState(boolean state) throws IOException {
         int luminosity = state ? 100 : 0;
-
-        HttpPut displayStateRequest = new HttpPut(DISPLAY_STATE_URI + "?luminosity=" + luminosity);
-
-        return executeRequest(displayStateRequest, true, false);
+        HttpConnection conn = HttpUtils.httpRequest("PUT", DISPLAY_STATE_URI + "?luminosity=" + luminosity);
+        return executeRequest(conn, true, false);
     }
 
 
@@ -464,13 +403,10 @@ public class BboxApi {
      * @param state wifi state ON/OFF
      * @return true if request has been successfully initiated
      */
-    public HttpStatus setWifiState(boolean state) {
-
+    public HttpStatus setWifiState(boolean state) throws IOException {
         int status = state ? 1 : 0;
-
-        HttpPut wifiRequest = new HttpPut(WIRELESS_URI + "?radio.enable=" + status);
-
-        return executeRequest(wifiRequest, true, false);
+        HttpConnection conn = HttpUtils.httpRequest("PUT", WIRELESS_URI + "?radio.enable=" + status);
+        return executeRequest(conn, true, false);
     }
 
     /**
@@ -479,13 +415,10 @@ public class BboxApi {
      * @param state state of Mac filtering
      * @return request status
      */
-    public HttpStatus setWifiMacFilter(boolean state) {
-
+    public HttpStatus setWifiMacFilter(boolean state) throws IOException {
         int status = state ? 1 : 0;
-
-        HttpPut wifiRequest = new HttpPut(WIRELESS_ACL_URI + "?enable=" + status);
-
-        return executeRequest(wifiRequest, true, false);
+        HttpConnection conn = HttpUtils.httpRequest("PUT", WIRELESS_ACL_URI + "?enable=" + status);
+        return executeRequest(conn, true, false);
     }
 
     /**
@@ -494,9 +427,9 @@ public class BboxApi {
      * @param ruleIndex number of rule
      * @return request status
      */
-    public HttpStatus deleteMacFilterRule(int ruleIndex) {
-        HttpDelete wifiRequest = new HttpDelete(WIRELESS_ACL_RULES + "/" + ruleIndex);
-        return executeRequest(wifiRequest, true, false);
+    public HttpStatus deleteMacFilterRule(int ruleIndex) throws IOException {
+        HttpConnection conn = HttpUtils.httpRequest("DELETE", WIRELESS_ACL_RULES + "/" + ruleIndex);
+        return executeRequest(conn, true, false);
     }
 
     /**
@@ -505,24 +438,13 @@ public class BboxApi {
      * @param state state of Mac filtering
      * @return request status
      */
-    public HttpStatus updateWifiMacFilterRule(int ruleIndex, boolean state, String macAddress, String ip) {
-
-        int status = state ? 1 : 0;
-
-        HttpPut wifiUpdate = new HttpPut(WIRELESS_ACL_RULES + "/" + ruleIndex);
-
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair("enable", String.valueOf(status)));
-        nameValuePairs.add(new BasicNameValuePair("macaddress", macAddress));
-        nameValuePairs.add(new BasicNameValuePair("device", ip));
-
-        try {
-            wifiUpdate.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return executeRequest(wifiUpdate, true, false);
+    public HttpStatus updateWifiMacFilterRule(int ruleIndex, boolean state, String macAddress, String ip) throws IOException {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("enable", String.valueOf(state ? 1 : 0));
+        params.put("macaddress", macAddress);
+        params.put("device", ip);
+        HttpConnection conn = HttpUtils.httpPutFormRequest(WIRELESS_ACL_RULES + "/" + ruleIndex, params);
+        return executeRequest(conn, true, false);
     }
 
     /**
@@ -532,7 +454,7 @@ public class BboxApi {
      * @param macAddress mac address to filter
      * @return request status
      */
-    public HttpStatus createWifiMacFilterRule(boolean enable, String macAddress, String ip) {
+    public HttpStatus createWifiMacFilterRule(boolean enable, String macAddress, String ip) throws IOException {
 
         BboxTokenResponse response = (BboxTokenResponse) executeGetRequest(RequestType.BBOX_TOKEN, TOKEN_URI, false);
 
@@ -540,24 +462,17 @@ public class BboxApi {
 
             if (response.getDeviceList().size() > 0 && response.getDeviceList().get(0).getBboxToken().getToken() !=
                     null) {
-                HttpPost wifiMacFilterReq = new HttpPost(WIRELESS_ACL_RULES + "?btoken=" + response.getDeviceList()
+
+                Map<String, Object> params = new LinkedHashMap<>();
+                params.put("enable", String.valueOf(enable ? 1 : 0));
+                params.put("macaddress", macAddress);
+                params.put("device", ip);
+
+                HttpConnection conn = HttpUtils.httpPostFormRequest(WIRELESS_ACL_RULES + "?btoken=" + response.getDeviceList()
                         .get(0)
-                        .getBboxToken().getToken());
+                        .getBboxToken().getToken(), params);
 
-                int status = enable ? 1 : 0;
-
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-                nameValuePairs.add(new BasicNameValuePair("enable", String.valueOf(status)));
-                nameValuePairs.add(new BasicNameValuePair("macaddress", macAddress));
-                nameValuePairs.add(new BasicNameValuePair("device", ip));
-
-                try {
-                    wifiMacFilterReq.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                return executeRequest(wifiMacFilterReq, true, false);
+                return executeRequest(conn, true, false);
             }
         }
         return response.getStatus();
@@ -568,18 +483,14 @@ public class BboxApi {
      *
      * @return
      */
-    public HttpStatus reboot() {
-
+    public HttpStatus reboot() throws IOException {
         BboxTokenResponse response = (BboxTokenResponse) executeGetRequest(RequestType.BBOX_TOKEN, TOKEN_URI, false);
 
         if (response.getStatus() == HttpStatus.OK) {
-
-            if (response.getDeviceList().size() > 0 && response.getDeviceList().get(0).getBboxToken().getToken() !=
-                    null) {
-                HttpPost rebootRequest = new HttpPost(REBOOT_URI + "?btoken=" + response.getDeviceList().get(0)
-                        .getBboxToken().getToken());
-
-                return executeRequest(rebootRequest, true, false);
+            if (response.getDeviceList().size() > 0 &&
+                    response.getDeviceList().get(0).getBboxToken().getToken() != null) {
+                HttpConnection conn = HttpUtils.httpRequest("POST", REBOOT_URI + "?btoken=" + response.getDeviceList().get(0).getBboxToken().getToken());
+                return executeRequest(conn, true, false);
             }
         }
         return response.getStatus();
@@ -590,9 +501,9 @@ public class BboxApi {
      *
      * @return
      */
-    public HttpStatus startPasswordRecovery() {
-        HttpPost rebootRequest = new HttpPost(PASSWORD_RECOV_URI);
-        return executeRequest(rebootRequest, false, false);
+    public HttpStatus startPasswordRecovery() throws IOException {
+        HttpConnection conn = HttpUtils.httpRequest("POST", PASSWORD_RECOV_URI);
+        return executeRequest(conn, false, false);
     }
 
     /**
@@ -600,9 +511,9 @@ public class BboxApi {
      *
      * @return
      */
-    public HttpStatus sendPincodeVerify(String pincode) {
-        HttpPost pincodeRequest = new HttpPost(PINCODE_VERIFY + "?pincode=" + pincode);
-        return executeRequest(pincodeRequest, false, false);
+    public HttpStatus sendPincodeVerify(String pincode) throws IOException {
+        HttpConnection conn = HttpUtils.httpRequest("POST", PINCODE_VERIFY + "?pincode=" + pincode);
+        return executeRequest(conn, false, false);
     }
 
     /**
@@ -611,7 +522,7 @@ public class BboxApi {
      * @param password
      * @return
      */
-    public HttpStatus resetPassword(String password) {
+    public HttpStatus resetPassword(String password) throws IOException {
 
         BboxTokenResponse response = (BboxTokenResponse) executeGetRequest(RequestType.BBOX_TOKEN, TOKEN_URI, true);
 
@@ -619,19 +530,14 @@ public class BboxApi {
 
             if (response.getDeviceList().size() > 0 && response.getDeviceList().get(0).getBboxToken().getToken() !=
                     null) {
-                HttpPost resetRequest = new HttpPost(RESET_PASSWORD + "?btoken=" + response.getDeviceList().get(0)
-                        .getBboxToken().getToken());
 
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-                nameValuePairs.add(new BasicNameValuePair("password", password));
+                Map<String, Object> params = new LinkedHashMap<>();
+                params.put("password", password);
 
-                try {
-                    resetRequest.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                HttpConnection conn = HttpUtils.httpPostFormRequest(RESET_PASSWORD +
+                        "?btoken=" + response.getDeviceList().get(0).getBboxToken().getToken(), params);
 
-                return executeRequest(resetRequest, true, true);
+                return executeRequest(conn, true, true);
             }
         }
         return response.getStatus();
@@ -643,19 +549,17 @@ public class BboxApi {
      *
      * @return true if request has been successfully initiated
      */
-    public HttpStatus voipDial(int lineNumber, String phoneNumber) {
-
-        HttpPut dialRequest = new HttpPut(DIAL_URI + "?line=" + lineNumber + "&number=" +
+    public HttpStatus voipDial(int lineNumber, String phoneNumber) throws IOException {
+        HttpConnection conn = HttpUtils.httpRequest("PUT", DIAL_URI + "?line=" + lineNumber + "&number=" +
                 URLEncoder.encode(phoneNumber.replaceAll("\\s+", "").replaceAll("\\+", "00")));
-
-        return executeRequest(dialRequest, true, false);
+        return executeRequest(conn, true, false);
     }
 
 
     /**
      * Verify password recovery status.
      */
-    public VerifyRecoveryResponse verifyPasswordRecovery() {
+    public VerifyRecoveryResponse verifyPasswordRecovery() throws IOException {
         return (VerifyRecoveryResponse) executeGetRequest(RequestType.VERIFY_PASSWORD_RECOVERY,
                 PASSWORD_RECOV_VERIFY_URI, false);
     }
@@ -663,7 +567,7 @@ public class BboxApi {
     /**
      * VoipItem data
      */
-    public VoipResponse getVoipData() {
+    public VoipResponse getVoipData() throws IOException {
         return (VoipResponse) executeGetRequest(RequestType.VOIP, VOIP_URI, false);
     }
 
@@ -671,7 +575,7 @@ public class BboxApi {
     /**
      * Profile Consumption.
      */
-    public ConsumptionResponse getConsumptionData() {
+    public ConsumptionResponse getConsumptionData() throws IOException {
 
         return (ConsumptionResponse) executeGetRequest(
                 RequestType.PROFILE_CONSUMPTION, PROFILE_CONSUMPTION_URI, false);
@@ -680,7 +584,7 @@ public class BboxApi {
     /**
      * Get Voice mail.
      */
-    public VoiceMailResponse getVoiceMailData() {
+    public VoiceMailResponse getVoiceMailData() throws IOException {
 
         // call voip/voicemail
         VoiceMailResponse voiceMailResponse = (VoiceMailResponse) executeGetRequest(RequestType.VOIP_VOICEMAIL,
@@ -717,20 +621,18 @@ public class BboxApi {
             }
 
             // check the first URL, set to empty string if not valid
-            HttpHead head = new HttpHead(voiceMailList.get(0).getLinkMsg());
+            HttpConnection conn = HttpUtils.httpRequest("HEAD", voiceMailList.get(0).getLinkMsg());
+
             try {
-                CloseableHttpResponse response = mHttpClient.execute(head);
-
-                if (response.getStatusLine().getStatusCode() != 200 ||
-                        response.getHeaders("Content-Type")[0].getValue().equals("text/html")) {
-
+                if (conn.getResponseCode() != 200 || conn.getConn().getHeaderField("Content-Type").equals("text/html")) {
                     for (VoiceMailItem item : voiceMailList) {
                         item.setLinkMsg("");
                     }
                 } else {
                     voiceMailResponse.setValidSession(true);
                 }
-            } catch (IOException e) {
+            } finally {
+                conn.disconnect();
             }
         }
         return voiceMailResponse;
@@ -742,7 +644,7 @@ public class BboxApi {
      * @param id voicemail id
      * @return http response
      */
-    public HttpResponse deleteVoiceMail(final int id) {
+    public HttpResponse deleteVoiceMail(final int id) throws IOException {
         return executeDeleteRequest(RequestType.VOIP_VOICEMAIL, VOIP_VOICEMAIL_URI + "/1/" + id, false);
     }
 
@@ -752,9 +654,9 @@ public class BboxApi {
      * @param id voicemail id
      * @return http response
      */
-    public HttpStatus readVoiceMail(final int id) {
-        HttpPut voiceMail = new HttpPut(VOIP_VOICEMAIL_URI + "/1/" + id);
-        return executeRequest(voiceMail, true, false);
+    public HttpStatus readVoiceMail(final int id) throws IOException {
+        HttpConnection conn = HttpUtils.httpRequest("PUT", VOIP_VOICEMAIL_URI + "/1/" + id);
+        return executeRequest(conn, true, false);
     }
 
     /**
@@ -763,26 +665,17 @@ public class BboxApi {
      * @param action type of data to refresh
      * @return
      */
-    public HttpStatus refreshProfile(RefreshAction action) {
-
-        HttpPut refreshProfile = new HttpPut(PROFILE_REFRESH_URI);
-
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair("action", action.getAction()));
-
-        try {
-            refreshProfile.setEntity(new UrlEncodedFormEntity(nameValuePairs, "utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return executeRequest(refreshProfile, true, false);
+    public HttpStatus refreshProfile(RefreshAction action) throws IOException {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("action", action.getAction());
+        HttpConnection conn = HttpUtils.httpPutFormRequest(PROFILE_REFRESH_URI, params);
+        return executeRequest(conn, true, false);
     }
 
     /**
      * Bbox device api
      */
-    public DeviceInfoResponse getDeviceInfo(boolean useAuth) {
+    public DeviceInfoResponse getDeviceInfo(boolean useAuth) throws IOException {
         return (DeviceInfoResponse) executeGetRequest(RequestType.DEVICE_INFO, DEVICE_URI, !useAuth);
     }
 
@@ -791,61 +684,60 @@ public class BboxApi {
      *
      * @return request status
      */
-    public WirelessAclResponse getWifiMacFilterInfo() {
+    public WirelessAclResponse getWifiMacFilterInfo() throws IOException {
         return (WirelessAclResponse) executeGetRequest(RequestType.GET_WIFI_MAC_FILTER, WIRELESS_ACL_URI, false);
     }
 
     /**
      * Retrieve summary api result
      */
-    public SummaryResponse getDeviceSummary(boolean useAuth) {
+    public SummaryResponse getDeviceSummary(boolean useAuth) throws IOException {
         return (SummaryResponse) executeGetRequest(RequestType.SUMMARY, SUMMARY_URI, !useAuth);
     }
 
     /**
      * Retrieve all hosts
      */
-    public HostsResponse getHosts() {
+    public HostsResponse getHosts() throws IOException {
         return (HostsResponse) executeGetRequest(RequestType.GET_HOSTS, HOSTS_URI, true);
     }
 
     /**
      * Get XDSL information.
      */
-    public WanXdslResponse getXdslInfo() {
+    public WanXdslResponse getXdslInfo() throws IOException {
         return (WanXdslResponse) executeGetRequest(RequestType.GET_XDSL_INFO, WAN_XDSL_URI, true);
     }
 
     /**
      * Get IP information.
      */
-    public WanIpResponse getIpInfo() {
+    public WanIpResponse getIpInfo() throws IOException {
         return (WanIpResponse) executeGetRequest(RequestType.GET_IP_INFO, WAN_IP_URI, true);
     }
 
     /**
      * Retrieve full call log
      */
-    public CallLogResponse getFullCallLog() {
+    public CallLogResponse getFullCallLog() throws IOException {
         return (CallLogResponse) executeGetRequest(RequestType.CALL_LOG, CALLLOG_URI, false);
     }
 
 
-    public WirelessResponse getWirelessData() {
+    public WirelessResponse getWirelessData() throws IOException {
         return (WirelessResponse) executeGetRequest(RequestType.WIRELESS_DATA, WIRELESS_URI, false);
     }
 
     /**
      * Logout
      */
-    public HttpStatus logout() {
-
-        HttpPost logoutRequest = new HttpPost(LOGOUT_URI);
+    public HttpStatus logout() throws IOException {
+        HttpConnection conn = HttpUtils.httpRequest("POST", LOGOUT_URI);
 
         mTokenHeader = "";
         mAuthenticated = false;
-        mCookieStore.clear();
+        mCookieManager.getCookieStore().removeAll();
 
-        return executeRequest(logoutRequest, false, false);
+        return executeRequest(conn, false, false);
     }
 }

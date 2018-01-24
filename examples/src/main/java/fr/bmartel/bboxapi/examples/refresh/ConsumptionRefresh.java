@@ -8,6 +8,8 @@ import fr.bmartel.bboxapi.response.ConsumptionResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 /**
  * Profile refresh request example.
  *
@@ -17,7 +19,7 @@ public class ConsumptionRefresh {
 
     private final static Logger LOGGER = LogManager.getLogger(ConsumptionRefresh.class.getName());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         BboxApi api = new BboxApi();
 

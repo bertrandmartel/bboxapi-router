@@ -25,7 +25,6 @@ package fr.bmartel.bboxapi.response;
 
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.wireless.WirelessItem;
-import org.apache.http.StatusLine;
 
 import java.util.List;
 
@@ -38,8 +37,8 @@ public class WirelessResponse extends HttpResponse {
 
     private List<WirelessItem> mWirelessList;
 
-    public WirelessResponse(List<WirelessItem> hostList, HttpStatus status, StatusLine statusLine) {
-        super(status, statusLine);
+    public WirelessResponse(List<WirelessItem> hostList, HttpStatus status) {
+        super(status);
         mWirelessList = hostList;
     }
 

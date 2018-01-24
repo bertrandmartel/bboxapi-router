@@ -34,6 +34,7 @@ import fr.bmartel.bboxapi.response.WanXdslResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class WanIp {
 
     private final static Logger LOGGER = LogManager.getLogger(Hosts.class.getName());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         BboxApi api = new BboxApi();
 

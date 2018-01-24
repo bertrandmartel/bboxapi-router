@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  * <p/>
- * Copyright (c) 2017 Bertrand Martel
+ * Copyright (c) 2017-2018 Bertrand Martel
  * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,30 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.examples.action;
+package fr.bmartel.bboxapi.model;
 
-import fr.bmartel.bboxapi.BboxApi;
-import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
-
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
-/**
- * Dial number request example.
- *
- * @author Bertrand Martel
- */
-public class Dial {
+public class HttpConnection {
 
-    public static void main(String[] args) throws IOException {
+    private HttpURLConnection mConn;
 
-        BboxApi api = new BboxApi();
+    private byte[] mData;
 
-        String pass = ExampleUtils.getPassword();
+    public HttpConnection(final HttpURLConnection conn, final byte[] data) {
+        mConn = conn;
+        mData = data;
+    }
 
-        api.setPassword(pass);
+    public HttpURLConnection getConn() {
+        return mConn;
+    }
 
-        String phoneNumber = ExampleUtils.getPhoenNumber();
+    public byte[] getData() {
+        return mData;
+    }
 
-        api.voipDial(1, phoneNumber);
+    public void write() throws IOException {
+        try (DataOutputStream wr = new DataOutputStream(mConn.getOutputStream())) {
+            wr.write(mData);
+        }
+    }
+
+    public int getResponseCode() throws IOException {
+        return mConn.getResponseCode();
+    }
+
+    public void disconnect() {
+        mConn.disconnect();
     }
 }

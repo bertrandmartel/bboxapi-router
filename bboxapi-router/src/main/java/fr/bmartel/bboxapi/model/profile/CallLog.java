@@ -21,28 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package fr.bmartel.bboxapi.response;
+package fr.bmartel.bboxapi.model.profile;
 
-import fr.bmartel.bboxapi.model.HttpStatus;
-import fr.bmartel.bboxapi.model.voip.CallLogList;
-
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
+import fr.bmartel.bboxapi.model.voip.CallType;
 
 /**
- * Response to call log request.
+ * Call log entry
  *
  * @author Bertrand Martel
  */
-public class CallLogResponse extends HttpResponse {
+public class CallLog {
 
-    private List<CallLogList> mCallLogList;
 
-    public CallLogResponse(List<CallLogList> hostList, HttpStatus status) {
-        super(status);
-        mCallLogList = hostList;
-    }
-
-    public List<CallLogList> getCallLogList() {
-        return mCallLogList;
-    }
 }

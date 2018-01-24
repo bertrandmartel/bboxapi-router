@@ -29,7 +29,7 @@ import com.google.gson.reflect.TypeToken;
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
-import fr.bmartel.bboxapi.model.profile.CallLogList;
+import fr.bmartel.bboxapi.model.voip.CallLogList;
 import fr.bmartel.bboxapi.response.CallLogVoipResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,13 +39,13 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * Get Call log request example.
+ * Last 5 Call log request example.
  *
  * @author Bertrand Martel
  */
-public class CallLog {
+public class LastCallLog {
 
-    private final static Logger LOGGER = LogManager.getLogger(CallLog.class.getName());
+    private final static Logger LOGGER = LogManager.getLogger(LastCallLog.class.getName());
 
     public static void main(String[] args) throws IOException {
 
@@ -55,7 +55,7 @@ public class CallLog {
 
         api.setPassword(pass);
 
-        CallLogVoipResponse callLogResponse = api.getCallLog(1);
+        CallLogVoipResponse callLogResponse = api.getLastCallLog(1);
 
         if (callLogResponse.getStatus() == HttpStatus.OK) {
 

@@ -17,7 +17,8 @@ These APIs are used by Bbox management interface on : http://bbox.lan
 | get information about Bbox | [`getDeviceSummary()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/Summary.java) |
 | get voip data | [`getVoipData()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/Voip.java) |   
 | get specific information about box | [`getDeviceInfo()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/DeviceInfo.java) | 
-| get call log  | [`getFullCallLog()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/CallLog.java) | 
+| get call log  | [`getCallLog()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/CallLog.java) |
+| get last 5 call log  | [`getLastCallLog()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/LastCallLog.java) |
 | get list of known hosts  | [`getHosts()`](./examples/src/main/java/fr/bmartel/bboxapi/examples/request/Hosts.java) |  
 | set wifi state | [`setWifiState(boolean state)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/Wifi.java) |  
 | set led state | [`setBboxDisplayState(boolean state)`](./examples/src/main/java/fr/bmartel/bboxapi/examples/action/Display.java) | 
@@ -135,7 +136,17 @@ BboxApi api = new BboxApi();
 
 api.setPassword("password");
 
-CallLogResponse callLogResponse = api.getFullCallLog();
+CallLogResponse callLogResponse = api.getCallLog();
+```
+
+## Last 5 Call Log
+
+```java
+BboxApi api = new BboxApi();
+
+api.setPassword("password");
+
+CallLogResponse callLogResponse = api.getLastCallLog();
 ```
 
 ## Dial a phone number

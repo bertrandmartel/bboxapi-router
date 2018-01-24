@@ -82,7 +82,8 @@ public class BboxApi {
     private final static String SUMMARY_URI = URL_PREFIX + "/api/v1/summary";
     private final static String LOGOUT_URI = URL_PREFIX + "/api/v1/logout";
     private final static String HOSTS_URI = URL_PREFIX + "/api/v1/hosts";
-    private final static String CALLLOG_URI = URL_PREFIX + "/api/v1/voip/fullcalllog/1";
+    private final static String LAST_FIVE_CALLLOG_URI = URL_PREFIX + "/api/v1/voip/fullcalllog";
+    private final static String CUSTOMER_CALLOG_URI = URL_PREFIX + "/profile/calllog";
     private final static String REBOOT_URI = URL_PREFIX + "/api/v1/device/reboot";
     private final static String TOKEN_URI = URL_PREFIX + "/api/v1/device/token";
     private final static String PASSWORD_RECOV_URI = URL_PREFIX + "/api/v1/password-recovery";
@@ -157,7 +158,8 @@ public class BboxApi {
         GET_HOSTS,
         GET_XDSL_INFO,
         GET_IP_INFO,
-        CALL_LOG,
+        LAST_FIVE_CALL_LOG,
+        CUSTOMER_CALLOG_URI,
         BBOX_TOKEN,
         WIRELESS_DATA,
         VERIFY_PASSWORD_RECOVERY,
@@ -248,12 +250,18 @@ public class BboxApi {
                                 }.getType());
 
                         return new WanIpResponse(ipInfo, HttpStatus.OK);
-                    case CALL_LOG:
-                        List<CallLogList> callLog = gson.fromJson(result,
+                    case LAST_FIVE_CALL_LOG:
+                        List<CallLogList> last5CallLog = gson.fromJson(result,
                                 new TypeToken<List<CallLogList>>() {
                                 }.getType());
 
-                        return new CallLogResponse(callLog, HttpStatus.OK);
+                        return new CallLogVoipResponse(last5CallLog, HttpStatus.OK);
+                    case CUSTOMER_CALLOG_URI:
+                        List<fr.bmartel.bboxapi.model.profile.CallLogList> customerCallLog = gson.fromJson(result,
+                                new TypeToken<List<fr.bmartel.bboxapi.model.profile.CallLogList>>() {
+                                }.getType());
+
+                        return new CallLogCustomerResponse(customerCallLog, HttpStatus.OK);
                     case WIRELESS_DATA:
                         List<WirelessItem> wirelessList = gson.fromJson(result,
                                 new TypeToken<List<WirelessItem>>() {
@@ -341,8 +349,8 @@ public class BboxApi {
                 return new SummaryResponse(null, status);
             case GET_HOSTS:
                 return new HostsResponse(null, status);
-            case CALL_LOG:
-                return new CallLogResponse(null, status);
+            case LAST_FIVE_CALL_LOG:
+                return new CallLogVoipResponse(null, status);
             case WIRELESS_DATA:
                 return new WirelessResponse(null, status);
             case GET_XDSL_INFO:
@@ -481,7 +489,6 @@ public class BboxApi {
 
     /**
      * Reboot bbox
-     *
      */
     public HttpStatus reboot() throws IOException {
         BboxTokenResponse response = (BboxTokenResponse) executeGetRequest(RequestType.BBOX_TOKEN, TOKEN_URI, false);
@@ -498,7 +505,6 @@ public class BboxApi {
 
     /**
      * Reboot bbox
-     *
      */
     public HttpStatus startPasswordRecovery() throws IOException {
         HttpConnection conn = HttpUtils.httpRequest("POST", PASSWORD_RECOV_URI);
@@ -507,7 +513,6 @@ public class BboxApi {
 
     /**
      * Reboot bbox
-     *
      */
     public HttpStatus sendPincodeVerify(String pincode) throws IOException {
         HttpConnection conn = HttpUtils.httpRequest("POST", PINCODE_VERIFY + "?pincode=" + pincode);
@@ -713,12 +718,18 @@ public class BboxApi {
     }
 
     /**
-     * Retrieve full call log
+     * Retrieve last five call log entries
      */
-    public CallLogResponse getFullCallLog() throws IOException {
-        return (CallLogResponse) executeGetRequest(RequestType.CALL_LOG, CALLLOG_URI, false);
+    public CallLogVoipResponse getLastCallLog(final int lineNumber) throws IOException {
+        return (CallLogVoipResponse) executeGetRequest(RequestType.LAST_FIVE_CALL_LOG, LAST_FIVE_CALLLOG_URI + "/" + lineNumber, false);
     }
 
+    /**
+     * Retrieve callLog from customer space.
+     */
+    public CallLogVoipResponse getCallLog(final int lineNumber) throws IOException {
+        return (CallLogVoipResponse) executeGetRequest(RequestType.CUSTOMER_CALLOG_URI, CUSTOMER_CALLOG_URI + "/" + lineNumber, false);
+    }
 
     public WirelessResponse getWirelessData() throws IOException {
         return (WirelessResponse) executeGetRequest(RequestType.WIRELESS_DATA, WIRELESS_URI, false);

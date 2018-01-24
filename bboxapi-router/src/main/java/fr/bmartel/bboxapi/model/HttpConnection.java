@@ -27,6 +27,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
+/**
+ * Wrapper for HttpURLConnection.
+ *
+ * @author Bertrand Martel
+ */
 public class HttpConnection {
 
     private HttpURLConnection mConn;

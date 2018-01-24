@@ -51,6 +51,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -481,7 +482,6 @@ public class BboxApi {
     /**
      * Reboot bbox
      *
-     * @return
      */
     public HttpStatus reboot() throws IOException {
         BboxTokenResponse response = (BboxTokenResponse) executeGetRequest(RequestType.BBOX_TOKEN, TOKEN_URI, false);
@@ -499,7 +499,6 @@ public class BboxApi {
     /**
      * Reboot bbox
      *
-     * @return
      */
     public HttpStatus startPasswordRecovery() throws IOException {
         HttpConnection conn = HttpUtils.httpRequest("POST", PASSWORD_RECOV_URI);
@@ -509,7 +508,6 @@ public class BboxApi {
     /**
      * Reboot bbox
      *
-     * @return
      */
     public HttpStatus sendPincodeVerify(String pincode) throws IOException {
         HttpConnection conn = HttpUtils.httpRequest("POST", PINCODE_VERIFY + "?pincode=" + pincode);
@@ -520,7 +518,6 @@ public class BboxApi {
      * reset password
      *
      * @param password
-     * @return
      */
     public HttpStatus resetPassword(String password) throws IOException {
 
@@ -551,7 +548,7 @@ public class BboxApi {
      */
     public HttpStatus voipDial(int lineNumber, String phoneNumber) throws IOException {
         HttpConnection conn = HttpUtils.httpRequest("PUT", DIAL_URI + "?line=" + lineNumber + "&number=" +
-                URLEncoder.encode(phoneNumber.replaceAll("\\s+", "").replaceAll("\\+", "00")));
+                URLEncoder.encode(phoneNumber.replaceAll("\\s+", "").replaceAll("\\+", "00"), StandardCharsets.UTF_8.toString()));
         return executeRequest(conn, true, false);
     }
 
@@ -663,7 +660,6 @@ public class BboxApi {
      * Refresh profile.
      *
      * @param action type of data to refresh
-     * @return
      */
     public HttpStatus refreshProfile(RefreshAction action) throws IOException {
         Map<String, Object> params = new LinkedHashMap<>();

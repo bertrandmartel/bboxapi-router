@@ -37,7 +37,6 @@ public class NetworkUtils {
      * https://stackoverflow.com/a/11733697/2614364 by @verisimilitude
      *
      * @param query
-     * @return
      */
     public static Map<String, String> getQueryMap(String query) {
         String[] params = query.split("&");

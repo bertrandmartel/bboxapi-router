@@ -29,6 +29,11 @@ import java.io.IOException;
 import java.net.*;
 import java.util.Map;
 
+/**
+ * Utility functions to use HttpURLConnection.
+ *
+ * @author Bertrand Martel
+ */
 public class HttpUtils {
 
     /**
@@ -36,7 +41,6 @@ public class HttpUtils {
      *
      * @param method
      * @param uri
-     * @return
      * @throws IOException
      */
     public final static HttpConnection httpRequest(final String method, final String uri) throws IOException {
@@ -62,7 +66,6 @@ public class HttpUtils {
      *
      * @param uri
      * @param params
-     * @return
      * @throws IOException
      */
     public static HttpConnection sendFormData(final String method, final String uri, Map<String, Object> params) throws IOException {

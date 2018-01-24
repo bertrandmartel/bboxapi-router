@@ -61,7 +61,7 @@ Note that `RefreshAction.ALL` will refresh voicemail, call log and consumption (
 * with Gradle, from JCenter or MavenCentral :
 
 ```java
-compile 'fr.bmartel:bboxapi-router:1.60.16'
+compile 'fr.bmartel:bboxapi-router:1.61.0'
 ```
 
 ## Usage
@@ -331,4 +331,4 @@ https://api.bbox.fr/v1/doc/apirouter/index.html
 
 ## License
 
-The MIT License (MIT) Copyright (c) 2017 Bertrand Martel
+The MIT License (MIT) Copyright (c) 2017-2018 Bertrand Martel

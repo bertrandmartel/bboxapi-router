@@ -62,7 +62,7 @@ Note that `RefreshAction.ALL` will refresh voicemail, call log and consumption (
 * with Gradle, from JCenter or MavenCentral :
 
 ```java
-compile 'fr.bmartel:bboxapi-router:1.61.0'
+compile 'fr.bmartel:bboxapi-router:1.61.1'
 ```
 
 ## Usage
@@ -222,7 +222,7 @@ WanXdslResponse xdslResponse = api.getXdslInfo();
 * add `bboxapi-router` dependency to `build.gradle` :
 
 ```java
-compile 'fr.bmartel:bboxapi-router:1.61.0'
+compile 'fr.bmartel:bboxapi-router:1.61.1'
 ```
 
 * add Internet permission to manifest :

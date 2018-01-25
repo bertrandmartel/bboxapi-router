@@ -83,7 +83,7 @@ public class BboxApi {
     private final static String LOGOUT_URI = URL_PREFIX + "/api/v1/logout";
     private final static String HOSTS_URI = URL_PREFIX + "/api/v1/hosts";
     private final static String LAST_FIVE_CALLLOG_URI = URL_PREFIX + "/api/v1/voip/fullcalllog";
-    private final static String CUSTOMER_CALLOG_URI = URL_PREFIX + "/profile/calllog";
+    private final static String CUSTOMER_CALLOG_URI = URL_PREFIX + "/api/v1/profile/calllog";
     private final static String REBOOT_URI = URL_PREFIX + "/api/v1/device/reboot";
     private final static String TOKEN_URI = URL_PREFIX + "/api/v1/device/token";
     private final static String PASSWORD_RECOV_URI = URL_PREFIX + "/api/v1/password-recovery";
@@ -257,6 +257,7 @@ public class BboxApi {
 
                         return new CallLogVoipResponse(last5CallLog, HttpStatus.OK);
                     case CUSTOMER_CALLOG_URI:
+                        System.out.println(result);
                         List<fr.bmartel.bboxapi.model.profile.CallLogList> customerCallLog = gson.fromJson(result,
                                 new TypeToken<List<fr.bmartel.bboxapi.model.profile.CallLogList>>() {
                                 }.getType());
@@ -727,8 +728,8 @@ public class BboxApi {
     /**
      * Retrieve callLog from customer space.
      */
-    public CallLogVoipResponse getCallLog(final int lineNumber) throws IOException {
-        return (CallLogVoipResponse) executeGetRequest(RequestType.CUSTOMER_CALLOG_URI, CUSTOMER_CALLOG_URI + "/" + lineNumber, false);
+    public CallLogCustomerResponse getCallLog(final int lineNumber) throws IOException {
+        return (CallLogCustomerResponse) executeGetRequest(RequestType.CUSTOMER_CALLOG_URI, CUSTOMER_CALLOG_URI + "/" + lineNumber, false);
     }
 
     public WirelessResponse getWirelessData() throws IOException {

@@ -30,7 +30,7 @@ import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.profile.CallLogList;
-import fr.bmartel.bboxapi.response.CallLogVoipResponse;
+import fr.bmartel.bboxapi.response.CallLogCustomerResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,7 +55,7 @@ public class CallLog {
 
         api.setPassword(pass);
 
-        CallLogVoipResponse callLogResponse = api.getCallLog(1);
+        CallLogCustomerResponse callLogResponse = api.getCallLog(1);
 
         if (callLogResponse.getStatus() == HttpStatus.OK) {
 

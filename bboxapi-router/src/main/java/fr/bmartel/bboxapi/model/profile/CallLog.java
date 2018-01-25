@@ -24,7 +24,6 @@
 package fr.bmartel.bboxapi.model.profile;
 
 import com.google.gson.annotations.SerializedName;
-import fr.bmartel.bboxapi.model.voip.CallType;
 
 /**
  * Call log entry
@@ -32,6 +31,73 @@ import fr.bmartel.bboxapi.model.voip.CallType;
  * @author Bertrand Martel
  */
 public class CallLog {
+    /**
+     * call log type
+     */
+    @SerializedName("type")
+    private String mType = "";
 
+    /**
+     * call log name
+     */
+    @SerializedName("name")
+    private String mName = "";
 
+    /**
+     * call log number
+     */
+    @SerializedName("number")
+    private String mNumber = "";
+
+    /**
+     * call log date
+     */
+    @SerializedName("date")
+    private String mDate = "";
+
+    /**
+     * call log type
+     */
+    @SerializedName("direction")
+    private String mDirection = "";
+
+    /**
+     * call log duration
+     */
+    @SerializedName("duration")
+    private String mDuration = "";
+
+    /**
+     * call log rang
+     */
+    @SerializedName("rang")
+    private int mRang = 0;
+
+    public String getType() {
+        return mType;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public String getNumber() {
+        return mNumber;
+    }
+
+    public String getDate() {
+        return mDate;
+    }
+
+    public String getDirection() {
+        return mDirection;
+    }
+
+    public String getDuration() {
+        return mDuration;
+    }
+
+    public int getRang() {
+        return mRang;
+    }
 }

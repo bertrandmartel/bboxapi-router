@@ -561,7 +561,7 @@ public class BboxApi {
      */
     public HttpStatus voipDial(int lineNumber, String phoneNumber) throws IOException {
         HttpConnection conn = HttpUtils.httpRequest("PUT", DIAL_URI + "?line=" + lineNumber + "&number=" +
-                URLEncoder.encode(phoneNumber.replaceAll("\\s+", "").replaceAll("\\+", "00"), StandardCharsets.UTF_8.toString()));
+                URLEncoder.encode(phoneNumber.replaceAll("\\s+", "").replaceAll("\\+", "00"), "UTF-8"));
         return executeRequest(conn, true, false);
     }
 

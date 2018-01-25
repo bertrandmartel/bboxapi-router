@@ -62,7 +62,7 @@ Note that `RefreshAction.ALL` will refresh voicemail, call log and consumption (
 * with Gradle, from JCenter or MavenCentral :
 
 ```java
-compile 'fr.bmartel:bboxapi-router:1.61.1'
+compile 'fr.bmartel:bboxapi-router:1.61.3'
 ```
 
 ## Usage
@@ -222,7 +222,7 @@ WanXdslResponse xdslResponse = api.getXdslInfo();
 * add `bboxapi-router` dependency to `build.gradle` :
 
 ```java
-compile 'fr.bmartel:bboxapi-router:1.61.1'
+compile 'fr.bmartel:bboxapi-router:1.61.3'
 ```
 
 * add Internet permission to manifest :
@@ -238,29 +238,28 @@ public class BboxApiTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... params) {
+        try {
+            BboxApi api = new BboxApi();
+            SummaryResponse summaryResponse = api.getDeviceSummary(false);
 
-        BboxApi api = new BboxApi();
+            if (summaryResponse.getStatus() == HttpStatus.OK) {
+                // print summary JSON result (deserialized)
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.setPrettyPrinting().create();
+                Type listOfTestObject = new TypeToken<List<ApiSummary>>() {
+                }.getType();
+                String summary = gson.toJson(summaryResponse.getSummary(), listOfTestObject);
 
-        SummaryResponse summaryResponse = api.getDeviceSummary();
-
-        if (summaryResponse.getStatus() == HttpStatus.OK) {
-
-        	// print summary JSON result (deserialized)
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.setPrettyPrinting().create();
-            Type listOfTestObject = new TypeToken<List<ApiSummary>>() {
-            }.getType();
-            String summary = gson.toJson(summaryResponse.getSummary(), listOfTestObject);
-
-            Log.v("bboxapi", summary);
-        } else {
-            Log.e("bboxapi", "http error  : " + summaryResponse.getStatus());
+                Log.v("bboxapi", summary);
+            } else {
+                Log.e("bboxapi", "http error  : " + summaryResponse.getStatus());
+            }
+        } catch (IOException e) {
+            Log.e("bboxapi", Log.getStackTraceString(e));
         }
-
         return null;
     }
 }
-
 ```
 
 Execute it with : `new BboxApiTask().execute();`

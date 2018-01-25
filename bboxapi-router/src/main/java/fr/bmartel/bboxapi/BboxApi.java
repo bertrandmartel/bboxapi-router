@@ -115,6 +115,7 @@ public class BboxApi {
         HttpConnection conn = HttpUtils.httpRequest("POST", LOGIN_URI + "?password=" + mPassword + "&remember=1");
 
         try {
+            conn.getConn().setDoOutput(true);
             conn.write();
             if (conn.getResponseCode() == 200) {
 
@@ -319,7 +320,10 @@ public class BboxApi {
                 HttpUtils.addCookies(conn, mCookieManager);
             }
 
-            conn.write();
+            if (conn.getData().length > 0) {
+                conn.getConn().setDoOutput(true);
+                conn.write();
+            }
 
             if (conn.getResponseCode() == 200) {
                 return getDefaultResponse(type, HttpStatus.OK);
@@ -379,7 +383,10 @@ public class BboxApi {
                 HttpUtils.addCookies(conn, mCookieManager);
             }
 
-            conn.write();
+            if (conn.getData().length > 0 || conn.getConn().getRequestMethod().equals("POST")) {
+                conn.getConn().setDoOutput(true);
+                conn.write();
+            }
 
             if (conn.getResponseCode() == 401 && auth) {
                 // authenticate & retry

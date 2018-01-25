@@ -49,7 +49,6 @@ public class HttpUtils {
         conn.setRequestMethod(method);
         conn.setRequestProperty("Content-Length", Integer.toString(0));
         conn.setDoInput(true);
-        conn.setDoOutput(true);
         return new HttpConnection(conn, new byte[]{});
     }
 

@@ -51,7 +51,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -302,7 +301,8 @@ public class BboxApi {
         return getDefaultResponse(type, HttpStatus.UNKNOWN);
     }
 
-    private HttpResponse executeDeleteRequest(RequestType type, String uri, boolean skipAuth) throws IOException {
+    /*
+    private HttpStatus executeDeleteRequest(RequestType type, String uri, boolean skipAuth) throws IOException {
 
         if (!skipAuth) {
             if (!mAuthenticated && mPassword != null && !mPassword.equals("")) {
@@ -338,6 +338,7 @@ public class BboxApi {
         }
         return getDefaultResponse(type, HttpStatus.UNKNOWN);
     }
+    */
 
     private HttpResponse getDefaultResponse(RequestType type, HttpStatus status) {
 
@@ -654,8 +655,9 @@ public class BboxApi {
      * @param id voicemail id
      * @return http response
      */
-    public HttpResponse deleteVoiceMail(final int id) throws IOException {
-        return executeDeleteRequest(RequestType.VOIP_VOICEMAIL, VOIP_VOICEMAIL_URI + "/1/" + id, false);
+    public HttpStatus deleteVoiceMail(final int id) throws IOException {
+        HttpConnection conn = HttpUtils.httpRequest("DELETE", VOIP_VOICEMAIL_URI + "/1/" + id);
+        return executeRequest(conn, true, false);
     }
 
     /**

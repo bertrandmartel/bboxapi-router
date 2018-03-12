@@ -26,6 +26,7 @@ package fr.bmartel.bboxapi.examples.action;
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
+import fr.bmartel.bboxapi.response.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,12 +49,12 @@ public class WifiMacFilteringRuleRemove {
 
         api.setPassword(pass);
 
-        HttpStatus response = api.deleteMacFilterRule(2);
+        HttpResponse response = api.deleteMacFilterRule(1);
 
-        if (response == HttpStatus.OK) {
-            LOGGER.debug(response);
+        if (response.getStatus() == HttpStatus.OK) {
+            LOGGER.debug(response.getStatus());
         } else {
-            LOGGER.error("http error  : " + response);
+            LOGGER.error("http error  : " + response.getStatus());
         }
     }
 }

@@ -8,6 +8,7 @@ import fr.bmartel.bboxapi.examples.request.Summary;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.recovery.VerifyRecovery;
+import fr.bmartel.bboxapi.response.HttpResponse;
 import fr.bmartel.bboxapi.response.VerifyRecoveryResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,11 +29,11 @@ public class SetupButton {
 
         BboxApi api = new BboxApi();
 
-        HttpStatus status = api.startPasswordRecovery();
+        HttpResponse response = api.startPasswordRecovery();
 
-        LOGGER.debug("status : " + status);
+        LOGGER.debug("status : " + response.getStatus());
 
-        if (status == HttpStatus.OK) {
+        if (response.getStatus() == HttpStatus.OK) {
 
             int expire = -1;
 
@@ -47,9 +48,9 @@ public class SetupButton {
 
                         String password = ExampleUtils.getPassword();
 
-                        HttpStatus setPasswordStatus = api.resetPassword(password);
+                        HttpResponse setPasswordStatus = api.resetPassword(password);
 
-                        LOGGER.debug("status : " + setPasswordStatus);
+                        LOGGER.debug("status : " + setPasswordStatus.getStatus());
 
                         break;
                     }

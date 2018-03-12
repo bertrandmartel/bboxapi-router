@@ -26,6 +26,7 @@ package fr.bmartel.bboxapi.examples.action;
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
+import fr.bmartel.bboxapi.response.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,12 +49,12 @@ public class WifiMacFilteringUpdate {
 
         api.setPassword(pass);
 
-        HttpStatus status = api.updateWifiMacFilterRule(1, true, "12:34:56:78:90:12", "");
+        HttpResponse response = api.updateWifiMacFilterRule(1, true, "12:34:56:78:90:12", "");
 
-        if (status == HttpStatus.OK) {
+        if (response.getStatus() == HttpStatus.OK) {
             LOGGER.debug("filter updated successfully");
         } else {
-            LOGGER.debug("failed to update filter, status : " + status);
+            LOGGER.debug("failed to update filter, status : " + response.getStatus());
         }
     }
 }

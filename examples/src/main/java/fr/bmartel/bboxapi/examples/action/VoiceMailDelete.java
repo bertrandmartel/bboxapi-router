@@ -49,12 +49,12 @@ public class VoiceMailDelete {
 
         api.setPassword(pass);
 
-        HttpStatus resp = api.deleteVoiceMail(1);
+        HttpResponse resp = api.deleteVoiceMail(1);
 
-        if (resp == HttpStatus.OK) {
+        if (resp.getStatus() == HttpStatus.OK) {
             LOGGER.debug("delete voicemail successful");
         } else {
-            LOGGER.error("http error  : " + resp);
+            LOGGER.error("http error  : " + resp.getStatus());
         }
     }
 

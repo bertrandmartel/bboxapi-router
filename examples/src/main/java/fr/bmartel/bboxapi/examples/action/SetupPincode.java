@@ -3,6 +3,7 @@ package fr.bmartel.bboxapi.examples.action;
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
+import fr.bmartel.bboxapi.response.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,17 +22,17 @@ public class SetupPincode {
 
         String pincode = ExampleUtils.getPincode();
 
-        HttpStatus status = api.sendPincodeVerify(pincode);
+        HttpResponse response = api.sendPincodeVerify(pincode);
 
-        LOGGER.debug("status : " + status);
+        LOGGER.debug("status : " + response.getStatus());
 
-        if (status == HttpStatus.OK) {
+        if (response.getStatus() == HttpStatus.OK) {
 
             String password = ExampleUtils.getPassword();
 
-            HttpStatus setPasswordStatus = api.resetPassword(password);
+            HttpResponse setPasswordStatus = api.resetPassword(password);
 
-            LOGGER.debug("status : " + setPasswordStatus);
+            LOGGER.debug("status : " + setPasswordStatus.getStatus());
         }
     }
 }

@@ -5,6 +5,7 @@ import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.profile.RefreshAction;
 import fr.bmartel.bboxapi.response.ConsumptionResponse;
+import fr.bmartel.bboxapi.response.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,9 +38,9 @@ public class VoiceMailRefresh {
                     .getChangedDate());
         }
 
-        HttpStatus status = api.refreshProfile(RefreshAction.VOICEMAIL);
+        HttpResponse response = api.refreshProfile(RefreshAction.VOICEMAIL);
 
-        LOGGER.debug("refreshProfile status : " + status);
+        LOGGER.debug("refreshProfile status : " + response.getStatus());
 
         int state = -1;
 

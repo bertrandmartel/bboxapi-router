@@ -28,6 +28,7 @@ import fr.bmartel.bboxapi.examples.request.WirelessAclInfo;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.wireless.Rules;
+import fr.bmartel.bboxapi.response.HttpResponse;
 import fr.bmartel.bboxapi.response.WirelessAclResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,8 +63,8 @@ public class WifiMacFilteringRemoveAllRules {
 
                 for (int i = 0; i < ruleList.size(); i++) {
                     LOGGER.error("delete rule with id " + ruleList.get(i).getId());
-                    HttpStatus status = api.deleteMacFilterRule(ruleList.get(i).getId());
-                    if (status == HttpStatus.OK) {
+                    HttpResponse response = api.deleteMacFilterRule(ruleList.get(i).getId());
+                    if (response.getStatus() == HttpStatus.OK) {
                         LOGGER.error("successfully deleted rules : " + ruleList.get(i).getId());
                     } else {
                         LOGGER.error("failed to delete rules : " + ruleList.get(i).getId());

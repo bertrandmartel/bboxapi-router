@@ -43,6 +43,6 @@ public class Wifi {
 
         api.setPassword(pass);
 
-        api.setWifiState(true);
+        api.setWifiState(false);
     }
 }

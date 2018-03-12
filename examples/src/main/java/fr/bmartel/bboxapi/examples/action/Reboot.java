@@ -3,6 +3,7 @@ package fr.bmartel.bboxapi.examples.action;
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
+import fr.bmartel.bboxapi.response.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +26,7 @@ public class Reboot {
 
         api.setPassword(pass);
 
-        HttpStatus status = api.reboot();
+        HttpResponse status = api.reboot();
 
         LOGGER.debug("status : " + status);
     }

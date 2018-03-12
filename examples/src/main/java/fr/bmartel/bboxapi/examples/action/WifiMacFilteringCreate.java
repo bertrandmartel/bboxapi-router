@@ -26,6 +26,7 @@ package fr.bmartel.bboxapi.examples.action;
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
+import fr.bmartel.bboxapi.response.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,12 +49,12 @@ public class WifiMacFilteringCreate {
 
         api.setPassword(pass);
 
-        HttpStatus status = api.createWifiMacFilterRule(true, "12:34:56:78:90:12", "");
+        HttpResponse response = api.createWifiMacFilterRule(true, "12:34:56:78:90:12", "");
 
-        if (status == HttpStatus.CREATED) {
+        if (response.getStatus() == HttpStatus.CREATED) {
             LOGGER.debug("filter created successfully");
         } else {
-            LOGGER.debug("failed to create filter, status : " + status);
+            LOGGER.debug("failed to create filter, status : " + response.getStatus());
         }
     }
 }

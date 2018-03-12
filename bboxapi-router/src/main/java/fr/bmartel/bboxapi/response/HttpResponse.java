@@ -30,7 +30,7 @@ import fr.bmartel.bboxapi.model.HttpStatus;
  *
  * @author Bertrand Martel
  */
-public abstract class HttpResponse {
+public class HttpResponse {
 
     private HttpStatus mStatus;
 

@@ -4,6 +4,7 @@ import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.examples.utils.ExampleUtils;
 import fr.bmartel.bboxapi.model.HttpStatus;
 import fr.bmartel.bboxapi.model.voip.voicemail.VoiceMailItem;
+import fr.bmartel.bboxapi.response.HttpResponse;
 import fr.bmartel.bboxapi.response.VoiceMailResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,9 +37,9 @@ public class VoiceMailRead {
 
             for (VoiceMailItem item : voiceMails) {
 
-                HttpStatus readResponse = api.readVoiceMail(item.getId());
+                HttpResponse readResponse = api.readVoiceMail(item.getId());
 
-                if (readResponse == HttpStatus.OK) {
+                if (readResponse.getStatus() == HttpStatus.OK) {
                     LOGGER.debug("succesfully read voicemail " + item.getId());
                 } else {
                     LOGGER.error("readResponse error for voicemail " + item.getId() + " : " + readResponse);

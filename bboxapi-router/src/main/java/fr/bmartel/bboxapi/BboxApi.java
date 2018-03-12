@@ -62,8 +62,6 @@ import java.util.Map;
  */
 public class BboxApi {
 
-    private String mTokenHeader = "";
-
     private boolean mAuthenticated = false;
 
     private String mPassword;
@@ -94,8 +92,6 @@ public class BboxApi {
     private final static String PROFILE_CONSUMPTION_URI = URL_PREFIX + "/api/v1/profile/consumption";
     private final static String PROFILE_REFRESH_URI = URL_PREFIX + "/api/v1/profile/refresh";
     private final static String VOIP_VOICEMAIL_URI = URL_PREFIX + "/api/v1/voip/voicemail";
-
-    private final static String BBOX_COOKIE_NAME = "BBOX_ID";
 
     private CookieManager mCookieManager = new CookieManager();
     private final static String COOKIE_HEADER = "Set-Cookie";
@@ -175,6 +171,39 @@ public class BboxApi {
         while ((ch = is.read()) != -1)
             sb.append((char) ch);
         return sb.toString();
+    }
+
+    /**
+     * Execute a custom http request.
+     *
+     * @param conn http url connection
+     * @param auth specify if request is authenticated
+     * @return true if http request was issued, false if an error occurred
+     * @throws IOException
+     */
+    public boolean executeCustomRequest(HttpConnection conn, boolean auth) throws IOException {
+        try {
+            if (auth) {
+                if (!mAuthenticated && mPassword != null && !mPassword.equals("")) {
+                    AuthResponse authResponse = authenticate();
+                    if (authResponse.getStatus() != HttpStatus.OK) {
+                        return false;
+                    }
+                }
+            }
+
+            if (auth && mCookieManager.getCookieStore().getCookies().size() > 0) {
+                HttpUtils.addCookies(conn, mCookieManager);
+            }
+
+            if (conn.getData().length > 0 || conn.getConn().getRequestMethod().equals("POST")) {
+                conn.getConn().setDoOutput(true);
+                conn.write();
+            }
+        } finally {
+            conn.disconnect();
+        }
+        return true;
     }
 
     private HttpResponse executeRequest(HttpConnection conn, RequestType type, boolean auth, boolean skipAuth) throws IOException {
@@ -263,7 +292,6 @@ public class BboxApi {
 
                         return new CallLogVoipResponse(last5CallLog, HttpStatus.OK);
                     case CUSTOMER_CALLOG_URI:
-                        System.out.println(result);
                         List<fr.bmartel.bboxapi.model.profile.CallLogList> customerCallLog = gson.fromJson(result,
                                 new TypeToken<List<fr.bmartel.bboxapi.model.profile.CallLogList>>() {
                                 }.getType());
@@ -697,7 +725,6 @@ public class BboxApi {
     public HttpResponse logout() throws IOException {
         HttpConnection conn = HttpUtils.httpRequest("POST", LOGOUT_URI);
 
-        mTokenHeader = "";
         mAuthenticated = false;
         mCookieManager.getCookieStore().removeAll();
 

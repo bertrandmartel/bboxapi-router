@@ -1,1 +1,1 @@
-include ':bboxapi-router',':examples'
+include ':bboxapi',':sample',':sample-java',':bboxapi-android'

@@ -1,0 +1,43 @@
+[{
+  "device": {
+    "now": "2018-03-14T17:27:20+0100",
+    "status": 1,
+    "numberofboots": 533,
+    "modelname": "F@st5330b",
+    "user_configured": 1,
+    "display": {
+      "luminosity": 100,
+      "state": "."
+    },
+    "main": {
+      "version": "12.11.0",
+      "date": "2018-02-16T18:09:14Z"
+    },
+    "reco": {
+      "version": "12.11.0",
+      "date": "2018-02-16T18:00:24Z"
+    },
+    "running": {
+      "version": "12.11.0",
+      "date": "2018-02-16T18:07:56+0100"
+    },
+    "bcck": {
+      "version": "8.8.18"
+    },
+    "ldr1": {
+      "version": "8.8.18"
+    },
+    "ldr2": {
+      "version": "8.8.18"
+    },
+    "firstusedate": "2015-11-26T18:18:17Z",
+    "uptime": 186893,
+    "using": {
+      "ipv4": 1,
+      "ipv6": 0,
+      "ftth": 1,
+      "adsl": 0,
+      "vdsl": 0
+    }
+  }
+}]

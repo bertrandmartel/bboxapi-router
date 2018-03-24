@@ -1,0 +1,54 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.novoda.bintray-release'
+
+android {
+    compileSdkVersion bboxapiCompileSdkVersion
+    buildToolsVersion bboxapiBuildToolVersion
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion bboxapiCompileSdkVersion
+        versionCode 1
+        versionName publishVersion
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile "com.github.kittinunf.fuel:fuel-android:$fuelAndroidVersion"
+    compile "com.google.code.gson:gson:$gsonVersion"
+    compile(project(':bboxapi')) {
+        exclude group: 'com.github.kittinunf.fuel'
+    }
+}
+
+publish {
+    artifactId = 'bboxapi-android'
+    autoPublish = true
+    desc = 'Bbox router API library for Kotlin/Java/Android'
+    groupId = 'fr.bmartel'
+    licences = ['MIT']
+    publishVersion = publishVersion
+    uploadName = 'bboxapi-android'
+    website = 'https://github.com/bertrandmartel/bboxapi-router'
+}

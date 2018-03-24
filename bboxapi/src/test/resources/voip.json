@@ -1,0 +1,13 @@
+[{
+  "voip": [{
+    "id": 1,
+    "status": "Up",
+    "callstate": "Idle",
+    "uri": "+33123456789@fai.bouygtel.net",
+    "blockstate": 0,
+    "anoncallstate": 0,
+    "mwi": 0,
+    "message_count": 0,
+    "notanswered": 4
+  }]
+}]

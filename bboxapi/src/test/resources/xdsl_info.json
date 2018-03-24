@@ -1,0 +1,32 @@
+[{
+  "wan": {
+    "xdsl": {
+      "state": "Idle",
+      "modulation": "",
+      "showtime": 0,
+      "atur_provider": "",
+      "atuc_provider": "",
+      "sync_count": 0,
+      "up": {
+        "bitrates": 0,
+        "noise": 0,
+        "attenuation": 0,
+        "power": 0,
+        "phyr": 0,
+        "ginp": 0,
+        "nitro": 0,
+        "interleave_delay": 0
+      },
+      "down": {
+        "bitrates": 0,
+        "noise": 0,
+        "attenuation": 0,
+        "power": 0,
+        "phyr": 0,
+        "ginp": 0,
+        "nitro": 0,
+        "interleave_delay": 0
+      }
+    }
+  }
+}]

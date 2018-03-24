@@ -1,0 +1,21 @@
+[{
+  "acl": {
+    "enable": 0,
+    "rules": [{
+      "id": 1,
+      "enable": 1,
+      "name": "",
+      "macaddress": "aa:12:34:56:78:90"
+    }, {
+      "id": 2,
+      "enable": 1,
+      "name": "",
+      "macaddress": "aa:12:34:56:78:90"
+    }, {
+      "id": 3,
+      "enable": 1,
+      "name": "",
+      "macaddress": "aa:12:34:56:78:90"
+    }]
+  }
+}]

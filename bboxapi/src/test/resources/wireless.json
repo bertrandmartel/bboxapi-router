@@ -1,0 +1,170 @@
+[{
+  "wireless": {
+    "status": "Configured",
+    "radio": {
+      "24": {
+        "enable": 1,
+        "standard": "11bgn",
+        "state": 1,
+        "channel": 0,
+        "current_channel": 11,
+        "ht40": {
+          "enable": 0
+        }
+      },
+      "5": {
+        "enable": 1,
+        "standard": "11an",
+        "state": 1,
+        "channel": 0,
+        "current_channel": 40,
+        "dfs": 0,
+        "ht40": {
+          "enable": 1
+        }
+      }
+    },
+    "scheduler": {
+      "now": "2018-03-14T20:08:04+0100",
+      "enable": 0
+    },
+    "ssid": {
+      "24": {
+        "id": "Nice-SSID1",
+        "enable": 1,
+        "hidden": 0,
+        "bssid": "ff:ff:ff:ff:ff:ff",
+        "wmmenable": 1,
+        "wps": {
+          "enable": 1,
+          "available": 1,
+          "status": "Error"
+        },
+        "security": {
+          "isdefault": 0,
+          "protocol": "WPA+WPA2",
+          "encryption": "AES",
+          "passphrase": "nice password"
+        }
+      },
+      "5": {
+        "id": "Nice-SSID2",
+        "enable": 1,
+        "hidden": 0,
+        "bssid": "ff:ff:ff:ff:ff:ff",
+        "wmmenable": 1,
+        "wps": {
+          "enable": 0,
+          "available": 1,
+          "status": "Error"
+        },
+        "security": {
+          "isdefault": 0,
+          "protocol": "WPA+WPA2",
+          "encryption": "AES",
+          "passphrase": "nice password"
+        }
+      }
+    },
+    "capabilities": {
+      "5": [{
+        "channel": 36,
+        "ht40": "36 / 40",
+        "nodfs": true,
+        "cactime": 0,
+        "cactime40": 0
+      }, {
+        "channel": 40,
+        "ht40": "",
+        "nodfs": true,
+        "cactime": 0,
+        "cactime40": 0
+      }, {
+        "channel": 44,
+        "ht40": "44 / 48",
+        "nodfs": true,
+        "cactime": 0,
+        "cactime40": 0
+      }, {
+        "channel": 48,
+        "ht40": "",
+        "nodfs": true,
+        "cactime": 0,
+        "cactime40": 0
+      }, {
+        "channel": 52,
+        "ht40": "52 / 56",
+        "nodfs": false,
+        "cactime": 1,
+        "cactime40": 1
+      }, {
+        "channel": 56,
+        "ht40": "",
+        "nodfs": false,
+        "cactime": 1,
+        "cactime40": 1
+      }, {
+        "channel": 60,
+        "ht40": "60 / 64",
+        "nodfs": false,
+        "cactime": 1,
+        "cactime40": 1
+      }, {
+        "channel": 64,
+        "ht40": "",
+        "nodfs": false,
+        "cactime": 1,
+        "cactime40": 1
+      }, {
+        "channel": 100,
+        "ht40": "100 / 104",
+        "nodfs": false,
+        "cactime": 1,
+        "cactime40": 1
+      }, {
+        "channel": 104,
+        "ht40": "",
+        "nodfs": false,
+        "cactime": 1,
+        "cactime40": 1
+      }, {
+        "channel": 108,
+        "ht40": "108 / 112",
+        "nodfs": false,
+        "cactime": 1,
+        "cactime40": 1
+      }, {
+        "channel": 112,
+        "ht40": "",
+        "nodfs": false,
+        "cactime": 1,
+        "cactime40": 1
+      }, {
+        "channel": 132,
+        "ht40": "132 / 136",
+        "nodfs": false,
+        "cactime": 1,
+        "cactime40": 1
+      }, {
+        "channel": 136,
+        "ht40": "",
+        "nodfs": false,
+        "cactime": 1,
+        "cactime40": 1
+      }]
+    },
+    "standard": {
+      "24": [{
+        "key": "11bg",
+        "value": "802.11b/g"
+      }, {
+        "key": "11bgn",
+        "value": "802.11b/g/n"
+      }],
+      "5": [{
+        "key": "11an",
+        "value": "802.11a/n"
+      }]
+    }
+  }
+}]

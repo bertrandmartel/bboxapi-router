@@ -55,6 +55,7 @@ open class BboxApiTest : TestCase() {
         bboxApi.authenticated = false
         bboxApi.blockedUntil = Date()
         bboxApi.bboxId = ""
+        bboxApi.blocked = false
         macFilterRule = null
         if (!runOnNetwork()) {
             bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
@@ -393,18 +394,23 @@ open class BboxApiTest : TestCase() {
     fun getCallLogs() {
         bboxApi.setPassword(password)
         TestUtils.executeAsyncLine(testcase = this, line = Voip.Line.LINE1, filename = "calllog.json", body = bboxApi::getCallLogs)
+        lock = CountDownLatch(1)
+        TestUtils.executeAsyncLine(testcase = this, line = Voip.Line.LINE2, filename = "calllog.json", body = bboxApi::getCallLogs)
     }
 
     @Test
     fun getCallLogsCb() {
         bboxApi.setPassword(password)
         TestUtils.executeAsyncLineCb(testcase = this, line = Voip.Line.LINE1, filename = "calllog.json", body = bboxApi::getCallLogs)
+        lock = CountDownLatch(1)
+        TestUtils.executeAsyncLineCb(testcase = this, line = Voip.Line.LINE2, filename = "calllog.json", body = bboxApi::getCallLogs)
     }
 
     @Test
     fun getCallLogsSync() {
         bboxApi.setPassword(password)
         TestUtils.executeSyncLine(filename = "calllog.json", line = Voip.Line.LINE1, body = bboxApi::getCallLogsSync)
+        TestUtils.executeSyncLine(filename = "calllog.json", line = Voip.Line.LINE2, body = bboxApi::getCallLogsSync)
     }
 
     @Test
@@ -440,6 +446,29 @@ open class BboxApiTest : TestCase() {
     }
 
     @Test
+    fun setWifiStateNotAuthenticated() {
+        bboxApi.setPassword("")
+        TestUtils.executeAsyncBool(
+                testcase = this,
+                input = false,
+                filename = null,
+                body = bboxApi::setWifiState,
+                expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
+    }
+
+    @Test
+    fun setWifiStateBadToken() {
+        bboxApi.setPassword("")
+        bboxApi.authenticated = true
+        TestUtils.executeAsyncBool(
+                testcase = this,
+                input = false,
+                filename = null,
+                body = bboxApi::setWifiState,
+                expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
+    }
+
+    @Test
     fun setWifiStateCb() {
         bboxApi.setPassword(password)
         TestUtils.executeAsyncBoolCb(testcase = this, input = false, filename = null, body = bboxApi::setWifiState)
@@ -448,10 +477,54 @@ open class BboxApiTest : TestCase() {
     }
 
     @Test
+    fun setWifiStateCbNotAuthenticated() {
+        bboxApi.setPassword("")
+        TestUtils.executeAsyncBoolCb(
+                testcase = this,
+                input = false,
+                filename = null,
+                body = bboxApi::setWifiState,
+                expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
+    }
+
+    @Test
+    fun setWifiStateCbBadToken() {
+        bboxApi.setPassword("")
+        bboxApi.authenticated = true
+        TestUtils.executeAsyncBoolCb(
+                testcase = this,
+                input = false,
+                filename = null,
+                body = bboxApi::setWifiState,
+                expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
+    }
+
+    @Test
     fun setWifiStateSync() {
         bboxApi.setPassword(password)
         TestUtils.executeSyncBool(input = false, filename = null, body = bboxApi::setWifiStateSync)
         TestUtils.executeSyncBool(input = true, filename = null, body = bboxApi::setWifiStateSync)
+    }
+
+    @Test
+    fun setWifiStateSyncNotAuthenticated() {
+        bboxApi.setPassword("")
+        TestUtils.executeSyncBool(
+                input = false,
+                filename = null,
+                body = bboxApi::setWifiStateSync,
+                expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
+    }
+
+    @Test
+    fun setWifiStateSyncBadToken() {
+        bboxApi.setPassword("")
+        bboxApi.authenticated = true
+        TestUtils.executeSyncBool(
+                input = false,
+                filename = null,
+                body = bboxApi::setWifiStateSync,
+                expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
     }
 
     @Test
@@ -481,18 +554,23 @@ open class BboxApiTest : TestCase() {
     fun voipDial() {
         bboxApi.setPassword(password)
         TestUtils.executeAsyncLineString(testcase = this, line = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDial)
+        lock = CountDownLatch(1)
+        TestUtils.executeAsyncLineString(testcase = this, line = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDial)
     }
 
     @Test
     fun voipDialCb() {
         bboxApi.setPassword(password)
         TestUtils.executeAsyncLineStringCb(testcase = this, line = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDial)
+        lock = CountDownLatch(1)
+        TestUtils.executeAsyncLineStringCb(testcase = this, line = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDial)
     }
 
     @Test
     fun voipDialSync() {
         bboxApi.setPassword(password)
         TestUtils.executeSyncLineString(line = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDialSync)
+        TestUtils.executeSyncLineString(line = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDialSync)
     }
 
     @Test
@@ -553,18 +631,23 @@ open class BboxApiTest : TestCase() {
     fun setWifiMacFilter() {
         bboxApi.setPassword(password)
         TestUtils.executeAsyncBool(testcase = this, input = false, filename = null, body = bboxApi::setWifiMacFilter)
+        lock = CountDownLatch(1)
+        TestUtils.executeAsyncBool(testcase = this, input = true, filename = null, body = bboxApi::setWifiMacFilter)
     }
 
     @Test
     fun setWifiMacFilterCb() {
         bboxApi.setPassword(password)
         TestUtils.executeAsyncBoolCb(testcase = this, input = false, filename = null, body = bboxApi::setWifiMacFilter)
+        lock = CountDownLatch(1)
+        TestUtils.executeAsyncBoolCb(testcase = this, input = true, filename = null, body = bboxApi::setWifiMacFilter)
     }
 
     @Test
     fun setWifiMacFilterSync() {
         bboxApi.setPassword(password)
         TestUtils.executeSyncBool(input = false, filename = null, body = bboxApi::setWifiMacFilterSync)
+        TestUtils.executeSyncBool(input = true, filename = null, body = bboxApi::setWifiMacFilterSync)
     }
 
     @Test

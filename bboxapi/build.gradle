@@ -1,5 +1,6 @@
 apply plugin: 'kotlin'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 apply plugin: 'jacoco'
 
 sourceSets {
@@ -45,13 +46,94 @@ jacoco {
 
 }
 
-publish {
-    artifactId = 'bboxapi'
-    autoPublish = true
-    desc = 'Bbox router API library for Kotlin/Java/Android'
-    groupId = 'fr.bmartel'
-    licences = ['MIT']
-    publishVersion = publishVersion
-    uploadName = 'bboxapi'
-    website = 'https://github.com/bertrandmartel/bboxapi-router'
+group = 'fr.bmartel'
+version = projectVersion
+
+def libName = 'bboxapi'
+
+bintray {
+    user = "$System.env.BINTRAY_USER"
+    key = "$System.env.BINTRAY_KEY"
+
+    configurations = ['archives']
+
+    dryRun = false //Whether to run this as dry-run, without deploying
+    publish = true //If version should be auto published after an upload
+
+    pkg {
+        repo = 'maven'
+        name = libName
+        desc = projectDescription
+        websiteUrl = projectSite
+        issueTrackerUrl = projectIssueTracker
+        vcsUrl = projectRepo
+        licenses = projectLicenses
+        labels = projectLabels
+        publicDownloadNumbers = true
+
+        version {
+            name = projectVersion //Bintray logical version name
+            vcsTag = projectVersion
+
+            gpg {
+                sign = true
+                passphrase = "$System.env.GPG_PASSPHRASE"
+            }
+
+            mavenCentralSync {
+                sync = false
+                //Optional (true by default). Determines whether to sync the version to Maven Central.
+                user = "$System.env.MAVEN_CENTRAL_USER_TOKEN" //OSS user token
+                password = "$System.env.MAVEN_CENTRAL_PASSWORD" //OSS user password
+                close = '1'
+                //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
+            }
+        }
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                description projectDescription
+                packaging 'jar'
+                name libName
+                url projectSite
+                licenses {
+                    license {
+                        name projectLicense
+                        url projectLicensePath
+                    }
+                }
+                developers {
+                    developer {
+                        id 'bertrandmartel'
+                        name 'Bertrand Martel'
+                        email 'bmartel.fr@gmail.com'
+                    }
+                }
+                scm {
+                    connection projectRepo
+                    developerConnection projectRepo
+                    url projectSite
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
 }

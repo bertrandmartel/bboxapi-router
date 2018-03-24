@@ -6,7 +6,6 @@ buildscript {
         kotlinVersion = '1.2.30'
         fuelGsonVersion = '1.12.1'
         fuelAndroidVersion = '1.12.1'
-        publishVersion = '1.7.0'
         junitVersion = '4.12'
         mockWebserverVersion = '3.10.0'
         jsonAssertVersion = '1.5.0'
@@ -14,6 +13,16 @@ buildscript {
         bboxapiBuildToolVersion = '26.0.2'
         robolectricVersion = '3.4.2'
         gsonVersion = '2.8.2'
+
+        projectVersion = '1.7.0'
+        projectDescription = 'Bbox router API library for Kotlin/Java/Android'
+        projectSite = 'https://github.com/bertrandmartel/bboxapi-router'
+        projectRepo = 'https://github.com/bertrandmartel/bboxapi-router.git'
+        projectLicense = 'The MIT License'
+        projectLicensePath = 'https://github.com/bertrandmartel/bboxapi-router/blob/master/LICENSE.md'
+        projectIssueTracker = 'https://github.com/bertrandmartel/bboxapi-router/issues'
+        projectLicenses = ['MIT']
+        projectLabels = ['bboxapi', 'bbox']
     }
 
     repositories {
@@ -21,9 +30,10 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'com.dicedmelon.gradle:jacoco-android:0.1.2'
-        classpath 'com.novoda:bintray-release:0.7.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }

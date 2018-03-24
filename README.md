@@ -34,11 +34,6 @@
 
 ## Tests
 
-Run test on local network :
-```bash
-./gradlew test -DtestMode=network
-```
-
 Run test on mockserver :
 ```bash
 ./gradlew test

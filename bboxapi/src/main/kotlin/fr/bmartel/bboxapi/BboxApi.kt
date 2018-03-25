@@ -6,6 +6,7 @@ import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMapError
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import fr.bmartel.bboxapi.model.*
 import java.net.HttpCookie
 import java.util.*
@@ -217,10 +218,14 @@ class BboxApi {
                 authenticated = false
                 attempts++
                 var authError: BboxException.Model? = null
-                val exception: Exception?
+                var exception: Exception?
                 if (response.data.isNotEmpty()) {
-                    authError = Gson().fromJson(String(response.data), BboxException.Model::class.java)
-                    exception = BboxAuthException(authError)
+                    try {
+                        authError = Gson().fromJson(String(response.data), BboxException.Model::class.java)
+                        exception = BboxAuthException(authError)
+                    } catch (e: JsonSyntaxException) {
+                        exception = e
+                    }
                 } else {
                     exception = result.getException().exception
                 }

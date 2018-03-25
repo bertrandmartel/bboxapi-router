@@ -1,13 +1,11 @@
 package fr.bmartel.bboxapi.javasample;
 
-import com.github.kittinunf.fuel.core.FuelError;
-import com.github.kittinunf.fuel.core.Handler;
-import com.github.kittinunf.fuel.core.Request;
-import com.github.kittinunf.fuel.core.Response;
+import com.github.kittinunf.fuel.core.*;
 import com.github.kittinunf.result.Result;
 import fr.bmartel.bboxapi.BboxApi;
 import kotlin.Triple;
 
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -16,12 +14,23 @@ public class Summary {
     public static void main(String args[]) throws InterruptedException {
         BboxApi bboxapi = new BboxApi();
 
+        System.out.println("authentication attempts : " + bboxapi.getAttempts());
+        System.out.println("user is authenticated   : " + bboxapi.getAuthenticated());
+        System.out.println("user is blocked         : " + bboxapi.getBlocked());
+        System.out.println("ban expiration date     : " + bboxapi.getBlockedUntil());
+
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
         bboxapi.getSummary(new Handler<List<fr.bmartel.bboxapi.model.Summary.Model>>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
-                error.printStackTrace();
+                if (error.getException() instanceof UnknownHostException) {
+                    System.out.println("hostname bbox.lan was not found");
+                } else if (error.getException() instanceof HttpException) {
+                    System.out.println("http error : " + response.getStatusCode());
+                } else {
+                    error.printStackTrace();
+                }
                 latch.countDown();
             }
 

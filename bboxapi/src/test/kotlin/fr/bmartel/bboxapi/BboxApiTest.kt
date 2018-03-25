@@ -5,6 +5,7 @@ import com.github.kittinunf.fuel.core.HttpException
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import fr.bmartel.bboxapi.model.*
 import okhttp3.mockwebserver.MockWebServer
@@ -904,6 +905,30 @@ open class BboxApiTest : TestCase() {
                 auth = false,
                 expectedException = HttpException(401, "Client Error"),
                 filename = null,
+                body = bboxApi::createCustomRequestSync
+        )
+    }
+
+    @Test
+    fun createCustomRequestNotAuthenticatedWrongHost() {
+        bboxApi.setBasePath("https://google.fr")
+        TestUtils.checkCustomResponseSync<List<Summary.Model>>(
+                inputReq = Fuel.get("/summary"),
+                auth = false,
+                expectedException = HttpException(401, "Client Error"),
+                filename = "summary.json",
+                body = bboxApi::createCustomRequestSync
+        )
+    }
+
+    @Test
+    fun createCustomRequestAuthenticatedWrongHost() {
+        bboxApi.setBasePath("https://google.fr")
+        TestUtils.checkCustomResponseSync<List<Summary.Model>>(
+                inputReq = Fuel.get("/summary"),
+                auth = true,
+                expectedException = JsonSyntaxException("Error"),
+                filename = "summary.json",
                 body = bboxApi::createCustomRequestSync
         )
     }

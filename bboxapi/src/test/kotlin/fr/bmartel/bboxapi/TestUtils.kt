@@ -3,6 +3,7 @@ package fr.bmartel.bboxapi
 import com.github.kittinunf.fuel.core.*
 import com.github.kittinunf.result.Result
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import fr.bmartel.bboxapi.BboxApiTest.Companion.fromJson
 import fr.bmartel.bboxapi.model.Acl
 import fr.bmartel.bboxapi.model.Voip
@@ -632,6 +633,8 @@ class TestUtils {
                 assertTrue(fuelError?.exception is HttpException)
                 val exception = fuelError?.exception as HttpException
                 assertEquals(exception.message, fuelError.exception.message)
+            } else if (expectedException is JsonSyntaxException) {
+                assertTrue(fuelError?.exception is JsonSyntaxException)
             } else {
                 fail("unchecked exception : $fuelError")
             }

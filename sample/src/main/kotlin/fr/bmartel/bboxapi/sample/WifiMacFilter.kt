@@ -166,7 +166,7 @@ fun showNewSize(bboxapi: BboxApi) {
 
 fun deleteAllRules(bboxapi: BboxApi, size: Int) {
     for (i in 1..size) {
-        val (_, res, stateResult) = bboxapi.deleteMacFilterRuleSync(i)
+        val (_, res, stateResult) = bboxapi.deleteMacFilterRuleSync(ruleIndex =  i)
         when (stateResult) {
             is Result.Failure -> {
                 val ex = stateResult.getException()

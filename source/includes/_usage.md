@@ -1,5 +1,21 @@
 # Usage
 
+## Gradle
+
+Dependency is available on JCenter or Maven Central
+with Gradle, from JCenter or MavenCentral :
+
+```groovy
+repositories {
+    jcenter() //or mavenCentral()
+}
+
+dependencies {
+    compile 'fr.bmartel:bboxapi:1.7.0' //for JVM
+    compile 'fr.bmartel:bboxapi-android:1.7.0' //for Android
+}
+```
+
 ## Synchronous & Asynchronous
 
 All methods have an asynchronous & synchronous version. The synchronous version is suffixed with `Sync` :

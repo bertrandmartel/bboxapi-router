@@ -14,7 +14,7 @@ buildscript {
         robolectricVersion = '3.4.2'
         gsonVersion = '2.8.2'
 
-        projectVersion = '1.7.0'
+        projectVersion = '1.7.1'
         projectDescription = 'Bbox router API library for Kotlin/Java/Android'
         projectSite = 'https://github.com/bertrandmartel/bboxapi-router'
         projectRepo = 'https://github.com/bertrandmartel/bboxapi-router.git'

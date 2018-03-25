@@ -116,8 +116,18 @@ install {
                     url projectSite
                 }
             }
+            whenConfigured {
+                p ->
+                    p.dependencies = p.dependencies.findAll {
+                        dep -> (dep.artifactId.notIn(["junit", "mockwebserver", "jsonassert"]))
+                    }
+            }
         }
     }
+}
+
+Object.metaClass.notIn = { Object collection ->
+    !(delegate in collection)
 }
 
 task sourcesJar(type: Jar) {

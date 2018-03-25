@@ -23,7 +23,6 @@ sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile "com.github.kittinunf.fuel:fuel-gson:$fuelGsonVersion"
     testCompile "junit:junit:$junitVersion"
     testCompile "com.squareup.okhttp3:mockwebserver:$mockWebserverVersion"
@@ -119,8 +118,18 @@ install {
                     url projectSite
                 }
             }
+            whenConfigured {
+                p ->
+                    p.dependencies = p.dependencies.findAll {
+                        dep -> (dep.artifactId.notIn(["junit", "mockwebserver", "jsonassert"]))
+                    }
+            }
         }
     }
+}
+
+Object.metaClass.notIn = { Object collection ->
+    !(delegate in collection)
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

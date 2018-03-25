@@ -229,6 +229,9 @@
             <a href="#usage" class="toc-h1 toc-link" data-title="usage">Usage</a>
               <ul class="toc-list-h2">
                   <li>
+                    <a href="#gradle" class="toc-h2 toc-link" data-title="gradle">Gradle</a>
+                  </li>
+                  <li>
                     <a href="#synchronous-amp-asynchronous" class="toc-h2 toc-link" data-title="synchronous-amp-asynchronous">Synchronous &amp; Asynchronous</a>
                   </li>
                   <li>
@@ -303,7 +306,8 @@
           </li>
       </div>
         <ul class="toc-footer">
-            <li><a href='https://github.com/lord/slate'>Documentation Powered by Slate</a></li>
+            <li><a href='https://github.com/bertrandmartel/bboxapi-router'>Contribute to Documentation</a></li>
+            <li><a href='https://github.com/lord/slate'>Powered by Slate</a></li>
         </ul>
     </div>
     <div class="page-wrapper">
@@ -490,7 +494,18 @@
 </tbody></table>
 
 <p>(*) some information may be missing when unauthenticated</p>
-<h1 id='usage'>Usage</h1><h2 id='synchronous-amp-asynchronous'>Synchronous &amp; Asynchronous</h2>
+<h1 id='usage'>Usage</h1><h2 id='gradle'>Gradle</h2>
+<p>Dependency is available on JCenter or Maven Central
+with Gradle, from JCenter or MavenCentral :</p>
+<pre class="highlight groovy tab-groovy"><code><span class="n">repositories</span> <span class="o">{</span>
+    <span class="n">jcenter</span><span class="o">()</span> <span class="c1">//or mavenCentral()</span>
+<span class="o">}</span>
+
+<span class="n">dependencies</span> <span class="o">{</span>
+    <span class="n">compile</span> <span class="s1">'fr.bmartel:bboxapi:1.7.0'</span> <span class="c1">//for JVM</span>
+    <span class="n">compile</span> <span class="s1">'fr.bmartel:bboxapi-android:1.7.0'</span> <span class="c1">//for Android</span>
+<span class="o">}</span>
+</code></pre><h2 id='synchronous-amp-asynchronous'>Synchronous &amp; Asynchronous</h2>
 <p>All methods have an asynchronous &amp; synchronous version. The synchronous version is suffixed with <code>Sync</code> :</p>
 
 <ul>

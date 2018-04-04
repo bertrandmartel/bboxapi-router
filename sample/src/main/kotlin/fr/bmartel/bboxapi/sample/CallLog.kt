@@ -7,7 +7,7 @@ import java.util.concurrent.CountDownLatch
 
 fun main(args: Array<String>) {
     val bboxapi = BboxApi()
-    bboxapi.setPassword("admin")
+    bboxapi.password = "admin"
 
     //asynchronous call
     val latch = CountDownLatch(1)

@@ -1,7 +1,5 @@
 package fr.bmartel.bboxapi.model
 
-import com.google.gson.annotations.SerializedName
-
 class Voip {
 
     data class Model(

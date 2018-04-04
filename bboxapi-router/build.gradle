@@ -2,6 +2,7 @@ apply plugin: 'kotlin'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'jacoco'
+apply plugin: 'org.jetbrains.dokka'
 
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
@@ -137,12 +138,17 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'javadoc'
+    outputDirectory = "$buildDir/dokkaJavadoc"
+}
+
+task packageJavadoc(type: Jar, dependsOn: 'dokkaJavadoc') {
+    from "$buildDir/dokkaJavadoc"
     classifier = 'javadoc'
-    from javadoc.destinationDir
 }
 
 artifacts {
-    archives javadocJar
+    archives packageJavadoc
     archives sourcesJar
 }

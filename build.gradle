@@ -13,6 +13,7 @@ buildscript {
         bboxapiBuildToolVersion = '26.0.2'
         robolectricVersion = '3.4.2'
         gsonVersion = '2.8.2'
+        dokkaVersion = '0.9.16'
 
         projectVersion = '1.7.2'
         projectDescription = 'Bbox router API library for Kotlin/Java/Android'
@@ -35,6 +36,8 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion"
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokkaVersion"
     }
 }
 

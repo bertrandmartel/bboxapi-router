@@ -10,7 +10,7 @@ class Summary {
             val status: String? = null,
             val callstate: CallState? = null,
             val message: Int? = null,
-            val notanswered: Int? = null
+            var notanswered: Int? = null
     )
 
     data class Iptv(

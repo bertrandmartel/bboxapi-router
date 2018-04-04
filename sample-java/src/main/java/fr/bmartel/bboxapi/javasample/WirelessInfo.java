@@ -20,7 +20,7 @@ public class WirelessInfo {
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
-        bboxapi.getWirelessInfo(new Handler<List<Wireless.Model>>() {
+        bboxapi.getWirelessInfo(new Handler<List<Wireless>>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -28,7 +28,7 @@ public class WirelessInfo {
             }
 
             @Override
-            public void success(Request request, Response response, List<Wireless.Model> data) {
+            public void success(Request request, Response response, List<Wireless> data) {
                 System.out.println(data);
                 latch.countDown();
             }
@@ -36,10 +36,10 @@ public class WirelessInfo {
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<List<Wireless.Model>, FuelError>> data = bboxapi.getWirelessInfoSync();
+        Triple<Request, Response, Result<List<Wireless>, FuelError>> data = bboxapi.getWirelessInfoSync();
         Request request = data.getFirst();
         Response response = data.getSecond();
-        Result<List<Wireless.Model>, FuelError> obj = data.getThird();
+        Result<List<Wireless>, FuelError> obj = data.getThird();
         System.out.println(obj.get());
     }
 }

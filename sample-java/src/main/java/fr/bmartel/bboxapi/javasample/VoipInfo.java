@@ -19,7 +19,7 @@ public class VoipInfo {
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
-        bboxapi.getVoipInfo(new Handler<List<fr.bmartel.bboxapi.model.Voip.Model>>() {
+        bboxapi.getVoipInfo(new Handler<List<fr.bmartel.bboxapi.model.Voip>>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -27,7 +27,7 @@ public class VoipInfo {
             }
 
             @Override
-            public void success(Request request, Response response, List<fr.bmartel.bboxapi.model.Voip.Model> data) {
+            public void success(Request request, Response response, List<fr.bmartel.bboxapi.model.Voip> data) {
                 System.out.println(data);
                 latch.countDown();
             }
@@ -35,10 +35,10 @@ public class VoipInfo {
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<List<fr.bmartel.bboxapi.model.Voip.Model>, FuelError>> data = bboxapi.getVoipInfoSync();
+        Triple<Request, Response, Result<List<fr.bmartel.bboxapi.model.Voip>, FuelError>> data = bboxapi.getVoipInfoSync();
         Request request = data.getFirst();
         Response response = data.getSecond();
-        Result<List<fr.bmartel.bboxapi.model.Voip.Model>, FuelError> obj = data.getThird();
+        Result<List<fr.bmartel.bboxapi.model.Voip>, FuelError> obj = data.getThird();
         System.out.println(obj.get());
     }
 }

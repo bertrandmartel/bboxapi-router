@@ -2,7 +2,7 @@ package fr.bmartel.bboxapi.sample
 
 import com.github.kittinunf.result.Result
 import fr.bmartel.bboxapi.BboxApi
-import fr.bmartel.bboxapi.model.Acl
+import fr.bmartel.bboxapi.model.MacFilterRule
 import java.util.concurrent.CountDownLatch
 
 fun main(args: Array<String>) {
@@ -84,7 +84,7 @@ fun main(args: Array<String>) {
      * create wifi mac filter rule
      */
     //asynchronous call
-    val rule1 = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89:01", ip = "")
+    val rule1 = MacFilterRule(enable = true, macaddress = "01:23:45:67:89:01", ip = "")
     latch = CountDownLatch(1)
     bboxapi.createMacFilterRule(rule = rule1) { _, res, result ->
         when (result) {
@@ -101,7 +101,7 @@ fun main(args: Array<String>) {
     latch.await()
 
     //synchronous call
-    val rule2 = Acl.MacFilterRule(enable = true, macaddress = "34:56:78:90:12:34", ip = "")
+    val rule2 = MacFilterRule(enable = true, macaddress = "34:56:78:90:12:34", ip = "")
     val (_, res2, createResult) = bboxapi.createMacFilterRuleSync(rule = rule2)
     when (createResult) {
         is Result.Failure -> {
@@ -166,7 +166,7 @@ fun showNewSize(bboxapi: BboxApi) {
 
 fun deleteAllRules(bboxapi: BboxApi, size: Int) {
     for (i in 1..size) {
-        val (_, res, stateResult) = bboxapi.deleteMacFilterRuleSync(ruleIndex =  i)
+        val (_, res, stateResult) = bboxapi.deleteMacFilterRuleSync(ruleIndex = i)
         when (stateResult) {
             is Result.Failure -> {
                 val ex = stateResult.getException()

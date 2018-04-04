@@ -7,6 +7,7 @@ import com.github.kittinunf.fuel.core.Response;
 import com.github.kittinunf.result.Result;
 import fr.bmartel.bboxapi.BboxApi;
 import fr.bmartel.bboxapi.model.Acl;
+import fr.bmartel.bboxapi.model.MacFilterRule;
 import kotlin.Triple;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class WifiMacFilter {
          */
         //asynchronous call
         latch = new CountDownLatch(1);
-        bboxapi.getWifiMacFilter(new Handler<List<Acl.Model>>() {
+        bboxapi.getWifiMacFilter(new Handler<List<Acl>>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -33,7 +34,7 @@ public class WifiMacFilter {
             }
 
             @Override
-            public void success(Request request, Response response, List<Acl.Model> data) {
+            public void success(Request request, Response response, List<Acl> data) {
                 System.out.println(data);
                 latch.countDown();
             }
@@ -41,10 +42,10 @@ public class WifiMacFilter {
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<List<Acl.Model>, FuelError>> data = bboxapi.getWifiMacFilterSync();
+        Triple<Request, Response, Result<List<Acl>, FuelError>> data = bboxapi.getWifiMacFilterSync();
         Request request = data.getFirst();
         Response response = data.getSecond();
-        Result<List<Acl.Model>, FuelError> wifiMacFilter = data.getThird();
+        Result<List<Acl>, FuelError> wifiMacFilter = data.getThird();
         System.out.println(wifiMacFilter.get());
 
         /**
@@ -83,8 +84,8 @@ public class WifiMacFilter {
         /**
          * create wifi mac rule
          */
-        Acl.MacFilterRule rule1 = new Acl.MacFilterRule(true, "01:23:45:67:89:01", "");
-        Acl.MacFilterRule rule2 = new Acl.MacFilterRule(true, "34:56:78:90:12:34", "");
+        MacFilterRule rule1 = new MacFilterRule(true, "01:23:45:67:89:01", "");
+        MacFilterRule rule2 = new MacFilterRule(true, "34:56:78:90:12:34", "");
 
         //asynchronous call
         latch = new CountDownLatch(1);
@@ -147,8 +148,8 @@ public class WifiMacFilter {
     }
 
     private static void showNewSize(BboxApi bboxApi) {
-        Triple<Request, Response, Result<List<Acl.Model>, FuelError>> result = bboxApi.getWifiMacFilterSync();
-        Result<List<Acl.Model>, FuelError> wifiMacFilter = result.getThird();
+        Triple<Request, Response, Result<List<Acl>, FuelError>> result = bboxApi.getWifiMacFilterSync();
+        Result<List<Acl>, FuelError> wifiMacFilter = result.getThird();
         System.out.println("new size : " + wifiMacFilter.get().get(0).getAcl().getRules().size());
     }
 }

@@ -1,14 +1,11 @@
 package fr.bmartel.bboxapi.model
 
-class Token {
+data class Token(
+        val device: DeviceToken? = null
+)
 
-    data class Model(
-            val device: DeviceToken? = null
-    )
-
-    data class DeviceToken(
-            val token: String? = null,
-            val now: String? = null,
-            val expires: String? = null
-    )
-}
+data class DeviceToken(
+        val token: String? = null,
+        val now: String? = null,
+        val expires: String? = null
+)

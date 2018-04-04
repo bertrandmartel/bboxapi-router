@@ -20,7 +20,7 @@ public class BboxToken {
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
-        bboxapi.getToken(new Handler<List<Token.Model>>() {
+        bboxapi.getToken(new Handler<List<Token>>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -28,7 +28,7 @@ public class BboxToken {
             }
 
             @Override
-            public void success(Request request, Response response, List<Token.Model> data) {
+            public void success(Request request, Response response, List<Token> data) {
                 System.out.println(data);
                 latch.countDown();
             }
@@ -36,10 +36,10 @@ public class BboxToken {
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<List<Token.Model>, FuelError>> data = bboxapi.getTokenSync();
+        Triple<Request, Response, Result<List<Token>, FuelError>> data = bboxapi.getTokenSync();
         Request request = data.getFirst();
         Response response = data.getSecond();
-        Result<List<Token.Model>, FuelError> obj = data.getThird();
+        Result<List<Token>, FuelError> obj = data.getThird();
         System.out.println(obj.get());
     }
 }

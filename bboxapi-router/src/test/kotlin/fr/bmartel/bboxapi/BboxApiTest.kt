@@ -27,14 +27,14 @@ open class BboxApiTest : TestCase() {
 
         val cookie = "2.215.7fffffff.a60bd4fcc583ae1b745b5947d1f04da491b01cefcdf39dd9d2676e1a499ecff0a9a3ec6f269a8a9af5e3e1c7d32f6b65df8754ac7af2854c59f367a29136923b.d2614b3af80b5eb35cd890de5760893330372ab2"
         var attempts = 0
-        var macFilterRule: Acl.MacFilterRule? = null
+        var macFilterRule: MacFilterRule? = null
         var PINCODE = "123456789"
         var changePassword = 0
 
         //https://stackoverflow.com/a/33381385/2614364
         inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object : TypeToken<T>() {}.type)
 
-        val btoken = Gson().fromJson<List<Token.Model>>(TestUtils.getResFile(fileName = "token.json"))
+        val btoken = Gson().fromJson<List<Token>>(TestUtils.getResFile(fileName = "token.json"))
 
         @BeforeClass
         @JvmStatic
@@ -157,8 +157,8 @@ open class BboxApiTest : TestCase() {
                 body = bboxApi::getVoipInfoSync,
                 expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
         Assert.assertEquals(2, attempts)
-        val exception = BboxApi.BboxAuthException(BboxException.Model(
-                BboxException.ApiException(domain = "v1/login", code = "429", errors = listOf())
+        val exception = BboxApi.BboxAuthException(BboxException(
+                ApiException(domain = "v1/login", code = "429", errors = listOf())
         ))
         Assert.assertFalse(bboxApi.blocked)
         Assert.assertEquals(2, bboxApi.attempts)
@@ -188,8 +188,8 @@ open class BboxApiTest : TestCase() {
                 body = bboxApi::getVoipInfo,
                 expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
         Assert.assertEquals(2, attempts)
-        val error = BboxException.Model(
-                BboxException.ApiException(domain = "v1/login", code = "429", errors = listOf())
+        val error = BboxException(
+                ApiException(domain = "v1/login", code = "429", errors = listOf())
         )
         Assert.assertFalse(bboxApi.blocked)
         Assert.assertEquals(2, bboxApi.attempts)
@@ -398,24 +398,24 @@ open class BboxApiTest : TestCase() {
     @Test
     fun getCallLogs() {
         bboxApi.password = password
-        TestUtils.executeAsyncOneParam(testcase = this, input = Voip.Line.LINE1, filename = "calllog.json", body = bboxApi::getCallLogs)
+        TestUtils.executeAsyncOneParam(testcase = this, input = Line.LINE1, filename = "calllog.json", body = bboxApi::getCallLogs)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncOneParam(testcase = this, input = Voip.Line.LINE2, filename = "calllog.json", body = bboxApi::getCallLogs)
+        TestUtils.executeAsyncOneParam(testcase = this, input = Line.LINE2, filename = "calllog.json", body = bboxApi::getCallLogs)
     }
 
     @Test
     fun getCallLogsCb() {
         bboxApi.password = password
-        TestUtils.executeAsyncOneParamCb(testcase = this, input = Voip.Line.LINE1, filename = "calllog.json", body = bboxApi::getCallLogs)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = Line.LINE1, filename = "calllog.json", body = bboxApi::getCallLogs)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncOneParamCb(testcase = this, input = Voip.Line.LINE2, filename = "calllog.json", body = bboxApi::getCallLogs)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = Line.LINE2, filename = "calllog.json", body = bboxApi::getCallLogs)
     }
 
     @Test
     fun getCallLogsSync() {
         bboxApi.password = password
-        TestUtils.executeSyncOneParam(filename = "calllog.json", input = Voip.Line.LINE1, body = bboxApi::getCallLogsSync)
-        TestUtils.executeSyncOneParam(filename = "calllog.json", input = Voip.Line.LINE2, body = bboxApi::getCallLogsSync)
+        TestUtils.executeSyncOneParam(filename = "calllog.json", input = Line.LINE1, body = bboxApi::getCallLogsSync)
+        TestUtils.executeSyncOneParam(filename = "calllog.json", input = Line.LINE2, body = bboxApi::getCallLogsSync)
     }
 
     @Test
@@ -558,24 +558,24 @@ open class BboxApiTest : TestCase() {
     @Test
     fun voipDial() {
         bboxApi.password = password
-        TestUtils.executeAsyncTwoParam(testcase = this, input1 = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDial)
+        TestUtils.executeAsyncTwoParam(testcase = this, input1 = Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDial)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncTwoParam(testcase = this, input1 = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDial)
+        TestUtils.executeAsyncTwoParam(testcase = this, input1 = Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDial)
     }
 
     @Test
     fun voipDialCb() {
         bboxApi.password = password
-        TestUtils.executeAsyncTwoParamCb(testcase = this, input1 = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDial)
+        TestUtils.executeAsyncTwoParamCb(testcase = this, input1 = Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDial)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncTwoParamCb(testcase = this, input1 = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDial)
+        TestUtils.executeAsyncTwoParamCb(testcase = this, input1 = Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDial)
     }
 
     @Test
     fun voipDialSync() {
         bboxApi.password = password
-        TestUtils.executeSyncTwoParam(input1 = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDialSync)
-        TestUtils.executeSyncTwoParam(input1 = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDialSync)
+        TestUtils.executeSyncTwoParam(input1 = Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDialSync)
+        TestUtils.executeSyncTwoParam(input1 = Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDialSync)
     }
 
     @Test
@@ -708,7 +708,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun updateMacFilterRule() {
         bboxApi.password = password
-        val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
+        val rule = MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
         TestUtils.executeAsyncTwoParam(
                 testcase = this,
                 input1 = 1,
@@ -725,7 +725,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun updateMacFilterRuleCb() {
         bboxApi.password = password
-        val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
+        val rule = MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
         TestUtils.executeAsyncTwoParamCb(
                 testcase = this,
                 input1 = 1,
@@ -742,7 +742,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun updateMacFilterRuleSync() {
         bboxApi.password = password
-        val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
+        val rule = MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
         TestUtils.executeSyncTwoParam(
                 filename = null,
                 input1 = 1,
@@ -758,7 +758,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createWifiMacRule() {
         bboxApi.password = password
-        val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
+        val rule = MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
         TestUtils.executeAsyncOneParam(
                 testcase = this,
                 input = rule,
@@ -774,7 +774,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createWifiMacRuleCb() {
         bboxApi.password = password
-        val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
+        val rule = MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
         TestUtils.executeAsyncOneParamCb(
                 testcase = this,
                 input = rule,
@@ -790,7 +790,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createWifiMacRuleSync() {
         bboxApi.password = password
-        val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
+        val rule = MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
         TestUtils.executeSyncOneParam(
                 input = rule,
                 filename = null,
@@ -804,7 +804,7 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun createCustomRequest() {
-        TestUtils.checkCustomResponse<List<Summary.Model>>(
+        TestUtils.checkCustomResponse<List<Summary>>(
                 testcase = this,
                 inputReq = Fuel.get("/summary"),
                 auth = false,
@@ -817,7 +817,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createCustomRequestSecured() {
         bboxApi.password = password
-        TestUtils.checkCustomResponse<List<Voip.Model>>(
+        TestUtils.checkCustomResponse<List<Voip>>(
                 testcase = this,
                 inputReq = Fuel.get("/voip"),
                 auth = true,
@@ -830,7 +830,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createCustomRequestSecuredUnauthorized() {
         bboxApi.password = password
-        TestUtils.checkCustomResponse<List<Voip.Model>>(
+        TestUtils.checkCustomResponse<List<Voip>>(
                 testcase = this,
                 inputReq = Fuel.get("/voip"),
                 auth = false,
@@ -842,7 +842,7 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun createCustomRequestCb() {
-        TestUtils.checkCustomResponseCb<List<Summary.Model>>(
+        TestUtils.checkCustomResponseCb<List<Summary>>(
                 testcase = this,
                 inputReq = Fuel.get("/summary"),
                 auth = false,
@@ -855,7 +855,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createCustomRequestCbSecured() {
         bboxApi.password = password
-        TestUtils.checkCustomResponseCb<List<Voip.Model>>(
+        TestUtils.checkCustomResponseCb<List<Voip>>(
                 testcase = this,
                 inputReq = Fuel.get("/voip"),
                 auth = true,
@@ -868,7 +868,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createCustomRequestCbSecuredUnauthorized() {
         bboxApi.password = password
-        TestUtils.checkCustomResponseCb<List<Voip.Model>>(
+        TestUtils.checkCustomResponseCb<List<Voip>>(
                 testcase = this,
                 inputReq = Fuel.get("/voip"),
                 auth = false,
@@ -880,7 +880,7 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun createCustomRequestSync() {
-        TestUtils.checkCustomResponseSync<List<Summary.Model>>(
+        TestUtils.checkCustomResponseSync<List<Summary>>(
                 inputReq = Fuel.get("/summary"),
                 auth = false,
                 expectedException = null,
@@ -892,7 +892,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createCustomRequestSecuredSync() {
         bboxApi.password = password
-        TestUtils.checkCustomResponseSync<List<Voip.Model>>(
+        TestUtils.checkCustomResponseSync<List<Voip>>(
                 inputReq = Fuel.get("/voip"),
                 auth = true,
                 expectedException = null,
@@ -904,7 +904,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createCustomRequestSecuredUnauthorizedSync() {
         bboxApi.password = password
-        TestUtils.checkCustomResponseSync<List<Voip.Model>>(
+        TestUtils.checkCustomResponseSync<List<Voip>>(
                 inputReq = Fuel.get("/voip"),
                 auth = false,
                 expectedException = HttpException(401, "Client Error"),
@@ -916,7 +916,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createCustomRequestNotAuthenticatedWrongHost() {
         bboxApi.setBasePath("https://google.fr")
-        TestUtils.checkCustomResponseSync<List<Summary.Model>>(
+        TestUtils.checkCustomResponseSync<List<Summary>>(
                 inputReq = Fuel.get("/summary"),
                 auth = false,
                 expectedException = HttpException(401, "Client Error"),
@@ -928,7 +928,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createCustomRequestAuthenticatedWrongHost() {
         bboxApi.setBasePath("https://google.fr")
-        TestUtils.checkCustomResponseSync<List<Summary.Model>>(
+        TestUtils.checkCustomResponseSync<List<Summary>>(
                 inputReq = Fuel.get("/summary"),
                 auth = true,
                 expectedException = JsonSyntaxException("Error"),

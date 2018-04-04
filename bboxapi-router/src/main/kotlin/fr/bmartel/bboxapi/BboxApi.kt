@@ -21,7 +21,7 @@ class BboxApi {
 
     var authenticated: Boolean = false
 
-    class BboxAuthException(error: BboxException.Model) : Exception("Bbox authentication failed : ${error.exception.toString()}") {
+    class BboxAuthException(error: BboxException) : Exception("Bbox authentication failed : ${error.exception.toString()}") {
         var error = error
     }
 
@@ -173,11 +173,11 @@ class BboxApi {
             is Result.Failure -> {
                 authenticated = false
                 attempts++
-                var authError: BboxException.Model? = null
+                var authError: BboxException? = null
                 var exception: Exception?
                 if (response.data.isNotEmpty()) {
                     try {
-                        authError = Gson().fromJson(String(response.data), BboxException.Model::class.java)
+                        authError = Gson().fromJson(String(response.data), BboxException::class.java)
                         exception = BboxAuthException(authError)
                     } catch (e: JsonSyntaxException) {
                         exception = e
@@ -221,100 +221,100 @@ class BboxApi {
         return processAuth(request = request, response = response, result = result)
     }
 
-    fun getSummary(handler: (Request, Response, Result<List<Summary.Model>, FuelError>) -> Unit) {
+    fun getSummary(handler: (Request, Response, Result<List<Summary>, FuelError>) -> Unit) {
         Fuel.get("/summary").responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getSummary(handler: Handler<List<Summary.Model>>) {
+    fun getSummary(handler: Handler<List<Summary>>) {
         Fuel.get("/summary").responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getSummarySync(): Triple<Request, Response, Result<List<Summary.Model>, FuelError>> {
+    fun getSummarySync(): Triple<Request, Response, Result<List<Summary>, FuelError>> {
         return Fuel.get("/summary").responseObject(gsonDeserializerOf())
     }
 
-    fun getXdslInfo(handler: (Request, Response, Result<List<Wan.Model>, FuelError>) -> Unit) {
+    fun getXdslInfo(handler: (Request, Response, Result<List<Wan>, FuelError>) -> Unit) {
         Fuel.get("/wan/xdsl").responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getXdslInfo(handler: Handler<List<Wan.Model>>) {
+    fun getXdslInfo(handler: Handler<List<Wan>>) {
         Fuel.get("/wan/xdsl").responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getXdslInfoSync(): Triple<Request, Response, Result<List<Wan.Model>, FuelError>> {
+    fun getXdslInfoSync(): Triple<Request, Response, Result<List<Wan>, FuelError>> {
         return Fuel.get("/wan/xdsl").responseObject(gsonDeserializerOf())
     }
 
-    fun getHosts(handler: (Request, Response, Result<List<Hosts.Model>, FuelError>) -> Unit) {
+    fun getHosts(handler: (Request, Response, Result<List<Hosts>, FuelError>) -> Unit) {
         Fuel.get("/hosts").responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getHosts(handler: Handler<List<Hosts.Model>>) {
+    fun getHosts(handler: Handler<List<Hosts>>) {
         Fuel.get("/hosts").responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getHostsSync(): Triple<Request, Response, Result<List<Hosts.Model>, FuelError>> {
+    fun getHostsSync(): Triple<Request, Response, Result<List<Hosts>, FuelError>> {
         return Fuel.get("/hosts").responseObject(gsonDeserializerOf())
     }
 
-    fun getWanIpInfo(handler: (Request, Response, Result<List<Wan.Model>, FuelError>) -> Unit) {
+    fun getWanIpInfo(handler: (Request, Response, Result<List<Wan>, FuelError>) -> Unit) {
         Fuel.get("/wan/ip").responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getWanIpInfo(handler: Handler<List<Wan.Model>>) {
+    fun getWanIpInfo(handler: Handler<List<Wan>>) {
         Fuel.get("/wan/ip").responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getWanIpInfoSync(): Triple<Request, Response, Result<List<Wan.Model>, FuelError>> {
+    fun getWanIpInfoSync(): Triple<Request, Response, Result<List<Wan>, FuelError>> {
         return Fuel.get("/wan/ip").responseObject(gsonDeserializerOf())
     }
 
-    fun getDeviceInfo(handler: (Request, Response, Result<List<Device.Model>, FuelError>) -> Unit) {
+    fun getDeviceInfo(handler: (Request, Response, Result<List<Device>, FuelError>) -> Unit) {
         Fuel.get("/device").responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getDeviceInfo(handler: Handler<List<Device.Model>>) {
+    fun getDeviceInfo(handler: Handler<List<Device>>) {
         Fuel.get("/device").responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getDeviceInfoSync(): Triple<Request, Response, Result<List<Device.Model>, FuelError>> {
+    fun getDeviceInfoSync(): Triple<Request, Response, Result<List<Device>, FuelError>> {
         return Fuel.get("/device").responseObject(gsonDeserializerOf())
     }
 
-    fun getVoipInfo(handler: (Request, Response, Result<List<Voip.Model>, FuelError>) -> Unit) {
+    fun getVoipInfo(handler: (Request, Response, Result<List<Voip>, FuelError>) -> Unit) {
         processSecureApi(request = Fuel.get("/voip"), handler = handler)
     }
 
-    fun getVoipInfo(handler: Handler<List<Voip.Model>>) {
+    fun getVoipInfo(handler: Handler<List<Voip>>) {
         processSecureApi(request = Fuel.get("/voip"), handler = handler)
     }
 
-    fun getVoipInfoSync(): Triple<Request, Response, Result<List<Voip.Model>, FuelError>> {
+    fun getVoipInfoSync(): Triple<Request, Response, Result<List<Voip>, FuelError>> {
         return processSecureApiSync(request = Fuel.get("/voip"))
     }
 
-    fun getWirelessInfo(handler: (Request, Response, Result<List<Wireless.Model>, FuelError>) -> Unit) {
+    fun getWirelessInfo(handler: (Request, Response, Result<List<Wireless>, FuelError>) -> Unit) {
         processSecureApi(request = Fuel.get("/wireless"), handler = handler)
     }
 
-    fun getWirelessInfo(handler: Handler<List<Wireless.Model>>) {
+    fun getWirelessInfo(handler: Handler<List<Wireless>>) {
         processSecureApi(request = Fuel.get("/wireless"), handler = handler)
     }
 
-    fun getWirelessInfoSync(): Triple<Request, Response, Result<List<Wireless.Model>, FuelError>> {
+    fun getWirelessInfoSync(): Triple<Request, Response, Result<List<Wireless>, FuelError>> {
         return processSecureApiSync(request = Fuel.get("/wireless"))
     }
 
-    fun getCallLogs(line: Voip.Line, handler: (Request, Response, Result<List<CallLog.Model>, FuelError>) -> Unit) {
-        processSecureApi(request = Fuel.get("/voip/fullcalllog/${if (line == Voip.Line.LINE1) 1 else 2}"), handler = handler)
+    fun getCallLogs(line: Line, handler: (Request, Response, Result<List<CallLog>, FuelError>) -> Unit) {
+        processSecureApi(request = Fuel.get("/voip/fullcalllog/${if (line == Line.LINE1) 1 else 2}"), handler = handler)
     }
 
-    fun getCallLogs(line: Voip.Line, handler: Handler<List<CallLog.Model>>) {
-        processSecureApi(request = Fuel.get("/voip/fullcalllog/${if (line == Voip.Line.LINE1) 1 else 2}"), handler = handler)
+    fun getCallLogs(line: Line, handler: Handler<List<CallLog>>) {
+        processSecureApi(request = Fuel.get("/voip/fullcalllog/${if (line == Line.LINE1) 1 else 2}"), handler = handler)
     }
 
-    fun getCallLogsSync(line: Voip.Line): Triple<Request, Response, Result<List<CallLog.Model>, FuelError>> {
-        return processSecureApiSync(request = Fuel.get("/voip/fullcalllog/${if (line == Voip.Line.LINE1) 1 else 2}"))
+    fun getCallLogsSync(line: Line): Triple<Request, Response, Result<List<CallLog>, FuelError>> {
+        return processSecureApiSync(request = Fuel.get("/voip/fullcalllog/${if (line == Line.LINE1) 1 else 2}"))
     }
 
     fun setWifiState(state: Boolean, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
@@ -341,35 +341,35 @@ class BboxApi {
         return processSecureApiSync(request = Fuel.put("/device/display?luminosity=${if (state) 100 else 0}"), json = false)
     }
 
-    fun voipDial(line: Voip.Line, phoneNumber: String, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
+    fun voipDial(line: Line, phoneNumber: String, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
         processSecureApi(
-                request = Fuel.put("/voip/dial?line=${if (line == Voip.Line.LINE1) 1 else 2}&number=$phoneNumber"),
+                request = Fuel.put("/voip/dial?line=${if (line == Line.LINE1) 1 else 2}&number=$phoneNumber"),
                 handler = handler,
                 json = false)
     }
 
-    fun voipDial(line: Voip.Line, phoneNumber: String, handler: Handler<String>) {
+    fun voipDial(line: Line, phoneNumber: String, handler: Handler<String>) {
         processSecureApi(
-                request = Fuel.put("/voip/dial?line=${if (line == Voip.Line.LINE1) 1 else 2}&number=$phoneNumber"),
+                request = Fuel.put("/voip/dial?line=${if (line == Line.LINE1) 1 else 2}&number=$phoneNumber"),
                 handler = handler,
                 json = false)
     }
 
-    fun voipDialSync(line: Voip.Line, phoneNumber: String): Triple<Request, Response, Result<String, FuelError>> {
+    fun voipDialSync(line: Line, phoneNumber: String): Triple<Request, Response, Result<String, FuelError>> {
         return processSecureApiSync(
-                request = Fuel.put("/voip/dial?line=${if (line == Voip.Line.LINE1) 1 else 2}&number=$phoneNumber"),
+                request = Fuel.put("/voip/dial?line=${if (line == Line.LINE1) 1 else 2}&number=$phoneNumber"),
                 json = false)
     }
 
-    fun getToken(handler: (Request, Response, Result<List<Token.Model>, FuelError>) -> Unit) {
+    fun getToken(handler: (Request, Response, Result<List<Token>, FuelError>) -> Unit) {
         processSecureApi(request = Fuel.get("/device/token"), handler = handler)
     }
 
-    fun getToken(handler: Handler<List<Token.Model>>) {
+    fun getToken(handler: Handler<List<Token>>) {
         processSecureApi(request = Fuel.get("/device/token"), handler = handler)
     }
 
-    fun getTokenSync(): Triple<Request, Response, Result<List<Token.Model>, FuelError>> {
+    fun getTokenSync(): Triple<Request, Response, Result<List<Token>, FuelError>> {
         return processSecureApiSync(request = Fuel.get("/device/token"))
     }
 
@@ -396,15 +396,15 @@ class BboxApi {
         return processSecureApiSync(request = Fuel.post("/device/reboot?btoken=${result.get()[0].device?.token}"), json = false)
     }
 
-    fun getWifiMacFilter(handler: (Request, Response, Result<List<Acl.Model>, FuelError>) -> Unit) {
+    fun getWifiMacFilter(handler: (Request, Response, Result<List<Acl>, FuelError>) -> Unit) {
         processSecureApi(request = Fuel.get("/wireless/acl"), handler = handler)
     }
 
-    fun getWifiMacFilter(handler: Handler<List<Acl.Model>>) {
+    fun getWifiMacFilter(handler: Handler<List<Acl>>) {
         processSecureApi(request = Fuel.get("/wireless/acl"), handler = handler)
     }
 
-    fun getWifiMacFilterSync(): Triple<Request, Response, Result<List<Acl.Model>, FuelError>> {
+    fun getWifiMacFilterSync(): Triple<Request, Response, Result<List<Acl>, FuelError>> {
         return processSecureApiSync(request = Fuel.get("/wireless/acl"))
     }
 
@@ -432,7 +432,7 @@ class BboxApi {
         return processSecureApiSync(request = Fuel.delete("/wireless/acl/rules/$ruleIndex"), json = false)
     }
 
-    fun updateMacFilterRule(ruleIndex: Int, rule: Acl.MacFilterRule, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
+    fun updateMacFilterRule(ruleIndex: Int, rule: MacFilterRule, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
         val data = listOf(
                 "enable" to (if (rule.enable) 1 else 0),
                 "macaddress" to rule.macaddress,
@@ -441,7 +441,7 @@ class BboxApi {
         processSecureApi(request = Fuel.put("/wireless/acl/rules/$ruleIndex", data), handler = handler, json = false)
     }
 
-    fun updateMacFilterRule(ruleIndex: Int, rule: Acl.MacFilterRule, handler: Handler<String>) {
+    fun updateMacFilterRule(ruleIndex: Int, rule: MacFilterRule, handler: Handler<String>) {
         val data = listOf(
                 "enable" to (if (rule.enable) 1 else 0),
                 "macaddress" to rule.macaddress,
@@ -450,7 +450,7 @@ class BboxApi {
         processSecureApi(request = Fuel.put("/wireless/acl/rules/$ruleIndex", data), handler = handler, json = false)
     }
 
-    fun updateMacFilterRuleSync(ruleIndex: Int, rule: Acl.MacFilterRule): Triple<Request, Response, Result<String, FuelError>> {
+    fun updateMacFilterRuleSync(ruleIndex: Int, rule: MacFilterRule): Triple<Request, Response, Result<String, FuelError>> {
         val data = listOf(
                 "enable" to (if (rule.enable) 1 else 0),
                 "macaddress" to rule.macaddress,
@@ -459,7 +459,7 @@ class BboxApi {
         return processSecureApiSync(request = Fuel.put("/wireless/acl/rules/$ruleIndex", data), json = false)
     }
 
-    fun createMacFilterRule(rule: Acl.MacFilterRule, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
+    fun createMacFilterRule(rule: MacFilterRule, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
         getToken { _, _, result ->
             val data = listOf(
                     "enable" to (if (rule.enable) 1 else 0),
@@ -473,7 +473,7 @@ class BboxApi {
         }
     }
 
-    fun createMacFilterRule(rule: Acl.MacFilterRule, handler: Handler<String>) {
+    fun createMacFilterRule(rule: MacFilterRule, handler: Handler<String>) {
         getToken { _, _, result ->
             val data = listOf(
                     "enable" to (if (rule.enable) 1 else 0),
@@ -487,7 +487,7 @@ class BboxApi {
         }
     }
 
-    fun createMacFilterRuleSync(rule: Acl.MacFilterRule): Triple<Request, Response, Result<String, FuelError>> {
+    fun createMacFilterRuleSync(rule: MacFilterRule): Triple<Request, Response, Result<String, FuelError>> {
         val (_, _, result) = getTokenSync()
         val data = listOf(
                 "enable" to (if (rule.enable) 1 else 0),

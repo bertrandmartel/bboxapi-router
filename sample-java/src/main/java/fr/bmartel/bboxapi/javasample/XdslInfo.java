@@ -19,7 +19,7 @@ public class XdslInfo {
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
-        bboxapi.getXdslInfo(new Handler<List<Wan.Model>>() {
+        bboxapi.getXdslInfo(new Handler<List<Wan>>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -27,7 +27,7 @@ public class XdslInfo {
             }
 
             @Override
-            public void success(Request request, Response response, List<Wan.Model> data) {
+            public void success(Request request, Response response, List<Wan> data) {
                 System.out.println(data);
                 latch.countDown();
             }
@@ -35,10 +35,10 @@ public class XdslInfo {
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<List<Wan.Model>, FuelError>> data = bboxapi.getXdslInfoSync();
+        Triple<Request, Response, Result<List<Wan>, FuelError>> data = bboxapi.getXdslInfoSync();
         Request request = data.getFirst();
         Response response = data.getSecond();
-        Result<List<Wan.Model>, FuelError> obj = data.getThird();
+        Result<List<Wan>, FuelError> obj = data.getThird();
         System.out.println(obj.get());
     }
 }

@@ -18,7 +18,7 @@ public class Hosts {
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
-        bboxapi.getHosts(new Handler<List<fr.bmartel.bboxapi.model.Hosts.Model>>() {
+        bboxapi.getHosts(new Handler<List<fr.bmartel.bboxapi.model.Hosts>>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -26,7 +26,7 @@ public class Hosts {
             }
 
             @Override
-            public void success(Request request, Response response, List<fr.bmartel.bboxapi.model.Hosts.Model> data) {
+            public void success(Request request, Response response, List<fr.bmartel.bboxapi.model.Hosts> data) {
                 System.out.println(data);
                 latch.countDown();
             }
@@ -34,10 +34,10 @@ public class Hosts {
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<List<fr.bmartel.bboxapi.model.Hosts.Model>, FuelError>> data = bboxapi.getHostsSync();
+        Triple<Request, Response, Result<List<fr.bmartel.bboxapi.model.Hosts>, FuelError>> data = bboxapi.getHostsSync();
         Request request = data.getFirst();
         Response response = data.getSecond();
-        Result<List<fr.bmartel.bboxapi.model.Hosts.Model>, FuelError> obj = data.getThird();
+        Result<List<fr.bmartel.bboxapi.model.Hosts>, FuelError> obj = data.getThird();
         System.out.println(obj.get());
     }
 }

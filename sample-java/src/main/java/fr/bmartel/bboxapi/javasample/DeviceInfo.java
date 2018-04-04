@@ -19,7 +19,7 @@ public class DeviceInfo {
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
-        bboxapi.getDeviceInfo(new Handler<List<Device.Model>>() {
+        bboxapi.getDeviceInfo(new Handler<List<Device>>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -27,7 +27,7 @@ public class DeviceInfo {
             }
 
             @Override
-            public void success(Request request, Response response, List<Device.Model> data) {
+            public void success(Request request, Response response, List<Device> data) {
                 System.out.println(data);
                 latch.countDown();
             }
@@ -35,10 +35,10 @@ public class DeviceInfo {
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<List<Device.Model>, FuelError>> data = bboxapi.getDeviceInfoSync();
+        Triple<Request, Response, Result<List<Device>, FuelError>> data = bboxapi.getDeviceInfoSync();
         Request request = data.getFirst();
         Response response = data.getSecond();
-        Result<List<Device.Model>, FuelError> obj = data.getThird();
+        Result<List<Device>, FuelError> obj = data.getThird();
         System.out.println(obj.get());
     }
 }

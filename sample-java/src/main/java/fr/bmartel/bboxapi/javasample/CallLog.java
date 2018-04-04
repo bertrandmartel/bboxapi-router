@@ -6,7 +6,7 @@ import com.github.kittinunf.fuel.core.Request;
 import com.github.kittinunf.fuel.core.Response;
 import com.github.kittinunf.result.Result;
 import fr.bmartel.bboxapi.BboxApi;
-import fr.bmartel.bboxapi.model.Voip;
+import fr.bmartel.bboxapi.model.Line;
 import kotlin.Triple;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class CallLog {
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
-        bboxapi.getCallLogs(Voip.Line.LINE1, new Handler<List<fr.bmartel.bboxapi.model.CallLog.Model>>() {
+        bboxapi.getCallLogs(Line.LINE1, new Handler<List<fr.bmartel.bboxapi.model.CallLog>>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -28,7 +28,7 @@ public class CallLog {
             }
 
             @Override
-            public void success(Request request, Response response, List<fr.bmartel.bboxapi.model.CallLog.Model> data) {
+            public void success(Request request, Response response, List<fr.bmartel.bboxapi.model.CallLog> data) {
                 System.out.println(data);
                 latch.countDown();
             }
@@ -36,10 +36,10 @@ public class CallLog {
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<List<fr.bmartel.bboxapi.model.CallLog.Model>, FuelError>> data = bboxapi.getCallLogsSync(Voip.Line.LINE1);
+        Triple<Request, Response, Result<List<fr.bmartel.bboxapi.model.CallLog>, FuelError>> data = bboxapi.getCallLogsSync(Line.LINE1);
         Request request = data.getFirst();
         Response response = data.getSecond();
-        Result<List<fr.bmartel.bboxapi.model.CallLog.Model>, FuelError> obj = data.getThird();
+        Result<List<fr.bmartel.bboxapi.model.CallLog>, FuelError> obj = data.getThird();
         System.out.println(obj.get());
     }
 }

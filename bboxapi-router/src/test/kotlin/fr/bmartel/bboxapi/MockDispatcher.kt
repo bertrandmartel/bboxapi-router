@@ -1,8 +1,10 @@
 package fr.bmartel.bboxapi
 
 import com.google.gson.Gson
-import fr.bmartel.bboxapi.model.Acl
+import fr.bmartel.bboxapi.model.ApiError
+import fr.bmartel.bboxapi.model.ApiException
 import fr.bmartel.bboxapi.model.BboxException
+import fr.bmartel.bboxapi.model.MacFilterRule
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
@@ -19,11 +21,11 @@ class MockDispatcher : Dispatcher() {
     /**
      * authenticated response error
      */
-    private val authError = BboxException.Model(
-            BboxException.ApiException(
+    private val authError = BboxException(
+            ApiException(
                     "v1/voip",
                     "401",
-                    listOf(BboxException.ApiError(
+                    listOf(ApiError(
                             "", "Operation requires authentication"
                     ))
             )
@@ -151,7 +153,7 @@ class MockDispatcher : Dispatcher() {
                     params.containsKey("macaddress") &&
                     params.containsKey("enable") &&
                     params.containsKey("device")) {
-                BboxApiTest.macFilterRule = Acl.MacFilterRule(
+                BboxApiTest.macFilterRule = MacFilterRule(
                         enable = params["enable"]?.get(0)?.toInt() == 1,
                         macaddress = params["macaddress"]?.get(0) ?: "",
                         ip = params["device"]?.get(0) ?: "")
@@ -215,7 +217,7 @@ class MockDispatcher : Dispatcher() {
                 if (formData.containsKey("macaddress") &&
                         formData.containsKey("enable") &&
                         formData.containsKey("device")) {
-                    BboxApiTest.macFilterRule = Acl.MacFilterRule(
+                    BboxApiTest.macFilterRule = MacFilterRule(
                             enable = formData["enable"]?.get(0)?.toInt() == 1,
                             macaddress = formData["macaddress"]?.get(0) ?: "",
                             ip = formData["device"]?.get(0) ?: "")
@@ -279,11 +281,11 @@ class MockDispatcher : Dispatcher() {
     private fun updateWireless(request: RecordedRequest): MockResponse {
         val pattern = Pattern.compile("/wireless\\?radio.enable=(\\d+)")
         val matcher = pattern.matcher(request.path)
-        val outOfRangeError = BboxException.Model(
-                BboxException.ApiException(
+        val outOfRangeError = BboxException(
+                ApiException(
                         "v1/wireless",
                         "400",
-                        listOf(BboxException.ApiError(
+                        listOf(ApiError(
                                 "radio.enable", "Parameter out of range"
                         ))
                 )
@@ -325,11 +327,11 @@ class MockDispatcher : Dispatcher() {
     private fun updateLuminosity(request: RecordedRequest): MockResponse {
         val pattern = Pattern.compile("/device/display\\?luminosity=(\\d+)")
         val matcher = pattern.matcher(request.path)
-        val outOfRangeError = BboxException.Model(
-                BboxException.ApiException(
+        val outOfRangeError = BboxException(
+                ApiException(
                         "v1/display",
                         "400",
-                        listOf(BboxException.ApiError(
+                        listOf(ApiError(
                                 "luminosity", "Parameter out of range"
                         ))
                 )
@@ -360,11 +362,11 @@ class MockDispatcher : Dispatcher() {
         } else {
             BboxApiTest.attempts++
             if (BboxApiTest.attempts >= 3) {
-                val authError = BboxException.Model(
-                        BboxException.ApiException(
+                val authError = BboxException(
+                        ApiException(
                                 "v1/login",
                                 "429",
-                                listOf(BboxException.ApiError(
+                                listOf(ApiError(
                                         "", "${BboxApiTest.attempts} attempts, retry after " + (120 * (BboxApiTest.attempts - 2)) + " seconds "
                                 ))
                         )

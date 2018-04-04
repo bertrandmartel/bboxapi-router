@@ -6,7 +6,7 @@ import com.github.kittinunf.fuel.core.Request;
 import com.github.kittinunf.fuel.core.Response;
 import com.github.kittinunf.result.Result;
 import fr.bmartel.bboxapi.BboxApi;
-import fr.bmartel.bboxapi.model.Voip;
+import fr.bmartel.bboxapi.model.Line;
 import kotlin.Triple;
 
 import java.util.concurrent.CountDownLatch;
@@ -19,7 +19,7 @@ public class VoipDial {
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
-        bboxapi.voipDial(Voip.Line.LINE1, "0123456789", new Handler<String>() {
+        bboxapi.voipDial(Line.LINE1, "0123456789", new Handler<String>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -35,7 +35,7 @@ public class VoipDial {
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<String, FuelError>> data = bboxapi.voipDialSync(Voip.Line.LINE1, "0123456789");
+        Triple<Request, Response, Result<String, FuelError>> data = bboxapi.voipDialSync(Line.LINE1, "0123456789");
         Request request = data.getFirst();
         Response response = data.getSecond();
         Result<String, FuelError> obj = data.getThird();

@@ -44,8 +44,16 @@ class TestUtils {
 
         fun <T> executeSync(filename: String?, body: () -> T, expectedException: Exception? = null) {
             val (_, response, result) = body() as Triple<Request, Response, *>
-            val (data, err) = result as Result<*, FuelError>
-            checkSyncResult(filename = filename, response = response, data = data, err = err, expectedException = expectedException)
+            var error: FuelError? = null
+            var resulData: Any? = null
+            if (result != null) {
+                val (data, err) = result as Result<*, *>
+                resulData = data
+                if (err != null && err is FuelError) {
+                    error = err
+                }
+            }
+            checkSyncResult(filename = filename, response = response, data = resulData, err = error, expectedException = expectedException)
         }
 
         fun <T, Y> executeSyncOneParam(filename: String?, input: Y, body: (input: Y) -> T, expectedException: Exception? = null) {
@@ -69,14 +77,14 @@ class TestUtils {
             } else {
                 assertEquals(200, response.statusCode)
                 MatcherAssert.assertThat(err?.exception, CoreMatchers.nullValue())
-                MatcherAssert.assertThat(data, CoreMatchers.notNullValue())
+                //MatcherAssert.assertThat(data, CoreMatchers.notNullValue())
                 if (filename != null) {
                     JSONAssert.assertEquals(TestUtils.getResFile(fileName = filename), Gson().toJson(data), false)
                 }
             }
         }
 
-        fun <T> executeAsync(testcase: TestCase, filename: String?, body: (handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
+        fun <T> executeAsync(testcase: TestCase, filename: String?, body: (handler: (Request, Response, Result<*, *>?) -> Unit) -> T, expectedException: Exception? = null) {
             var request: Request? = null
             var response: Response? = null
             var data: Any? = null
@@ -84,9 +92,13 @@ class TestUtils {
             body { req, res, result ->
                 request = req
                 response = res
-                val (d, e) = result
-                data = d
-                err = e
+                if (result != null) {
+                    val (d, e) = result
+                    data = d
+                    if (e != null && e is FuelError) {
+                        err = e
+                    }
+                }
                 testcase.lock.countDown()
             }
             testcase.await()
@@ -258,7 +270,7 @@ class TestUtils {
             } else {
                 assertEquals(200, response?.statusCode)
                 MatcherAssert.assertThat(err?.exception, CoreMatchers.nullValue())
-                MatcherAssert.assertThat(data, CoreMatchers.notNullValue())
+                //MatcherAssert.assertThat(data, CoreMatchers.notNullValue())
                 if (filename != null) {
                     JSONAssert.assertEquals(TestUtils.getResFile(fileName = filename), Gson().toJson(data), false)
                 }

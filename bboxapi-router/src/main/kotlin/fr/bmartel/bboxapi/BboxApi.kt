@@ -7,14 +7,16 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMapError
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.google.gson.reflect.TypeToken
 import fr.bmartel.bboxapi.model.*
 import java.net.HttpCookie
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.concurrent.schedule
 
 class BboxApi {
 
-    private var password: String = ""
+    var password: String = ""
     var bboxId: String = ""
 
     var authenticated: Boolean = false
@@ -48,9 +50,7 @@ class BboxApi {
         FuelManager.instance.basePath = basePath
     }
 
-    fun setPassword(password: String) {
-        this.password = password
-    }
+    inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object : TypeToken<T>() {}.type)
 
     private inline fun <reified T : Any> authenticateAndExecute(request: Request, noinline handler: (Request, Response, Result<T, FuelError>) -> Unit, json: Boolean = true) {
         authenticate { authResult ->
@@ -521,5 +521,176 @@ class BboxApi {
         } else {
             return request.responseString()
         }
+    }
+
+    fun logout(handler: (Request, Response, Result<ByteArray, FuelError>) -> Unit) {
+        authenticated = false
+        Fuel.post("/logout").response(handler)
+    }
+
+    fun logout(handler: Handler<ByteArray>) {
+        authenticated = false
+        Fuel.post("/logout").response(handler)
+    }
+
+    fun logoutSync(): Triple<Request, Response, Result<ByteArray, FuelError>> {
+        authenticated = false
+        return Fuel.post("/logout").response()
+    }
+
+    fun startPasswordRecovery(handler: (Request, Response, Result<ByteArray, FuelError>) -> Unit) {
+        Fuel.post("/password-recovery").response(handler)
+    }
+
+    fun startPasswordRecovery(handler: Handler<ByteArray>) {
+        Fuel.post("/password-recovery").response(handler)
+    }
+
+    fun startPasswordRecoverySync(): Triple<Request, Response, Result<ByteArray, FuelError>> {
+        return Fuel.post("/password-recovery").response()
+    }
+
+    fun verifyPasswordRecovery(handler: (Request, Response, Result<List<RecoveryVerify>, Exception>?) -> Unit) {
+        Fuel.get("/password-recovery/verify").responseString { req, res, result ->
+            when (result) {
+                is Result.Failure -> {
+                    handler(req, res, null)
+                }
+                is Result.Success -> {
+                    if (result.get().isEmpty()) {
+                        res.headers["Set-Cookie"]?.flatMap { HttpCookie.parse(it) }?.find { it.name == "BBOX_ID" }?.let {
+                            bboxId = it.value
+                            authenticated = true
+                        }
+                        handler(req, res, null)
+                    } else {
+                        val data = Result.of(Gson().fromJson<List<RecoveryVerify>>(result.get()))
+                        handler(req, res, data)
+                    }
+                }
+            }
+        }
+    }
+
+    fun verifyPasswordRecovery(handler: Handler<List<RecoveryVerify>?>) {
+        Fuel.get("/password-recovery/verify").responseString { req, res, result ->
+            when (result) {
+                is Result.Failure -> {
+                    handler.failure(req, res, result.error)
+                }
+                is Result.Success -> {
+                    if (result.get().isEmpty()) {
+                        res.headers["Set-Cookie"]?.flatMap { HttpCookie.parse(it) }?.find { it.name == "BBOX_ID" }?.let {
+                            bboxId = it.value
+                            authenticated = true
+                        }
+                        handler.success(req, res, null)
+                    } else {
+                        handler.success(req, res, Gson().fromJson<List<RecoveryVerify>>(result.get()))
+                    }
+                }
+            }
+        }
+    }
+
+    fun verifyPasswordRecoverySync(): Triple<Request, Response, Result<List<RecoveryVerify>, Exception>?> {
+        val (req, res, result) = Fuel.get("/password-recovery/verify").responseString()
+        if (result.component2() != null) {
+            return Triple(req, res, null)
+        }
+        return if (result.get().isEmpty()) {
+            res.headers["Set-Cookie"]?.flatMap { HttpCookie.parse(it) }?.find { it.name == "BBOX_ID" }?.let {
+                bboxId = it.value
+                authenticated = true
+            }
+            Triple(req, res, null)
+        } else {
+            Triple(req, res, Result.of(Gson().fromJson<List<RecoveryVerify>>(result.get())))
+        }
+    }
+
+    fun resetPassword(password: String, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
+        getToken { _, _, result ->
+            val data = listOf(
+                    "password" to password
+            )
+            processSecureApi(
+                    request = Fuel.post("/reset-password?btoken=${result.get()[0].device?.token}", parameters = data),
+                    handler = { req: Request, res: Response, resetResult: Result<String, FuelError> ->
+                        if (res.statusCode == 200) {
+                            this.password = password
+                        }
+                        handler(req, res, resetResult)
+                    },
+                    json = false)
+        }
+    }
+
+    fun resetPassword(password: String, handler: Handler<String>) {
+        getToken { _, _, result ->
+            val data = listOf(
+                    "password" to password
+            )
+            processSecureApi(
+                    request = Fuel.post("/reset-password?btoken=${result.get()[0].device?.token}", parameters = data),
+                    handler = { req: Request, res: Response, resetResult: Result<String, FuelError> ->
+                        if (res.statusCode == 200) {
+                            this.password = password
+                        }
+                        when (resetResult) {
+                            is Result.Failure -> {
+                                handler.failure(req, res, resetResult.error)
+                            }
+                            is Result.Success -> {
+                                handler.success(req, res, resetResult.get())
+                            }
+                        }
+                    },
+                    json = false)
+        }
+    }
+
+    fun resetPasswordSync(password: String): Triple<Request, Response, Result<String, FuelError>> {
+        val (_, _, result) = getTokenSync()
+        val data = listOf(
+                "password" to password
+        )
+        val resetResult: Triple<Request, Response, Result<String, FuelError>> = processSecureApiSync(
+                request = Fuel.post("/reset-password?btoken=${result.get()[0].device?.token}", parameters = data),
+                json = false)
+        if (resetResult.second.statusCode == 200) {
+            this.password = password
+        }
+        return resetResult
+    }
+
+    fun waitForPushButton(maxDuration: Long, pollInterval: Long = 1000): Boolean {
+        val (_, response, _) = startPasswordRecoverySync()
+        var listenTimer: Timer? = null
+        if (response.statusCode == 200) {
+            val (_, response, result) = verifyPasswordRecoverySync()
+            if (response.statusCode == 200 && result?.get() == null) {
+                return true
+            }
+            var expire: Int = result?.get()?.get(0)?.expires ?: 0
+            if (expire > 0) {
+                var stop = false
+                listenTimer = Timer()
+                listenTimer.schedule(delay = maxDuration) {
+                    stop = true
+                }
+                while (expire > 0 && !stop) {
+                    val (_, res, verify) = verifyPasswordRecoverySync()
+                    if (res.statusCode == 200 && verify?.get() == null) {
+                        return true
+                    } else {
+                        expire = verify?.get()?.get(0)?.expires ?: 0
+                    }
+                    Thread.sleep(pollInterval)
+                }
+            }
+        }
+        listenTimer?.cancel()
+        return false
     }
 }

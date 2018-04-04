@@ -53,6 +53,11 @@ class MockDispatcher : Dispatcher() {
             request.method == "PUT" && request.path.startsWith("/device/display?luminosity=") -> updateLuminosity(request)
             request.method == "GET" && request.path == "/voip" -> sendAuthenticatedResponse(request = request, fileName = "voip.json")
             request.method == "POST" && request.path == "/login" -> login(request)
+            request.method == "POST" && request.path == "/logout" -> MockResponse().setResponseCode(200)
+            request.method == "POST" && request.path.startsWith("/pincode/verify") -> pincodeVerify(request)
+            request.method == "POST" && request.path == "/password-recovery" -> MockResponse().setResponseCode(200)
+            request.method == "POST" && request.path.startsWith("/reset-password") -> resetPassword(request)
+            request.method == "GET" && request.path == "/password-recovery/verify" -> verifyPassword()
             else -> MockResponse().setResponseCode(404)
         }
     }
@@ -69,6 +74,21 @@ class MockDispatcher : Dispatcher() {
      */
     private fun sendAuthenticatedResponse(request: RecordedRequest, fileName: String): MockResponse {
         return dispatchAuthResponse(request, MockResponse().setResponseCode(200).setBody(TestUtils.getResFile(fileName = fileName)))
+    }
+
+    /**
+     * 0 is not started, 1 is push button pressed, other is max duration (started)
+     */
+    private fun verifyPassword(): MockResponse {
+        if (BboxApiTest.changePassword == 0) {
+            return sendResponse(fileName = "verify_password.json")
+        } else if (BboxApiTest.changePassword == 1) {
+            return MockResponse()
+                    .setResponseCode(200)
+                    .addHeader("Set-Cookie", "BBOX_ID=${BboxApiTest.cookie}; Path=/; Version=1; HttpOnly")
+                    .setBody("")
+        }
+        return sendResponse(fileName = "verify_password_max.json")
     }
 
     /**
@@ -163,6 +183,22 @@ class MockDispatcher : Dispatcher() {
         }
     }
 
+    private fun pincodeVerify(request: RecordedRequest): MockResponse {
+        if (request.path.indexOf("?") != -1) {
+            val query = request.path.substringAfter("?")
+            val params = TestUtils.splitQuery(query)
+            if (params.containsKey("pincode") &&
+                    (params.get("pincode")?.isNotEmpty() == true) &&
+                    (params["pincode"]?.get(0).equals(BboxApiTest.PINCODE))) {
+                return MockResponse().setResponseCode(200)
+            } else {
+                return MockResponse().setResponseCode(401)
+            }
+        } else {
+            return MockResponse().setResponseCode(401)
+        }
+    }
+
     /**
      * POST /wireless/acl
      */
@@ -183,6 +219,29 @@ class MockDispatcher : Dispatcher() {
                             enable = formData["enable"]?.get(0)?.toInt() == 1,
                             macaddress = formData["macaddress"]?.get(0) ?: "",
                             ip = formData["device"]?.get(0) ?: "")
+                    return dispatchAuthResponse(request, MockResponse().setResponseCode(200))
+                } else {
+                    return dispatchAuthResponse(request, MockResponse().setResponseCode(401))
+                }
+            } else {
+                return dispatchAuthResponse(request, MockResponse().setResponseCode(401))
+            }
+        } else {
+            return dispatchAuthResponse(request, MockResponse().setResponseCode(401))
+        }
+    }
+
+    private fun resetPassword(request: RecordedRequest): MockResponse {
+        if (request.path.indexOf("?") != -1) {
+            val query = request.path.substringAfter("?")
+            val params = TestUtils.splitQuery(query)
+            if (params.containsKey("btoken") &&
+                    (params.get("btoken")?.isNotEmpty() == true) &&
+                    params["btoken"]?.get(0) == BboxApiTest.btoken[0].device?.token) {
+
+                val formData = TestUtils.splitQuery(request.body.readUtf8())
+
+                if (formData.containsKey("password")) {
                     return dispatchAuthResponse(request, MockResponse().setResponseCode(200))
                 } else {
                     return dispatchAuthResponse(request, MockResponse().setResponseCode(401))

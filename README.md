@@ -31,6 +31,9 @@
 - [x] create wifi mac filter (`POST /wireless/acl?btoken=xxx`)
 - [x] update wifi mac filter (`PUT /wireless/acl/$rule`)
 - [x] delete wifi mac filter (`DELETE /wireless/acl/$rule`)
+- [x] start password recovery (`POST /password-recovery`)
+- [x] verify password recovery (`GET /password-recovery/verify`)
+- [x] reset password (`POST /reset-password`)
 
 ## Tests
 

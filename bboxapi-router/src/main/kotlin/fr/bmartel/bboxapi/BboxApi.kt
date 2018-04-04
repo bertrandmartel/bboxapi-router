@@ -52,7 +52,7 @@ class BboxApi {
         this.password = password
     }
 
-    private inline fun <reified T : Any> authenticateAndExecute(request: Request, noinline handler: (Request, Response, Result<T, FuelError>) -> Unit) {
+    private inline fun <reified T : Any> authenticateAndExecute(request: Request, noinline handler: (Request, Response, Result<T, FuelError>) -> Unit, json: Boolean = true) {
         authenticate { authResult ->
             val (req, res, exception, cookie) = authResult
             if (exception != null) {
@@ -61,106 +61,80 @@ class BboxApi {
                 })
             } else {
                 bboxId = cookie ?: ""
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = gsonDeserializerOf(), handler = handler)
+                if (json) {
+                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = gsonDeserializerOf(), handler = handler)
+                } else {
+                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString(handler = handler as (Request, Response, Result<*, FuelError>) -> Unit)
+                }
             }
         }
     }
 
-    private inline fun <reified T : Any> authenticateAndExecute(request: Request, handler: Handler<T>) {
+    private inline fun <reified T : Any> authenticateAndExecute(request: Request, handler: Handler<T>, json: Boolean = true) {
         authenticate { authResult ->
             val (req, res, exception, cookie) = authResult
             if (exception != null) {
                 handler.failure(req, res, Result.error(FuelError(exception)).error)
             } else {
                 bboxId = cookie ?: ""
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = gsonDeserializerOf(), handler = handler)
-            }
-        }
-    }
-
-    private inline fun <reified T : Any> processSecureApi(request: Request, handler: Handler<T>) {
-        if (!authenticated) {
-            authenticateAndExecute(request, handler)
-        } else {
-            request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(deserializer = gsonDeserializerOf()) { req, res, result ->
-                if (res.statusCode == 401) {
-                    authenticateAndExecute(request = request, handler = handler)
+                if (json) {
+                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = gsonDeserializerOf(), handler = handler)
                 } else {
-                    handler.success(req, res, result.get())
+                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString(handler = handler as Handler<String>)
                 }
             }
         }
     }
 
-    private inline fun <reified T : Any> processSecureApi(request: Request, noinline handler: (Request, Response, Result<T, FuelError>) -> Unit) {
+    private inline fun <reified T : Any> processSecureApi(request: Request, handler: Handler<T>, json: Boolean = true) {
         if (!authenticated) {
-            authenticateAndExecute(request, handler)
+            authenticateAndExecute(request, handler, json = json)
         } else {
-            request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(deserializer = gsonDeserializerOf()) { req, res, result ->
-                if (res.statusCode == 401) {
-                    authenticateAndExecute(request = request, handler = handler)
-                } else {
-                    handler(req, res, result)
+            if (json) {
+                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(deserializer = gsonDeserializerOf()) { req, res, result ->
+                    if (res.statusCode == 401) {
+                        authenticateAndExecute(request = request, handler = handler, json = json)
+                    } else {
+                        handler.success(req, res, result.get())
+                    }
                 }
-            }
-        }
-    }
-
-    private fun processSecureApiString(request: Request, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        if (!authenticated) {
-            authenticateAndExecuteString(request, handler)
-        } else {
-            request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString { req, res, result ->
-                if (res.statusCode == 401) {
-                    authenticateAndExecuteString(request = request, handler = handler)
-                } else {
-                    handler(req, res, result)
-                }
-            }
-        }
-    }
-
-    private fun processSecureApiString(request: Request, handler: Handler<String>) {
-        if (!authenticated) {
-            authenticateAndExecuteString(request, handler)
-        } else {
-            request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString { req, res, result ->
-                if (res.statusCode == 401) {
-                    authenticateAndExecuteString(request = request, handler = handler)
-                } else {
-                    handler.success(req, res, result.get())
-                }
-            }
-        }
-    }
-
-    private fun authenticateAndExecuteString(request: Request, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        authenticate { authResult ->
-            val (req, res, exception, cookie) = authResult
-            if (exception != null) {
-                handler(req, res, Result.error(Exception("failure")).flatMapError {
-                    Result.error(FuelError(exception))
-                })
             } else {
-                bboxId = cookie ?: ""
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString(handler = handler)
+                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString { req, res, result ->
+                    if (res.statusCode == 401) {
+                        authenticateAndExecute(request = request, handler = handler, json = json)
+                    } else {
+                        handler.success(req, res, result.get() as T)
+                    }
+                }
             }
         }
     }
 
-    private fun authenticateAndExecuteString(request: Request, handler: Handler<String>) {
-        authenticate { authResult ->
-            val (req, res, exception, cookie) = authResult
-            if (exception != null) {
-                handler.failure(req, res, Result.error(FuelError(exception)).error)
+    private inline fun <reified T : Any> processSecureApi(request: Request, noinline handler: (Request, Response, Result<T, FuelError>) -> Unit, json: Boolean = true) {
+        if (!authenticated) {
+            authenticateAndExecute(request, handler, json = json)
+        } else {
+            if (json) {
+                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(deserializer = gsonDeserializerOf()) { req, res, result ->
+                    if (res.statusCode == 401) {
+                        authenticateAndExecute(request = request, handler = handler, json = json)
+                    } else {
+                        handler(req, res, result)
+                    }
+                }
             } else {
-                bboxId = cookie ?: ""
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString(handler = handler)
+                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString { req, res, result ->
+                    if (res.statusCode == 401) {
+                        authenticateAndExecute(request = request, handler = handler, json = json)
+                    } else {
+                        handler(req, res, result as Result<T, FuelError>)
+                    }
+                }
             }
         }
     }
 
-    private inline fun <reified T : Any> authenticateAndExecuteSync(request: Request): Triple<Request, Response, Result<T, FuelError>> {
+    private inline fun <reified T : Any> authenticateAndExecuteSync(request: Request, json: Boolean = true): Triple<Request, Response, Result<T, FuelError>> {
         val (req, res, exception, cookie) = authenticateSync()
         if (exception != null) {
             return Triple(req, res, Result.error(Exception("failure")).flatMapError {
@@ -168,47 +142,29 @@ class BboxApi {
             })
         } else {
             bboxId = cookie ?: ""
-            return request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = gsonDeserializerOf())
-        }
-    }
-
-    private inline fun <reified T : Any> processSecureApiSync(request: Request): Triple<Request, Response, Result<T, FuelError>> {
-        if (!authenticated) {
-            return authenticateAndExecuteSync(request = request)
-        } else {
-            val triple = request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(gsonDeserializerOf())
-
-            if (triple.second.statusCode == 401) {
-                return authenticateAndExecuteSync(request = request)
+            if (json) {
+                return request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = gsonDeserializerOf())
             } else {
-                return triple
+                return request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString() as Triple<Request, Response, Result<T, FuelError>>
             }
         }
     }
 
-    private fun processSecureApiStringSync(request: Request): Triple<Request, Response, Result<String, FuelError>> {
+    private inline fun <reified T : Any> processSecureApiSync(request: Request, json: Boolean = true): Triple<Request, Response, Result<T, FuelError>> {
         if (!authenticated) {
-            return authenticateAndExecuteStringSync(request = request)
+            return authenticateAndExecuteSync(request = request, json = json)
         } else {
-            val triple = request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString()
-
-            if (triple.second.statusCode == 401) {
-                return authenticateAndExecuteStringSync(request = request)
+            val triple = if (json) {
+                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(gsonDeserializerOf())
             } else {
-                return triple
+                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString()
             }
-        }
-    }
 
-    private fun authenticateAndExecuteStringSync(request: Request): Triple<Request, Response, Result<String, FuelError>> {
-        val (req, res, exception, cookie) = authenticateSync()
-        if (exception != null) {
-            return Triple(req, res, Result.error(Exception("failure")).flatMapError {
-                Result.error(ex = FuelError(exception = exception))
-            })
-        } else {
-            bboxId = cookie ?: ""
-            return request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString()
+            return if (triple.second.statusCode == 401) {
+                authenticateAndExecuteSync(request = request)
+            } else {
+                triple as Triple<Request, Response, Result<T, FuelError>>
+            }
         }
     }
 
@@ -362,39 +318,47 @@ class BboxApi {
     }
 
     fun setWifiState(state: Boolean, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        processSecureApiString(request = Fuel.put("/wireless?radio.enable=${if (state) 1 else 0}"), handler = handler)
+        processSecureApi(request = Fuel.put("/wireless?radio.enable=${if (state) 1 else 0}"), handler = handler, json = false)
     }
 
     fun setWifiState(state: Boolean, handler: Handler<String>) {
-        processSecureApiString(request = Fuel.put("/wireless?radio.enable=${if (state) 1 else 0}"), handler = handler)
+        processSecureApi(request = Fuel.put("/wireless?radio.enable=${if (state) 1 else 0}"), handler = handler, json = false)
     }
 
     fun setWifiStateSync(state: Boolean): Triple<Request, Response, Result<String, FuelError>> {
-        return processSecureApiStringSync(request = Fuel.put("/wireless?radio.enable=${if (state) 1 else 0}"))
+        return processSecureApiSync(request = Fuel.put("/wireless?radio.enable=${if (state) 1 else 0}"), json = false)
     }
 
     fun setDisplayState(state: Boolean, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        processSecureApiString(request = Fuel.put("/device/display?luminosity=${if (state) 100 else 0}"), handler = handler)
+        processSecureApi(request = Fuel.put("/device/display?luminosity=${if (state) 100 else 0}"), handler = handler, json = false)
     }
 
     fun setDisplayState(state: Boolean, handler: Handler<String>) {
-        processSecureApiString(request = Fuel.put("/device/display?luminosity=${if (state) 100 else 0}"), handler = handler)
+        processSecureApi(request = Fuel.put("/device/display?luminosity=${if (state) 100 else 0}"), handler = handler, json = false)
     }
 
     fun setDisplayStateSync(state: Boolean): Triple<Request, Response, Result<String, FuelError>> {
-        return processSecureApiStringSync(request = Fuel.put("/device/display?luminosity=${if (state) 100 else 0}"))
+        return processSecureApiSync(request = Fuel.put("/device/display?luminosity=${if (state) 100 else 0}"), json = false)
     }
 
     fun voipDial(line: Voip.Line, phoneNumber: String, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        processSecureApiString(request = Fuel.put("/voip/dial?line=${if (line == Voip.Line.LINE1) 1 else 2}&number=$phoneNumber"), handler = handler)
+        processSecureApi(
+                request = Fuel.put("/voip/dial?line=${if (line == Voip.Line.LINE1) 1 else 2}&number=$phoneNumber"),
+                handler = handler,
+                json = false)
     }
 
     fun voipDial(line: Voip.Line, phoneNumber: String, handler: Handler<String>) {
-        processSecureApiString(request = Fuel.put("/voip/dial?line=${if (line == Voip.Line.LINE1) 1 else 2}&number=$phoneNumber"), handler = handler)
+        processSecureApi(
+                request = Fuel.put("/voip/dial?line=${if (line == Voip.Line.LINE1) 1 else 2}&number=$phoneNumber"),
+                handler = handler,
+                json = false)
     }
 
     fun voipDialSync(line: Voip.Line, phoneNumber: String): Triple<Request, Response, Result<String, FuelError>> {
-        return processSecureApiStringSync(request = Fuel.put("/voip/dial?line=${if (line == Voip.Line.LINE1) 1 else 2}&number=$phoneNumber"))
+        return processSecureApiSync(
+                request = Fuel.put("/voip/dial?line=${if (line == Voip.Line.LINE1) 1 else 2}&number=$phoneNumber"),
+                json = false)
     }
 
     fun getToken(handler: (Request, Response, Result<List<Token.Model>, FuelError>) -> Unit) {
@@ -411,19 +375,25 @@ class BboxApi {
 
     fun reboot(handler: (Request, Response, Result<String, FuelError>) -> Unit) {
         getToken { _, _, result ->
-            processSecureApiString(request = Fuel.post("/device/reboot?btoken=${result.get()[0].device?.token}"), handler = handler)
+            processSecureApi(
+                    request = Fuel.post("/device/reboot?btoken=${result.get()[0].device?.token}"),
+                    handler = handler,
+                    json = false)
         }
     }
 
     fun reboot(handler: Handler<String>) {
         getToken { _, _, result ->
-            processSecureApiString(request = Fuel.post("/device/reboot?btoken=${result.get()[0].device?.token}"), handler = handler)
+            processSecureApi(
+                    request = Fuel.post("/device/reboot?btoken=${result.get()[0].device?.token}"),
+                    handler = handler,
+                    json = false)
         }
     }
 
     fun rebootSync(): Triple<Request, Response, Result<String, FuelError>> {
         val (_, _, result) = getTokenSync()
-        return processSecureApiStringSync(request = Fuel.post("/device/reboot?btoken=${result.get()[0].device?.token}"))
+        return processSecureApiSync(request = Fuel.post("/device/reboot?btoken=${result.get()[0].device?.token}"), json = false)
     }
 
     fun getWifiMacFilter(handler: (Request, Response, Result<List<Acl.Model>, FuelError>) -> Unit) {
@@ -439,27 +409,27 @@ class BboxApi {
     }
 
     fun setWifiMacFilter(state: Boolean, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        processSecureApiString(request = Fuel.put("/wireless/acl?enable=${if (state) 1 else 0}"), handler = handler)
+        processSecureApi(request = Fuel.put("/wireless/acl?enable=${if (state) 1 else 0}"), handler = handler, json = false)
     }
 
     fun setWifiMacFilter(state: Boolean, handler: Handler<String>) {
-        processSecureApiString(request = Fuel.put("/wireless/acl?enable=${if (state) 1 else 0}"), handler = handler)
+        processSecureApi(request = Fuel.put("/wireless/acl?enable=${if (state) 1 else 0}"), handler = handler, json = false)
     }
 
     fun setWifiMacFilterSync(state: Boolean): Triple<Request, Response, Result<String, FuelError>> {
-        return processSecureApiStringSync(request = Fuel.put("/wireless/acl?enable=${if (state) 1 else 0}"))
+        return processSecureApiSync(request = Fuel.put("/wireless/acl?enable=${if (state) 1 else 0}"), json = false)
     }
 
     fun deleteMacFilterRule(ruleIndex: Int, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        processSecureApiString(request = Fuel.delete("/wireless/acl/rules/$ruleIndex"), handler = handler)
+        processSecureApi(request = Fuel.delete("/wireless/acl/rules/$ruleIndex"), handler = handler, json = false)
     }
 
     fun deleteMacFilterRule(ruleIndex: Int, handler: Handler<String>) {
-        processSecureApiString(request = Fuel.delete("/wireless/acl/rules/$ruleIndex"), handler = handler)
+        processSecureApi(request = Fuel.delete("/wireless/acl/rules/$ruleIndex"), handler = handler, json = false)
     }
 
     fun deleteMacFilterRuleSync(ruleIndex: Int): Triple<Request, Response, Result<String, FuelError>> {
-        return processSecureApiStringSync(request = Fuel.delete("/wireless/acl/rules/$ruleIndex"))
+        return processSecureApiSync(request = Fuel.delete("/wireless/acl/rules/$ruleIndex"), json = false)
     }
 
     fun updateMacFilterRule(ruleIndex: Int, rule: Acl.MacFilterRule, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
@@ -468,7 +438,7 @@ class BboxApi {
                 "macaddress" to rule.macaddress,
                 "device" to (if (rule.ip == "") -1 else rule.ip)
         )
-        processSecureApiString(request = Fuel.put("/wireless/acl/rules/$ruleIndex", data), handler = handler)
+        processSecureApi(request = Fuel.put("/wireless/acl/rules/$ruleIndex", data), handler = handler, json = false)
     }
 
     fun updateMacFilterRule(ruleIndex: Int, rule: Acl.MacFilterRule, handler: Handler<String>) {
@@ -477,7 +447,7 @@ class BboxApi {
                 "macaddress" to rule.macaddress,
                 "device" to (if (rule.ip == "") -1 else rule.ip)
         )
-        processSecureApiString(request = Fuel.put("/wireless/acl/rules/$ruleIndex", data), handler = handler)
+        processSecureApi(request = Fuel.put("/wireless/acl/rules/$ruleIndex", data), handler = handler, json = false)
     }
 
     fun updateMacFilterRuleSync(ruleIndex: Int, rule: Acl.MacFilterRule): Triple<Request, Response, Result<String, FuelError>> {
@@ -486,7 +456,7 @@ class BboxApi {
                 "macaddress" to rule.macaddress,
                 "device" to (if (rule.ip == "") -1 else rule.ip)
         )
-        return processSecureApiStringSync(request = Fuel.put("/wireless/acl/rules/$ruleIndex", data))
+        return processSecureApiSync(request = Fuel.put("/wireless/acl/rules/$ruleIndex", data), json = false)
     }
 
     fun createMacFilterRule(rule: Acl.MacFilterRule, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
@@ -496,7 +466,10 @@ class BboxApi {
                     "macaddress" to rule.macaddress,
                     "device" to (if (rule.ip == "") -1 else rule.ip)
             )
-            processSecureApiString(request = Fuel.post("/wireless/acl/rules?btoken=${result.get()[0].device?.token}", parameters = data), handler = handler)
+            processSecureApi(
+                    request = Fuel.post("/wireless/acl/rules?btoken=${result.get()[0].device?.token}", parameters = data),
+                    handler = handler,
+                    json = false)
         }
     }
 
@@ -507,7 +480,10 @@ class BboxApi {
                     "macaddress" to rule.macaddress,
                     "device" to (if (rule.ip == "") -1 else rule.ip)
             )
-            processSecureApiString(request = Fuel.post("/wireless/acl/rules?btoken=${result.get()[0].device?.token}", parameters = data), handler = handler)
+            processSecureApi(
+                    request = Fuel.post("/wireless/acl/rules?btoken=${result.get()[0].device?.token}", parameters = data),
+                    handler = handler,
+                    json = false)
         }
     }
 
@@ -518,12 +494,14 @@ class BboxApi {
                 "macaddress" to rule.macaddress,
                 "device" to (if (rule.ip == "") -1 else rule.ip)
         )
-        return processSecureApiStringSync(request = Fuel.post("/wireless/acl/rules?btoken=${result.get()[0].device?.token}", parameters = data))
+        return processSecureApiSync(
+                request = Fuel.post("/wireless/acl/rules?btoken=${result.get()[0].device?.token}", parameters = data),
+                json = false)
     }
 
     fun createCustomRequest(request: Request, auth: Boolean, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
         if (auth) {
-            processSecureApiString(request = request, handler = handler)
+            processSecureApi(request = request, handler = handler, json = false)
         } else {
             request.responseString(handler = handler)
         }
@@ -531,7 +509,7 @@ class BboxApi {
 
     fun createCustomRequest(request: Request, auth: Boolean, handler: Handler<String>) {
         if (auth) {
-            processSecureApiString(request = request, handler = handler)
+            processSecureApi(request = request, handler = handler, json = false)
         } else {
             request.responseString(handler = handler)
         }
@@ -539,7 +517,7 @@ class BboxApi {
 
     fun createCustomRequestSync(request: Request, auth: Boolean): Triple<Request, Response, Result<String, FuelError>> {
         if (auth) {
-            return processSecureApiStringSync(request = request)
+            return processSecureApiSync(request = request, json = false)
         } else {
             return request.responseString()
         }

@@ -5,8 +5,6 @@ import com.github.kittinunf.result.Result
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import fr.bmartel.bboxapi.BboxApiTest.Companion.fromJson
-import fr.bmartel.bboxapi.model.Acl
-import fr.bmartel.bboxapi.model.Voip
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert
 import org.junit.Assert
@@ -50,43 +48,17 @@ class TestUtils {
             checkSyncResult(filename = filename, response = response, data = data, err = err, expectedException = expectedException)
         }
 
-        fun <T> executeSyncInt(filename: String?, input: Int, body: (input: Int) -> T, expectedException: Exception? = null) {
+        fun <T, Y> executeSyncOneParam(filename: String?, input: Y, body: (input: Y) -> T, expectedException: Exception? = null) {
             val (_, response, result) = body(input) as Triple<Request, Response, *>
             val (data, err) = result as Result<*, FuelError>
             checkSyncResult(filename = filename, response = response, data = data, err = err, expectedException = expectedException)
         }
 
-        fun <T> executeSyncBool(filename: String?, input: Boolean, body: (input: Boolean) -> T, expectedException: Exception? = null) {
-            val (_, response, result) = body(input) as Triple<Request, Response, *>
-            val (data, err) = result as Result<*, FuelError>
-            checkSyncResult(filename = filename, response = response, data = data, err = err, expectedException = expectedException)
-        }
-
-        fun <T> executeSyncLineString(filename: String?, line: Voip.Line, input2: String, body: (line: Voip.Line, input2: String) -> T, expectedException: Exception? = null) {
-            val (_, response, result) = body(line, input2) as Triple<Request, Response, *>
-            val (data, err) = result as Result<*, FuelError>
-            checkSyncResult(filename = filename, response = response, data = data, err = err, expectedException = expectedException)
-        }
-
-        fun <T> executeSyncLine(filename: String?, line: Voip.Line, body: (line: Voip.Line) -> T, expectedException: Exception? = null) {
-            val (_, response, result) = body(line) as Triple<Request, Response, *>
-            val (data, err) = result as Result<*, FuelError>
-            checkSyncResult(filename = filename, response = response, data = data, err = err, expectedException = expectedException)
-        }
-
-        fun <T> executeSyncRuleInt(filename: String?,
-                                   input1: Int,
-                                   input2: Acl.MacFilterRule,
-                                   body: (input1: Int, input2: Acl.MacFilterRule) -> T, expectedException: Exception? = null) {
+        fun <T, Y, Z> executeSyncTwoParam(filename: String?,
+                                          input1: Y,
+                                          input2: Z,
+                                          body: (input1: Y, input2: Z) -> T, expectedException: Exception? = null) {
             val (_, response, result) = body(input1, input2) as Triple<Request, Response, *>
-            val (data, err) = result as Result<*, FuelError>
-            checkSyncResult(filename = filename, response = response, data = data, err = err, expectedException = expectedException)
-        }
-
-        fun <T> executeSyncRule(filename: String?,
-                                input1: Acl.MacFilterRule,
-                                body: (input1: Acl.MacFilterRule) -> T, expectedException: Exception? = null) {
-            val (_, response, result) = body(input1) as Triple<Request, Response, *>
             val (data, err) = result as Result<*, FuelError>
             checkSyncResult(filename = filename, response = response, data = data, err = err, expectedException = expectedException)
         }
@@ -158,7 +130,7 @@ class TestUtils {
                     expectedException = expectedException)
         }
 
-        fun <T> executeAsyncInt(testcase: TestCase, input: Int, filename: String?, body: (input: Int, handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
+        fun <T, Y> executeAsyncOneParam(testcase: TestCase, input: Y, filename: String?, body: (input: Y, handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
             var request: Request? = null
             var response: Response? = null
             var data: Any? = null
@@ -181,7 +153,7 @@ class TestUtils {
                     expectedException = expectedException)
         }
 
-        fun <T> executeAsyncIntCb(testcase: TestCase, input: Int, filename: String?, body: (input: Int, handler: Handler<T>) -> T, expectedException: Exception? = null) {
+        fun <T, Y> executeAsyncOneParamCb(testcase: TestCase, input: Y, filename: String?, body: (input: Y, handler: Handler<T>) -> T, expectedException: Exception? = null) {
             var request: Request? = null
             var response: Response? = null
             var data: Any? = null
@@ -211,178 +183,11 @@ class TestUtils {
                     expectedException = expectedException)
         }
 
-        fun <T> executeAsyncLine(testcase: TestCase, line: Voip.Line, filename: String?, body: (line: Voip.Line, handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
-            var request: Request? = null
-            var response: Response? = null
-            var data: Any? = null
-            var err: FuelError? = null
-            body(line) { req, res, result ->
-                request = req
-                response = res
-                val (d, e) = result
-                data = d
-                err = e
-                testcase.lock.countDown()
-            }
-            testcase.await()
-            checkAsyncResult(
-                    filename = filename,
-                    request = request,
-                    response = response,
-                    data = data,
-                    err = err,
-                    expectedException = expectedException)
-        }
-
-        fun <T> executeAsyncLineCb(testcase: TestCase, line: Voip.Line, filename: String?, body: (line: Voip.Line, handler: Handler<T>) -> T, expectedException: Exception? = null) {
-            var request: Request? = null
-            var response: Response? = null
-            var data: Any? = null
-            var err: FuelError? = null
-            body(line, object : Handler<T> {
-                override fun failure(req: Request, res: Response, e: FuelError) {
-                    request = req
-                    response = res
-                    err = e
-                    testcase.lock.countDown()
-                }
-
-                override fun success(req: Request, res: Response, d: T) {
-                    request = req
-                    response = res
-                    data = d
-                    testcase.lock.countDown()
-                }
-            })
-            testcase.await()
-            checkAsyncResult(
-                    filename = filename,
-                    request = request,
-                    response = response,
-                    data = data,
-                    err = err,
-                    expectedException = expectedException)
-        }
-
-        fun <T> executeAsyncBool(testcase: TestCase, input: Boolean, filename: String?, body: (input: Boolean, handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
-            var request: Request? = null
-            var response: Response? = null
-            var data: Any? = null
-            var err: FuelError? = null
-            body(input) { req, res, result ->
-                request = req
-                response = res
-                val (d, e) = result
-                data = d
-                err = e
-                testcase.lock.countDown()
-            }
-            testcase.await()
-            checkAsyncResult(
-                    filename = filename,
-                    request = request,
-                    response = response,
-                    data = data,
-                    err = err,
-                    expectedException = expectedException)
-        }
-
-        fun <T> executeAsyncBoolCb(testcase: TestCase, input: Boolean, filename: String?, body: (input: Boolean, handler: Handler<T>) -> T, expectedException: Exception? = null) {
-            var request: Request? = null
-            var response: Response? = null
-            var data: Any? = null
-            var err: FuelError? = null
-            body(input, object : Handler<T> {
-                override fun failure(req: Request, res: Response, e: FuelError) {
-                    request = req
-                    response = res
-                    err = e
-                    testcase.lock.countDown()
-                }
-
-                override fun success(req: Request, res: Response, d: T) {
-                    request = req
-                    response = res
-                    data = d
-                    testcase.lock.countDown()
-                }
-            })
-            testcase.await()
-            checkAsyncResult(
-                    filename = filename,
-                    request = request,
-                    response = response,
-                    data = data,
-                    err = err,
-                    expectedException = expectedException)
-        }
-
-        fun <T> executeAsyncLineString(testcase: TestCase,
-                                       line: Voip.Line,
-                                       input2: String,
-                                       filename: String?,
-                                       body: (line: Voip.Line, input2: String, handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
-            var request: Request? = null
-            var response: Response? = null
-            var data: Any? = null
-            var err: FuelError? = null
-            body(line, input2) { req, res, result ->
-                request = req
-                response = res
-                val (d, e) = result
-                data = d
-                err = e
-                testcase.lock.countDown()
-            }
-            testcase.await()
-            checkAsyncResult(
-                    filename = filename,
-                    request = request,
-                    response = response,
-                    data = data,
-                    err = err,
-                    expectedException = expectedException)
-        }
-
-        fun <T> executeAsyncLineStringCb(testcase: TestCase,
-                                         line: Voip.Line,
-                                         input2: String,
-                                         filename: String?,
-                                         body: (line: Voip.Line, input2: String, handler: Handler<T>) -> T, expectedException: Exception? = null) {
-            var request: Request? = null
-            var response: Response? = null
-            var data: Any? = null
-            var err: FuelError? = null
-            body(line, input2, object : Handler<T> {
-                override fun failure(req: Request, res: Response, e: FuelError) {
-                    request = req
-                    response = res
-                    err = e
-                    testcase.lock.countDown()
-                }
-
-                override fun success(req: Request, res: Response, d: T) {
-                    request = req
-                    response = res
-                    data = d
-                    testcase.lock.countDown()
-                }
-            })
-            testcase.await()
-            checkAsyncResult(
-                    filename = filename,
-                    request = request,
-                    response = response,
-                    data = data,
-                    err = err,
-                    expectedException = expectedException)
-        }
-
-        fun <T> executeAsyncRuleInt(testcase: TestCase,
-                                    input1: Int,
-                                    input2: Acl.MacFilterRule,
-                                    filename: String?,
-                                    body: (input1: Int, input2: Acl.MacFilterRule, handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
+        fun <T, Y, Z> executeAsyncTwoParam(testcase: TestCase,
+                                           input1: Y,
+                                           input2: Z,
+                                           filename: String?,
+                                           body: (line: Y, input2: Z, handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
             var request: Request? = null
             var response: Response? = null
             var data: Any? = null
@@ -405,75 +210,16 @@ class TestUtils {
                     expectedException = expectedException)
         }
 
-        fun <T> executeAsyncRuleIntCb(testcase: TestCase,
-                                      input1: Int,
-                                      input2: Acl.MacFilterRule,
-                                      filename: String?,
-                                      body: (input1: Int, input2: Acl.MacFilterRule, handler: Handler<T>) -> T, expectedException: Exception? = null) {
+        fun <T, Y, Z> executeAsyncTwoParamCb(testcase: TestCase,
+                                             input1: Y,
+                                             input2: Z,
+                                             filename: String?,
+                                             body: (line: Y, input2: Z, handler: Handler<T>) -> T, expectedException: Exception? = null) {
             var request: Request? = null
             var response: Response? = null
             var data: Any? = null
             var err: FuelError? = null
             body(input1, input2, object : Handler<T> {
-                override fun failure(req: Request, res: Response, e: FuelError) {
-                    request = req
-                    response = res
-                    err = e
-                    testcase.lock.countDown()
-                }
-
-                override fun success(req: Request, res: Response, d: T) {
-                    request = req
-                    response = res
-                    data = d
-                    testcase.lock.countDown()
-                }
-            })
-            testcase.await()
-            checkAsyncResult(
-                    filename = filename,
-                    request = request,
-                    response = response,
-                    data = data,
-                    err = err,
-                    expectedException = expectedException)
-        }
-
-        fun <T> executeAsyncRule(testcase: TestCase,
-                                 input1: Acl.MacFilterRule,
-                                 filename: String?,
-                                 body: (input1: Acl.MacFilterRule, handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
-            var request: Request? = null
-            var response: Response? = null
-            var data: Any? = null
-            var err: FuelError? = null
-            body(input1) { req, res, result ->
-                request = req
-                response = res
-                val (d, e) = result
-                data = d
-                err = e
-                testcase.lock.countDown()
-            }
-            testcase.await()
-            checkAsyncResult(
-                    filename = filename,
-                    request = request,
-                    response = response,
-                    data = data,
-                    err = err,
-                    expectedException = expectedException)
-        }
-
-        fun <T> executeAsyncRuleCb(testcase: TestCase,
-                                   input1: Acl.MacFilterRule,
-                                   filename: String?,
-                                   body: (input1: Acl.MacFilterRule, handler: Handler<T>) -> T, expectedException: Exception? = null) {
-            var request: Request? = null
-            var response: Response? = null
-            var data: Any? = null
-            var err: FuelError? = null
-            body(input1, object : Handler<T> {
                 override fun failure(req: Request, res: Response, e: FuelError) {
                     request = req
                     response = res

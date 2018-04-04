@@ -394,24 +394,24 @@ open class BboxApiTest : TestCase() {
     @Test
     fun getCallLogs() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncLine(testcase = this, line = Voip.Line.LINE1, filename = "calllog.json", body = bboxApi::getCallLogs)
+        TestUtils.executeAsyncOneParam(testcase = this, input = Voip.Line.LINE1, filename = "calllog.json", body = bboxApi::getCallLogs)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncLine(testcase = this, line = Voip.Line.LINE2, filename = "calllog.json", body = bboxApi::getCallLogs)
+        TestUtils.executeAsyncOneParam(testcase = this, input = Voip.Line.LINE2, filename = "calllog.json", body = bboxApi::getCallLogs)
     }
 
     @Test
     fun getCallLogsCb() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncLineCb(testcase = this, line = Voip.Line.LINE1, filename = "calllog.json", body = bboxApi::getCallLogs)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = Voip.Line.LINE1, filename = "calllog.json", body = bboxApi::getCallLogs)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncLineCb(testcase = this, line = Voip.Line.LINE2, filename = "calllog.json", body = bboxApi::getCallLogs)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = Voip.Line.LINE2, filename = "calllog.json", body = bboxApi::getCallLogs)
     }
 
     @Test
     fun getCallLogsSync() {
         bboxApi.setPassword(password)
-        TestUtils.executeSyncLine(filename = "calllog.json", line = Voip.Line.LINE1, body = bboxApi::getCallLogsSync)
-        TestUtils.executeSyncLine(filename = "calllog.json", line = Voip.Line.LINE2, body = bboxApi::getCallLogsSync)
+        TestUtils.executeSyncOneParam(filename = "calllog.json", input = Voip.Line.LINE1, body = bboxApi::getCallLogsSync)
+        TestUtils.executeSyncOneParam(filename = "calllog.json", input = Voip.Line.LINE2, body = bboxApi::getCallLogsSync)
     }
 
     @Test
@@ -441,15 +441,15 @@ open class BboxApiTest : TestCase() {
     @Test
     fun setWifiState() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncBool(testcase = this, input = false, filename = null, body = bboxApi::setWifiState)
+        TestUtils.executeAsyncOneParam(testcase = this, input = false, filename = null, body = bboxApi::setWifiState)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncBool(testcase = this, input = true, filename = null, body = bboxApi::setWifiState)
+        TestUtils.executeAsyncOneParam(testcase = this, input = true, filename = null, body = bboxApi::setWifiState)
     }
 
     @Test
     fun setWifiStateNotAuthenticated() {
         bboxApi.setPassword("")
-        TestUtils.executeAsyncBool(
+        TestUtils.executeAsyncOneParam(
                 testcase = this,
                 input = false,
                 filename = null,
@@ -461,7 +461,7 @@ open class BboxApiTest : TestCase() {
     fun setWifiStateBadToken() {
         bboxApi.setPassword("")
         bboxApi.authenticated = true
-        TestUtils.executeAsyncBool(
+        TestUtils.executeAsyncOneParam(
                 testcase = this,
                 input = false,
                 filename = null,
@@ -472,15 +472,15 @@ open class BboxApiTest : TestCase() {
     @Test
     fun setWifiStateCb() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncBoolCb(testcase = this, input = false, filename = null, body = bboxApi::setWifiState)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = false, filename = null, body = bboxApi::setWifiState)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncBoolCb(testcase = this, input = true, filename = null, body = bboxApi::setWifiState)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = true, filename = null, body = bboxApi::setWifiState)
     }
 
     @Test
     fun setWifiStateCbNotAuthenticated() {
         bboxApi.setPassword("")
-        TestUtils.executeAsyncBoolCb(
+        TestUtils.executeAsyncOneParamCb(
                 testcase = this,
                 input = false,
                 filename = null,
@@ -492,7 +492,7 @@ open class BboxApiTest : TestCase() {
     fun setWifiStateCbBadToken() {
         bboxApi.setPassword("")
         bboxApi.authenticated = true
-        TestUtils.executeAsyncBoolCb(
+        TestUtils.executeAsyncOneParamCb(
                 testcase = this,
                 input = false,
                 filename = null,
@@ -503,14 +503,14 @@ open class BboxApiTest : TestCase() {
     @Test
     fun setWifiStateSync() {
         bboxApi.setPassword(password)
-        TestUtils.executeSyncBool(input = false, filename = null, body = bboxApi::setWifiStateSync)
-        TestUtils.executeSyncBool(input = true, filename = null, body = bboxApi::setWifiStateSync)
+        TestUtils.executeSyncOneParam(input = false, filename = null, body = bboxApi::setWifiStateSync)
+        TestUtils.executeSyncOneParam(input = true, filename = null, body = bboxApi::setWifiStateSync)
     }
 
     @Test
     fun setWifiStateSyncNotAuthenticated() {
         bboxApi.setPassword("")
-        TestUtils.executeSyncBool(
+        TestUtils.executeSyncOneParam(
                 input = false,
                 filename = null,
                 body = bboxApi::setWifiStateSync,
@@ -521,7 +521,7 @@ open class BboxApiTest : TestCase() {
     fun setWifiStateSyncBadToken() {
         bboxApi.setPassword("")
         bboxApi.authenticated = true
-        TestUtils.executeSyncBool(
+        TestUtils.executeSyncOneParam(
                 input = false,
                 filename = null,
                 body = bboxApi::setWifiStateSync,
@@ -531,47 +531,47 @@ open class BboxApiTest : TestCase() {
     @Test
     fun setDisplayState() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncBool(testcase = this, input = false, filename = null, body = bboxApi::setDisplayState)
+        TestUtils.executeAsyncOneParam(testcase = this, input = false, filename = null, body = bboxApi::setDisplayState)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncBool(testcase = this, input = true, filename = null, body = bboxApi::setDisplayState)
+        TestUtils.executeAsyncOneParam(testcase = this, input = true, filename = null, body = bboxApi::setDisplayState)
     }
 
     @Test
     fun setDisplayStateCb() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncBoolCb(testcase = this, input = false, filename = null, body = bboxApi::setDisplayState)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = false, filename = null, body = bboxApi::setDisplayState)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncBoolCb(testcase = this, input = true, filename = null, body = bboxApi::setDisplayState)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = true, filename = null, body = bboxApi::setDisplayState)
     }
 
     @Test
     fun setDisplayStateSync() {
         bboxApi.setPassword(password)
-        TestUtils.executeSyncBool(input = false, filename = null, body = bboxApi::setDisplayStateSync)
-        TestUtils.executeSyncBool(input = true, filename = null, body = bboxApi::setDisplayStateSync)
+        TestUtils.executeSyncOneParam(input = false, filename = null, body = bboxApi::setDisplayStateSync)
+        TestUtils.executeSyncOneParam(input = true, filename = null, body = bboxApi::setDisplayStateSync)
     }
 
     @Test
     fun voipDial() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncLineString(testcase = this, line = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDial)
+        TestUtils.executeAsyncTwoParam(testcase = this, input1 = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDial)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncLineString(testcase = this, line = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDial)
+        TestUtils.executeAsyncTwoParam(testcase = this, input1 = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDial)
     }
 
     @Test
     fun voipDialCb() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncLineStringCb(testcase = this, line = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDial)
+        TestUtils.executeAsyncTwoParamCb(testcase = this, input1 = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDial)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncLineStringCb(testcase = this, line = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDial)
+        TestUtils.executeAsyncTwoParamCb(testcase = this, input1 = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDial)
     }
 
     @Test
     fun voipDialSync() {
         bboxApi.setPassword(password)
-        TestUtils.executeSyncLineString(line = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDialSync)
-        TestUtils.executeSyncLineString(line = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDialSync)
+        TestUtils.executeSyncTwoParam(input1 = Voip.Line.LINE1, input2 = "012345689", filename = null, body = bboxApi::voipDialSync)
+        TestUtils.executeSyncTwoParam(input1 = Voip.Line.LINE2, input2 = "012345689", filename = null, body = bboxApi::voipDialSync)
     }
 
     @Test
@@ -631,36 +631,36 @@ open class BboxApiTest : TestCase() {
     @Test
     fun setWifiMacFilter() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncBool(testcase = this, input = false, filename = null, body = bboxApi::setWifiMacFilter)
+        TestUtils.executeAsyncOneParam(testcase = this, input = false, filename = null, body = bboxApi::setWifiMacFilter)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncBool(testcase = this, input = true, filename = null, body = bboxApi::setWifiMacFilter)
+        TestUtils.executeAsyncOneParam(testcase = this, input = true, filename = null, body = bboxApi::setWifiMacFilter)
     }
 
     @Test
     fun setWifiMacFilterCb() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncBoolCb(testcase = this, input = false, filename = null, body = bboxApi::setWifiMacFilter)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = false, filename = null, body = bboxApi::setWifiMacFilter)
         lock = CountDownLatch(1)
-        TestUtils.executeAsyncBoolCb(testcase = this, input = true, filename = null, body = bboxApi::setWifiMacFilter)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = true, filename = null, body = bboxApi::setWifiMacFilter)
     }
 
     @Test
     fun setWifiMacFilterSync() {
         bboxApi.setPassword(password)
-        TestUtils.executeSyncBool(input = false, filename = null, body = bboxApi::setWifiMacFilterSync)
-        TestUtils.executeSyncBool(input = true, filename = null, body = bboxApi::setWifiMacFilterSync)
+        TestUtils.executeSyncOneParam(input = false, filename = null, body = bboxApi::setWifiMacFilterSync)
+        TestUtils.executeSyncOneParam(input = true, filename = null, body = bboxApi::setWifiMacFilterSync)
     }
 
     @Test
     fun deleteWifiMacFilter() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncInt(testcase = this, input = 1, filename = null, body = bboxApi::deleteMacFilterRule)
+        TestUtils.executeAsyncOneParam(testcase = this, input = 1, filename = null, body = bboxApi::deleteMacFilterRule)
     }
 
     @Test
     fun deleteWifiMacFilterInvalid() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncInt(
+        TestUtils.executeAsyncOneParam(
                 testcase = this,
                 input = 2,
                 filename = null,
@@ -671,13 +671,13 @@ open class BboxApiTest : TestCase() {
     @Test
     fun deleteWifiMacFilterCb() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncIntCb(testcase = this, input = 1, filename = null, body = bboxApi::deleteMacFilterRule)
+        TestUtils.executeAsyncOneParamCb(testcase = this, input = 1, filename = null, body = bboxApi::deleteMacFilterRule)
     }
 
     @Test
     fun deleteWifiMacFilterCbInvalid() {
         bboxApi.setPassword(password)
-        TestUtils.executeAsyncIntCb(
+        TestUtils.executeAsyncOneParamCb(
                 testcase = this,
                 input = 2,
                 filename = null,
@@ -688,13 +688,13 @@ open class BboxApiTest : TestCase() {
     @Test
     fun deleteWifiMacFilterSync() {
         bboxApi.setPassword(password)
-        TestUtils.executeSyncInt(input = 1, filename = null, body = bboxApi::deleteMacFilterRuleSync)
+        TestUtils.executeSyncOneParam(input = 1, filename = null, body = bboxApi::deleteMacFilterRuleSync)
     }
 
     @Test
     fun deleteWifiMacFilterSyncInvalid() {
         bboxApi.setPassword(password)
-        TestUtils.executeSyncInt(
+        TestUtils.executeSyncOneParam(
                 input = 2,
                 filename = null,
                 body = bboxApi::deleteMacFilterRuleSync,
@@ -705,7 +705,7 @@ open class BboxApiTest : TestCase() {
     fun updateMacFilterRule() {
         bboxApi.setPassword(password)
         val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
-        TestUtils.executeAsyncRuleInt(
+        TestUtils.executeAsyncTwoParam(
                 testcase = this,
                 input1 = 1,
                 input2 = rule,
@@ -722,7 +722,7 @@ open class BboxApiTest : TestCase() {
     fun updateMacFilterRuleCb() {
         bboxApi.setPassword(password)
         val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
-        TestUtils.executeAsyncRuleIntCb(
+        TestUtils.executeAsyncTwoParamCb(
                 testcase = this,
                 input1 = 1,
                 input2 = rule,
@@ -739,7 +739,7 @@ open class BboxApiTest : TestCase() {
     fun updateMacFilterRuleSync() {
         bboxApi.setPassword(password)
         val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
-        TestUtils.executeSyncRuleInt(
+        TestUtils.executeSyncTwoParam(
                 filename = null,
                 input1 = 1,
                 input2 = rule,
@@ -755,9 +755,9 @@ open class BboxApiTest : TestCase() {
     fun createWifiMacRule() {
         bboxApi.setPassword(password)
         val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
-        TestUtils.executeAsyncRule(
+        TestUtils.executeAsyncOneParam(
                 testcase = this,
-                input1 = rule,
+                input = rule,
                 filename = null,
                 body = bboxApi::createMacFilterRule
         )
@@ -771,9 +771,9 @@ open class BboxApiTest : TestCase() {
     fun createWifiMacRuleCb() {
         bboxApi.setPassword(password)
         val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
-        TestUtils.executeAsyncRuleCb(
+        TestUtils.executeAsyncOneParamCb(
                 testcase = this,
-                input1 = rule,
+                input = rule,
                 filename = null,
                 body = bboxApi::createMacFilterRule
         )
@@ -787,8 +787,8 @@ open class BboxApiTest : TestCase() {
     fun createWifiMacRuleSync() {
         bboxApi.setPassword(password)
         val rule = Acl.MacFilterRule(enable = true, macaddress = "01:23:45:67:89", ip = "192.168.2.4")
-        TestUtils.executeSyncRule(
-                input1 = rule,
+        TestUtils.executeSyncOneParam(
+                input = rule,
                 filename = null,
                 body = bboxApi::createMacFilterRuleSync
         )

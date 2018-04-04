@@ -1,6 +1,6 @@
 #!/bin/bash
 
-modules=("bboxapi" "bboxapi-android")
+modules=("bboxapi-router" "bboxapi-router-android")
 for i in "${modules[@]}"
 do
 echo ">> Deploying $i ..."

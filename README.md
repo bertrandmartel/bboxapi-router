@@ -1,9 +1,9 @@
 # BboxApi Router client library #
 
 [![Build Status](https://travis-ci.org/bertrandmartel/bboxapi-router.svg)](https://travis-ci.org/bertrandmartel/bboxapi-router)
-[![Download](https://api.bintray.com/packages/bertrandmartel/maven/bboxapi-router-android/images/download.svg) ](https://bintray.com/bertrandmartel/maven/bboxapi-router-android/_latestVersion)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.bmartel/bboxapi-router-android/badge.svg)](https://maven-badges.herokuapp.com/maven-central/fr.bmartel/bboxapi-router-android)
-[![Javadoc](http://javadoc-badge.appspot.com/fr.bmartel/bboxapi-router-android.svg?label=javadoc)](http://javadoc-badge.appspot.com/fr.bmartel/bboxapi-router-android)
+[![Download](https://api.bintray.com/packages/bertrandmartel/maven/bboxapi-router/images/download.svg) ](https://bintray.com/bertrandmartel/maven/bboxapi-router/_latestVersion)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.bmartel/bboxapi-router/badge.svg)](https://maven-badges.herokuapp.com/maven-central/fr.bmartel/bboxapi-router)
+[![Javadoc](http://javadoc-badge.appspot.com/fr.bmartel/bboxapi-router.svg?label=javadoc)](http://javadoc-badge.appspot.com/fr.bmartel/bboxapi-router)
 [![codecov](https://codecov.io/gh/bertrandmartel/bboxapi-router/branch/master/graph/badge.svg)](https://codecov.io/gh/bertrandmartel/bboxapi-router)
 [![License](http://img.shields.io/:license-mit-blue.svg)](LICENSE.md)
 

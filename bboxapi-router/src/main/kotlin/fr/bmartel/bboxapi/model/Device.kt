@@ -1,5 +1,8 @@
 package fr.bmartel.bboxapi.model
 
+import com.google.gson.annotations.SerializedName
+import java.util.regex.Pattern
+
 class Device {
 
     data class Model(
@@ -11,14 +14,15 @@ class Device {
             val status: Int? = null,
             val numberofboots: Int? = null,
             val modelname: String? = null,
-            val user_configured: Int? = null,
+            @SerializedName("user_configured")
+            val userConfigured: Int? = null,
             val display: Display? = null,
-            val main: Versionning? = null,
-            val reco: Versionning? = null,
-            val running: Versionning? = null,
-            val bcck: Versionning? = null,
-            val ldr1: Versionning? = null,
-            val ldr2: Versionning? = null,
+            val main: Version? = null,
+            val reco: Version? = null,
+            val running: Version? = null,
+            val bcck: Version? = null,
+            val ldr1: Version? = null,
+            val ldr2: Version? = null,
             val firstusedate: String? = null,
             val uptime: Int? = null,
             val serialnumber: String? = null,
@@ -30,10 +34,22 @@ class Device {
             val state: String? = null
     )
 
-    data class Versionning(
-            val version: String? = null,
-            val date: String? = null
-    )
+    data class Version(
+            private val version: String? = null,
+            private val date: String? = null
+    ) {
+        fun getMajor(): Int {
+            return getVersionPattern(version, 1)
+        }
+
+        fun getMinor(): Int {
+            return getVersionPattern(version, 2)
+        }
+
+        fun getPatch(): Int {
+            return getVersionPattern(version, 3)
+        }
+    }
 
     data class DeviceService(
             val ipv4: Int? = null,
@@ -42,4 +58,11 @@ class Device {
             val adsl: Int? = null,
             val vdsl: Int? = null
     )
+
+    companion object {
+        fun getVersionPattern(input: String?, index: Int): Int {
+            val match = Pattern.compile("(\\d+).(\\d+).(\\d+)").matcher(input)
+            return if (match.matches()) Integer.parseInt(match.group(index)) else -1
+        }
+    }
 }

@@ -10,5 +10,5 @@ sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
 dependencies {
-    compile project(':bboxapi')
+    compile project(':bboxapi-router')
 }

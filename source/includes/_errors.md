@@ -28,7 +28,7 @@ bboxapi.getVoipInfo { _, response, result ->
 BboxApi bboxapi = new BboxApi();
 bboxapi.setPassword("root");
 
-bboxapi.getVoipInfo(new Handler<List<Voip.Model>>() {
+bboxapi.getVoipInfo(new Handler<List<Voip>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         if (error.getException() instanceof UnknownHostException) {

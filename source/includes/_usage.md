@@ -11,8 +11,8 @@ repositories {
 }
 
 dependencies {
-    compile 'fr.bmartel:bboxapi:1.7.0' //for JVM
-    compile 'fr.bmartel:bboxapi-android:1.7.0' //for Android
+    compile 'fr.bmartel:bboxapi-router:2.0.1' //for JVM
+    compile 'fr.bmartel:bboxapi-router-android:2.0.1' //for Android
 }
 ```
 
@@ -31,7 +31,7 @@ The format is the same as the one used in [Fuel](https://github.com/kittinunf/Fu
 
 The callback function is given in parameter, a `Request` & `Response` objects are returned along with a [Result object](https://github.com/kittinunf/Result) holding the data and a `FuelError` object in case of failure.
 
-For instance, for `getSummary` it will return `(Request, Response, Result<List<Model.Summary>, FuelError>)`
+For instance, for `getSummary` it will return `(Request, Response, Result<List<Summary>, FuelError>)`
 
 In case of Java, an `Handler` function is used that have 2 callbacks : `onSuccess` & `onError`
 

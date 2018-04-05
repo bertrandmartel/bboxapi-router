@@ -28,7 +28,7 @@ bboxapi.getVoipInfo { _, response, result ->
 BboxApi bboxapi = new BboxApi();
 bboxapi.setPassword("root");
 
-bboxapi.getVoipInfo(new Handler<List<Voip.Model>>() {
+bboxapi.getVoipInfo(new Handler<List<Voip>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         if (error.getException() instanceof UnknownHostException) {
@@ -41,7 +41,7 @@ bboxapi.getVoipInfo(new Handler<List<Voip.Model>>() {
     }
 
     @Override
-    public void success(Request request, Response response, List<Voip.Model> data) {
+    public void success(Request request, Response response, List<Voip> data) {
         System.out.println(data);
     }
 });
@@ -50,16 +50,10 @@ bboxapi.getVoipInfo(new Handler<List<Voip.Model>>() {
 
 Most of the APIs require authentication via `setPassword(password: String)` which is Bbox admin interface password.
 
-* get summary
-* get XDSL
-* get hosts
-* get wan ip info
-* get device info
-
-
 | method              | API call                               | require auth | description                    
 |---------------------|----------------------------------------|---------------|--------------------------------
-| login               | `POST /login`                            | false | login                          
+| login               | `POST /login`                          | false | login
+| logout              | `POST /logout`                         | true | logout                               
 | getSummary          | `GET /summary`                           | false | information summary            
 | getVoipInfo         | `GET /voip`                              | true | voip data                      
 | getDeviceInfo       | `GET /device`                            | false(*) | device information             
@@ -77,5 +71,9 @@ Most of the APIs require authentication via `setPassword(password: String)` whic
 | createMacFilterRule | `POST /wireless/acl?btoken=xxx`          | true | create wifi mac filter         
 | updateMacFilterRule | `PUT /wireless/acl/$rule`                | true | update wifi mac filter         
 | deleteMacFilterRule | `DELETE /wireless/acl/$rule`             | true | delete wifi mac filter         
+| startPasswordRecovery | `POST /password-recovery`             | false | start password recovery process
+| verifyPasswordRecovery | `GET /password-recovery/verify`       | false | check if push button has been pressed   
+| resetPassword        | `POST /reset-password?btoken=$btoken`       | true | reset the password
+
 
 (*) some information may be missing when unauthenticated

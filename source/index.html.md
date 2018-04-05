@@ -15,6 +15,7 @@ includes:
   - usage
   - authentication_status
   - api
+  - set_password
   - errors
 
 search: true

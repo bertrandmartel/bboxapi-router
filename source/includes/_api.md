@@ -20,14 +20,14 @@ bboxapi.getSummary { _, _, result ->
 ```
 
 ```java
-bboxapi.getSummary(new Handler<List<Summary.Model>>() {
+bboxapi.getSummary(new Handler<List<Summary>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
     }
 
     @Override
-    public void success(Request request, Response response, List<Summary.Model> data) {
+    public void success(Request request, Response response, List<Summary> data) {
         System.out.println(data);
     }
 });
@@ -50,11 +50,11 @@ when (result) {
 ```
 
 ```java
-Triple<Request, Response, Result<List<Summary.Model>, FuelError>> data = bboxapi.getSummarySync();
+Triple<Request, Response, Result<List<Summary>, FuelError>> data = bboxapi.getSummarySync();
 
 Request request = data.getFirst();
 Response response = data.getSecond();
-Result<List<Summary.Model>, FuelError> obj = data.getThird();
+Result<List<Summary>, FuelError> obj = data.getThird();
 System.out.println(obj.get());
 ```
 
@@ -94,14 +94,14 @@ bboxapi.getVoipInfo { _, _, result ->
 ```
 
 ```java
-bboxapi.getVoipInfo(new Handler<List<Voip.Model>>() {
+bboxapi.getVoipInfo(new Handler<List<Voip>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
     }
 
     @Override
-    public void success(Request request, Response response, List<Voip.Model> data) {
+    public void success(Request request, Response response, List<Voip> data) {
         System.out.println(data);
     }
 });
@@ -124,11 +124,11 @@ when (result) {
 ```
 
 ```java
-Triple<Request, Response, Result<List<Voip.Model>, FuelError>> data = bboxapi.getVoipInfoSync();
+Triple<Request, Response, Result<List<Voip>, FuelError>> data = bboxapi.getVoipInfoSync();
 
 Request request = data.getFirst();
 Response response = data.getSecond();
-Result<List<Voip.Model>, FuelError> obj = data.getThird();
+Result<List<Voip>, FuelError> obj = data.getThird();
 System.out.println(obj.get());
 ```
 
@@ -162,14 +162,14 @@ bboxapi.getHosts { _, _, result ->
 ```
 
 ```java
-bboxapi.getHosts(new Handler<List<Hosts.Model>>() {
+bboxapi.getHosts(new Handler<List<Hosts>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
     }
 
     @Override
-    public void success(Request request, Response response, List<Hosts.Model> data) {
+    public void success(Request request, Response response, List<Hosts> data) {
         System.out.println(data);
     }
 });
@@ -192,11 +192,11 @@ when (result) {
 ```
 
 ```java
-Triple<Request, Response, Result<List<Hosts.Model>, FuelError>> data = bboxapi.getHostsSync();
+Triple<Request, Response, Result<List<Hosts>, FuelError>> data = bboxapi.getHostsSync();
 
 Request request = data.getFirst();
 Response response = data.getSecond();
-Result<List<Hosts.Model>, FuelError> obj = data.getThird();
+Result<List<Hosts>, FuelError> obj = data.getThird();
 System.out.println(obj.get());
 ```
 
@@ -235,14 +235,14 @@ bboxapi.getDeviceInfo { _, _, result ->
 ```
 
 ```java
-bboxapi.getDeviceInfo(new Handler<List<Device.Model>>() {
+bboxapi.getDeviceInfo(new Handler<List<Device>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
     }
 
     @Override
-    public void success(Request request, Response response, List<Device.Model> data) {
+    public void success(Request request, Response response, List<Device> data) {
         System.out.println(data);
     }
 });
@@ -265,11 +265,11 @@ when (result) {
 ```
 
 ```java
-Triple<Request, Response, Result<List<Device.Model>, FuelError>> data = bboxapi.getDeviceInfoSync();
+Triple<Request, Response, Result<List<Device>, FuelError>> data = bboxapi.getDeviceInfoSync();
 
 Request request = data.getFirst();
 Response response = data.getSecond();
-Result<List<Device.Model>, FuelError> obj = data.getThird();
+Result<List<Device>, FuelError> obj = data.getThird();
 System.out.println(obj.get());
 ```
 
@@ -295,7 +295,7 @@ This API doesn't require authentication
 > Asynchronous
 
 ```kotlin
-bboxapi.getCallLogs(line = Voip.Line.LINE1) { _, _, result ->
+bboxapi.getCallLogs(line = Line.LINE1) { _, _, result ->
     when (result) {
         is Result.Failure -> {
             val ex = result.getException()
@@ -310,14 +310,14 @@ bboxapi.getCallLogs(line = Voip.Line.LINE1) { _, _, result ->
 ```
 
 ```java
-bboxapi.getCallLogs(Voip.Line.LINE1, new Handler<List<CallLog.Model>>() {
+bboxapi.getCallLogs(Line.LINE1, new Handler<List<CallLog>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
     }
 
     @Override
-    public void success(Request request, Response response, List<CallLog.Model> data) {
+    public void success(Request request, Response response, List<CallLog> data) {
         System.out.println(data);
     }
 });
@@ -326,7 +326,7 @@ bboxapi.getCallLogs(Voip.Line.LINE1, new Handler<List<CallLog.Model>>() {
 > Synchronous
 
 ```kotlin
-val (_, _, result) = bboxapi.getCallLogsSync(line = Voip.Line.LINE1)
+val (_, _, result) = bboxapi.getCallLogsSync(line = Line.LINE1)
 when (result) {
     is Result.Failure -> {
         val ex = result.getException()
@@ -340,15 +340,15 @@ when (result) {
 ```
 
 ```java
-Triple<Request, Response, Result<List<CallLog.Model>, FuelError>> data = bboxapi.getCallLogsSync(Voip.Line.LINE1);
+Triple<Request, Response, Result<List<CallLog>, FuelError>> data = bboxapi.getCallLogsSync(Line.LINE1);
 
 Request request = data.getFirst();
 Response response = data.getSecond();
-Result<List<CallLog.Model>, FuelError> obj = data.getThird();
+Result<List<CallLog>, FuelError> obj = data.getThird();
 System.out.println(obj.get());
 ```
 
-> replace `Voip.Line.LINE1` with `Voip.Line.LINE2` to get the call logs for second line
+> replace `Line.LINE1` with `Line.LINE2` to get the call logs for second line
 
 Retrieve full call logs since last reboot. Call logs information include the following info :
 
@@ -380,14 +380,14 @@ bboxapi.getWirelessInfo { _, _, result ->
 ```
 
 ```java
-bboxapi.getWirelessInfo(new Handler<List<Wireless.Model>>() {
+bboxapi.getWirelessInfo(new Handler<List<Wireless>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
     }
 
     @Override
-    public void success(Request request, Response response, List<Wireless.Model> data) {
+    public void success(Request request, Response response, List<Wireless> data) {
         System.out.println(data);
     }
 });
@@ -410,11 +410,11 @@ when (result) {
 ```
 
 ```java
-Triple<Request, Response, Result<List<Wireless.Model>, FuelError>> data = bboxapi.getWirelessInfoSync();
+Triple<Request, Response, Result<List<Wireless>, FuelError>> data = bboxapi.getWirelessInfoSync();
 
 Request request = data.getFirst();
 Response response = data.getSecond();
-Result<List<Wireless.Model>, FuelError> obj = data.getThird();
+Result<List<Wireless>, FuelError> obj = data.getThird();
 System.out.println(obj.get());
 ```
 
@@ -557,7 +557,7 @@ Set the Bbox luminosity display either to 0% or 100%
 > Asynchronous
 
 ```kotlin
-bboxapi.voipDial(line = Voip.Line.LINE1, phoneNumber = "012345678") { _, res, result ->
+bboxapi.voipDial(line = Line.LINE1, phoneNumber = "012345678") { _, res, result ->
     when (result) {
         is Result.Failure -> {
             val ex = result.getException()
@@ -571,7 +571,7 @@ bboxapi.voipDial(line = Voip.Line.LINE1, phoneNumber = "012345678") { _, res, re
 ```
 
 ```java
-bboxapi.voipDial(Voip.Line.LINE1, "0123456789", new Handler<String>() {
+bboxapi.voipDial(Line.LINE1, "0123456789", new Handler<String>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
@@ -587,7 +587,7 @@ bboxapi.voipDial(Voip.Line.LINE1, "0123456789", new Handler<String>() {
 > Synchronous
 
 ```kotlin
-val (_, res, result) = bboxapi.voipDialSync(line = Voip.Line.LINE1, phoneNumber = "012345678")
+val (_, res, result) = bboxapi.voipDialSync(line = Line.LINE1, phoneNumber = "012345678")
 when (result) {
     is Result.Failure -> {
         val ex = result.getException()
@@ -600,14 +600,14 @@ when (result) {
 ```
 
 ```java
-Triple<Request, Response, Result<String, FuelError>> data = bboxapi.voipDialSync(Voip.Line.LINE1, "0123456789");
+Triple<Request, Response, Result<String, FuelError>> data = bboxapi.voipDialSync(Line.LINE1, "0123456789");
 
 Request request = data.getFirst();
 Response response = data.getSecond();
 Result<String, FuelError> obj = data.getThird();
 System.out.println(response.getStatusCode());
 ```
-> replace `Voip.Line.LINE1` with `Voip.Line.LINE2` to call on second line
+> replace `Line.LINE1` with `Line.LINE2` to call on second line
 
 Compose phone number on landline phone on line 1 or line 2 of Bbox. Also called click-to-call, the phone will ring & the call is triggered when someone pick up the phone
 
@@ -693,14 +693,14 @@ bboxapi.getXdslInfo { _, _, result ->
 ```
 
 ```java
-bboxapi.getXdslInfo(new Handler<List<Wan.Model>>() {
+bboxapi.getXdslInfo(new Handler<List<Wan>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
     }
 
     @Override
-    public void success(Request request, Response response, List<Wan.Model> data) {
+    public void success(Request request, Response response, List<Wan> data) {
         System.out.println(data);
     }
 });
@@ -723,11 +723,11 @@ when (result) {
 ```
 
 ```java
-Triple<Request, Response, Result<List<Wan.Model>, FuelError>> data = bboxapi.getXdslInfoSync();
+Triple<Request, Response, Result<List<Wan>, FuelError>> data = bboxapi.getXdslInfoSync();
 
 Request request = data.getFirst();
 Response response = data.getSecond();
-Result<List<Wan.Model>, FuelError> obj = data.getThird();
+Result<List<Wan>, FuelError> obj = data.getThird();
 System.out.println(obj.get());
 ```
 
@@ -764,14 +764,14 @@ bboxapi.getWanIpInfo { _, _, result ->
 ```
 
 ```java
-bboxapi.getWanIpInfo(new Handler<List<Wan.Model>>() {
+bboxapi.getWanIpInfo(new Handler<List<Wan>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
     }
 
     @Override
-    public void success(Request request, Response response, List<Wan.Model> data) {
+    public void success(Request request, Response response, List<Wan> data) {
         System.out.println(data);
     }
 });
@@ -794,11 +794,11 @@ when (result) {
 ```
 
 ```java
-Triple<Request, Response, Result<List<Wan.Model>, FuelError>> data = bboxapi.getWanIpInfoSync();
+Triple<Request, Response, Result<List<Wan>, FuelError>> data = bboxapi.getWanIpInfoSync();
 
 Request request = data.getFirst();
 Response response = data.getSecond();
-Result<List<Wan.Model>, FuelError> obj = data.getThird();
+Result<List<Wan>, FuelError> obj = data.getThird();
 System.out.println(obj.get());
 ```
 
@@ -896,14 +896,14 @@ bboxapi.getWifiMacFilter { _, _, result ->
 ```
 
 ```java
-bboxapi.getWifiMacFilter(new Handler<List<Acl.Model>>() {
+bboxapi.getWifiMacFilter(new Handler<List<Acl>>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
     }
 
     @Override
-    public void success(Request request, Response response, List<Acl.Model> data) {
+    public void success(Request request, Response response, List<Acl> data) {
         System.out.println(data);
     }
 });
@@ -926,11 +926,11 @@ when (wifiMacFilter) {
 ```
 
 ```java
-Triple<Request, Response, Result<List<Acl.Model>, FuelError>> data = bboxapi.getWifiMacFilterSync();
+Triple<Request, Response, Result<List<Acl>, FuelError>> data = bboxapi.getWifiMacFilterSync();
 
 Request request = data.getFirst();
 Response response = data.getSecond();
-Result<List<Acl.Model>, FuelError> wifiMacFilter = data.getThird();
+Result<List<Acl>, FuelError> wifiMacFilter = data.getThird();
 System.out.println(wifiMacFilter.get());
 ```
 
@@ -1129,6 +1129,254 @@ Response response = result.getSecond();
 ```
 
 Delete wifi mac filter rule by index
+
+<aside class="warning">This API requires authentication</aside>
+
+## Logout
+
+> Asynchronous
+
+```kotlin
+bboxapi.logout { _, response, result ->
+    when (result) {
+        is Result.Failure -> {
+            val ex = result.getException()
+            println(ex)
+        }
+        is Result.Success -> {
+            println(response.statusCode)
+        }
+    }
+}
+```
+
+```java
+bboxapi.logout(new Handler<byte[]>() {
+    @Override
+    public void failure(Request request, Response response, FuelError error) {
+        error.printStackTrace();
+    }
+
+    @Override
+    public void success(Request request, Response response, byte[] data) {
+        System.out.println(response.getStatusCode());
+    }
+});
+```
+
+> Synchronous
+
+```kotlin
+val (_, response, result) = bboxapi.logoutSync()
+when (result) {
+    is Result.Failure -> {
+        val ex = result.getException()
+        println(ex)
+    }
+    is Result.Success -> {
+        println(response.statusCode)
+    }
+}
+```
+
+```java
+Triple<Request, Response, Result<byte[], FuelError>> data = bboxapi.logoutSync();
+
+Request request = data.getFirst();
+Response response = data.getSecond();
+Result<byte[], FuelError> obj = data.getThird();
+System.out.println(response.getStatusCode());
+```
+
+Logout. This will set the authenticated state to `false`
+
+<aside class="success">
+This API doesn't require authentication
+</aside>
+
+## Start password recovery
+
+> Asynchronous
+
+```kotlin
+bboxapi.startPaswordRecovery { _, response, result ->
+    when (result) {
+        is Result.Failure -> {
+            val ex = result.getException()
+            println(ex)
+        }
+        is Result.Success -> {
+            println(response.statusCode)
+        }
+    }
+}
+```
+
+```java
+bboxapi.startPaswordRecovery(new Handler<byte[]>() {
+    @Override
+    public void failure(Request request, Response response, FuelError error) {
+        error.printStackTrace();
+    }
+
+    @Override
+    public void success(Request request, Response response, byte[] data) {
+        System.out.println(response.getStatusCode());
+    }
+});
+```
+
+> Synchronous
+
+```kotlin
+val (_, response, result) = bboxapi.startPaswordRecoverySync()
+when (result) {
+    is Result.Failure -> {
+        val ex = result.getException()
+        println(ex)
+    }
+    is Result.Success -> {
+        println(response.statusCode)
+    }
+}
+```
+
+```java
+Triple<Request, Response, Result<byte[], FuelError>> data = bboxapi.startPaswordRecoverySync();
+
+Request request = data.getFirst();
+Response response = data.getSecond();
+Result<byte[], FuelError> obj = data.getThird();
+System.out.println(response.getStatusCode());
+```
+
+Start password recovery process. This call is usually followed by a polling on `verifyPasswordRecovery` to check if the user has pressed the Wifi button on Bbox
+
+<aside class="success">
+This API doesn't require authentication
+</aside>
+
+## Verify password recovery
+
+> Asynchronous
+
+```kotlin
+bboxapi.verifyPasswordRecovery { _, _, result ->
+    when (result) {
+        is Result.Failure -> {
+            val ex = result.getException()
+            println(ex)
+        }
+        is Result.Success -> {
+            val data = result.get()
+            println(data)
+        }
+    }
+}
+```
+
+```java
+bboxapi.verifyPasswordRecovery(new Handler<List<RecoveryVerify>>() {
+    @Override
+    public void failure(Request request, Response response, FuelError error) {
+        error.printStackTrace();
+    }
+
+    @Override
+    public void success(Request request, Response response, List<RecoveryVerify> data) {
+        System.out.println(data);
+    }
+});
+```
+
+> Synchronous
+
+```kotlin
+val (_, _, result) = bboxapi.verifyPasswordRecoverySync()
+when (result) {
+    is Result.Failure -> {
+        val ex = result.getException()
+        println(ex)
+    }
+    is Result.Success -> {
+        val data = result.get()
+        println(data)
+    }
+}
+```
+
+```java
+Triple<Request, Response, Result<List<RecoveryVerify>, FuelError>> data = bboxapi.verifyPasswordRecoverySync();
+
+Request request = data.getFirst();
+Response response = data.getSecond();
+Result<List<RecoveryVerify>, FuelError> obj = data.getThird();
+System.out.println(obj.get());
+```
+
+Check the remaining time for the user to push the Wifi button on Bbox to set password. This API will return a `List<RecoveryVerify>` object only if the user has not pressed the button yet. When the user push the button, the next call to `verifyPasswordRecovery` will return an empty String (eg a `null` result) with the authentication cookie.
+
+When an empty response (or a null result) is detected, you may want to reset password with `resetPassword`.
+
+<aside class="success">
+This API doesn't require authentication
+</aside>
+
+## Reset password
+
+> Asynchronous
+
+```kotlin
+bboxapi.resetPassword(password = "123456") { _, res, result ->
+    when (result) {
+        is Result.Failure -> {
+            val ex = result.getException()
+            println(ex)
+        }
+        is Result.Success -> {
+            println(res.statusCode)
+        }
+    }
+}
+```
+
+
+```java
+bboxapi.resetPassword("123456", new Handler<String>() {
+    @Override
+    public void failure(Request request, Response response, FuelError error) {
+        error.printStackTrace();
+    }
+
+    @Override
+    public void success(Request request, Response response, String data) {
+        System.out.println(response.getStatusCode());
+    }
+});
+```
+> Synchronous
+
+```kotlin
+val (_, res, result) = bboxapi.resetPasswordSync(password = "123456")
+when (result) {
+    is Result.Failure -> {
+        val ex = result.getException()
+        println(ex)
+    }
+    is Result.Success -> {
+        val data = result.get()
+        println(res.statusCode)
+    }
+}
+```
+
+```java
+Triple<Request, Response, Result<String, FuelError>> result = bboxApi.resetPasswordSync("123456");
+
+Response response = result.getSecond();
+```
+
+Reset password by setting a new one
 
 <aside class="warning">This API requires authentication</aside>
 

@@ -297,9 +297,24 @@
                     <a href="#delete-wifi-mac-filter-rule" class="toc-h2 toc-link" data-title="delete-wifi-mac-filter-rule">Delete Wifi mac filter rule</a>
                   </li>
                   <li>
+                    <a href="#logout" class="toc-h2 toc-link" data-title="logout">Logout</a>
+                  </li>
+                  <li>
+                    <a href="#start-password-recovery" class="toc-h2 toc-link" data-title="start-password-recovery">Start password recovery</a>
+                  </li>
+                  <li>
+                    <a href="#verify-password-recovery" class="toc-h2 toc-link" data-title="verify-password-recovery">Verify password recovery</a>
+                  </li>
+                  <li>
+                    <a href="#reset-password" class="toc-h2 toc-link" data-title="reset-password">Reset password</a>
+                  </li>
+                  <li>
                     <a href="#custom-http-request" class="toc-h2 toc-link" data-title="custom-http-request">Custom HTTP request</a>
                   </li>
               </ul>
+          </li>
+          <li>
+            <a href="#setting-password" class="toc-h1 toc-link" data-title="setting-password">Setting Password</a>
           </li>
           <li>
             <a href="#errors" class="toc-h1 toc-link" data-title="errors">Errors</a>
@@ -343,7 +358,7 @@
 </code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApi</span><span class="o">();</span>
 <span class="n">bboxapi</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="s">"root"</span><span class="o">);</span>
 
-<span class="n">bboxapi</span><span class="o">.</span><span class="na">getVoipInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+<span class="n">bboxapi</span><span class="o">.</span><span class="na">getVoipInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">error</span><span class="o">.</span><span class="na">getException</span><span class="o">()</span> <span class="k">instanceof</span> <span class="n">UnknownHostException</span><span class="o">)</span> <span class="o">{</span>
@@ -356,7 +371,7 @@
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>
@@ -366,14 +381,6 @@
 </blockquote>
 
 <p>Most of the APIs require authentication via <code>setPassword(password: String)</code> which is Bbox admin interface password.</p>
-
-<ul>
-<li>get summary</li>
-<li>get XDSL</li>
-<li>get hosts</li>
-<li>get wan ip info</li>
-<li>get device info</li>
-</ul>
 
 <table><thead>
 <tr>
@@ -388,6 +395,12 @@
 <td><code>POST /login</code></td>
 <td>false</td>
 <td>login</td>
+</tr>
+<tr>
+<td>logout</td>
+<td><code>POST /logout</code></td>
+<td>true</td>
+<td>logout</td>
 </tr>
 <tr>
 <td>getSummary</td>
@@ -491,6 +504,24 @@
 <td>true</td>
 <td>delete wifi mac filter</td>
 </tr>
+<tr>
+<td>startPasswordRecovery</td>
+<td><code>POST /password-recovery</code></td>
+<td>false</td>
+<td>start password recovery process</td>
+</tr>
+<tr>
+<td>verifyPasswordRecovery</td>
+<td><code>GET /password-recovery/verify</code></td>
+<td>false</td>
+<td>check if push button has been pressed</td>
+</tr>
+<tr>
+<td>resetPassword</td>
+<td><code>POST /reset-password?btoken=$btoken</code></td>
+<td>true</td>
+<td>reset the password</td>
+</tr>
 </tbody></table>
 
 <p>(*) some information may be missing when unauthenticated</p>
@@ -502,8 +533,8 @@ with Gradle, from JCenter or MavenCentral :</p>
 <span class="o">}</span>
 
 <span class="n">dependencies</span> <span class="o">{</span>
-    <span class="n">compile</span> <span class="s1">'fr.bmartel:bboxapi:1.7.0'</span> <span class="c1">//for JVM</span>
-    <span class="n">compile</span> <span class="s1">'fr.bmartel:bboxapi-android:1.7.0'</span> <span class="c1">//for Android</span>
+    <span class="n">compile</span> <span class="s1">'fr.bmartel:bboxapi-router:2.0.1'</span> <span class="c1">//for JVM</span>
+    <span class="n">compile</span> <span class="s1">'fr.bmartel:bboxapi-router-android:2.0.1'</span> <span class="c1">//for Android</span>
 <span class="o">}</span>
 </code></pre><h2 id='synchronous-amp-asynchronous'>Synchronous &amp; Asynchronous</h2>
 <p>All methods have an asynchronous &amp; synchronous version. The synchronous version is suffixed with <code>Sync</code> :</p>
@@ -521,7 +552,7 @@ with Gradle, from JCenter or MavenCentral :</p>
 
 <p>The callback function is given in parameter, a <code>Request</code> &amp; <code>Response</code> objects are returned along with a <a href="https://github.com/kittinunf/Result">Result object</a> holding the data and a <code>FuelError</code> object in case of failure.</p>
 
-<p>For instance, for <code>getSummary</code> it will return <code>(Request, Response, Result&lt;List&lt;Model.Summary&gt;, FuelError&gt;)</code></p>
+<p>For instance, for <code>getSummary</code> it will return <code>(Request, Response, Result&lt;List&lt;Summary&gt;, FuelError&gt;)</code></p>
 
 <p>In case of Java, an <code>Handler</code> function is used that have 2 callbacks : <code>onSuccess</code> &amp; <code>onError</code></p>
 
@@ -596,14 +627,14 @@ with Gradle, from JCenter or MavenCentral :</p>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getSummary</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Summary</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getSummary</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Summary</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Summary</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Summary</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>
@@ -622,11 +653,11 @@ with Gradle, from JCenter or MavenCentral :</p>
         <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Summary</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getSummarySync</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Summary</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getSummarySync</span><span class="o">();</span>
 
 <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
 <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
-<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Summary</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Summary</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <p>Retrieve Bbox Summary information which is an aggregation of all general API info including : </p>
@@ -662,14 +693,14 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getVoipInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getVoipInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>
@@ -688,11 +719,11 @@ This API doesn't require authentication
         <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getVoipInfoSync</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getVoipInfoSync</span><span class="o">();</span>
 
 <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
 <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
-<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <p>Retrieve Voice over IP (VOIP) information including :</p>
@@ -722,14 +753,14 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getHosts</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Hosts</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getHosts</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Hosts</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Hosts</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Hosts</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>
@@ -748,11 +779,11 @@ This API doesn't require authentication
         <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Hosts</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getHostsSync</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Hosts</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getHostsSync</span><span class="o">();</span>
 
 <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
 <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
-<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Hosts</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Hosts</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <p>Get a list of known hosts including : </p>
@@ -787,14 +818,14 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getDeviceInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Device</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getDeviceInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Device</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Device</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Device</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>
@@ -813,11 +844,11 @@ This API doesn't require authentication
         <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Device</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getDeviceInfoSync</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Device</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getDeviceInfoSync</span><span class="o">();</span>
 
 <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
 <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
-<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Device</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Device</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <p>Retrieve Bbox information including : </p>
@@ -842,7 +873,7 @@ This API doesn't require authentication
 <blockquote>
 <p>Asynchronous</p>
 </blockquote>
-<pre class="highlight kotlin tab-kotlin"><code><span class="n">bboxapi</span><span class="p">.</span><span class="n">getCallLogs</span><span class="p">(</span><span class="n">line</span> <span class="p">=</span> <span class="n">Voip</span><span class="p">.</span><span class="n">Line</span><span class="p">.</span><span class="n">LINE1</span><span class="p">)</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
+<pre class="highlight kotlin tab-kotlin"><code><span class="n">bboxapi</span><span class="p">.</span><span class="n">getCallLogs</span><span class="p">(</span><span class="n">line</span> <span class="p">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">LINE1</span><span class="p">)</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
     <span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
             <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
@@ -854,14 +885,14 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getCallLogs</span><span class="o">(</span><span class="n">Voip</span><span class="o">.</span><span class="na">Line</span><span class="o">.</span><span class="na">LINE1</span><span class="o">,</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">CallLog</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getCallLogs</span><span class="o">(</span><span class="n">Line</span><span class="o">.</span><span class="na">LINE1</span><span class="o">,</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">CallLog</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">CallLog</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">CallLog</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>
@@ -869,7 +900,7 @@ This API doesn't require authentication
 <blockquote>
 <p>Synchronous</p>
 </blockquote>
-<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="err">(</span><span class="py">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">getCallLogsSync</span><span class="p">(</span><span class="n">line</span> <span class="p">=</span> <span class="n">Voip</span><span class="p">.</span><span class="n">Line</span><span class="p">.</span><span class="n">LINE1</span><span class="p">)</span>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="err">(</span><span class="py">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">getCallLogsSync</span><span class="p">(</span><span class="n">line</span> <span class="p">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">LINE1</span><span class="p">)</span>
 <span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
         <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
@@ -880,15 +911,15 @@ This API doesn't require authentication
         <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">CallLog</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getCallLogsSync</span><span class="o">(</span><span class="n">Voip</span><span class="o">.</span><span class="na">Line</span><span class="o">.</span><span class="na">LINE1</span><span class="o">);</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">CallLog</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getCallLogsSync</span><span class="o">(</span><span class="n">Line</span><span class="o">.</span><span class="na">LINE1</span><span class="o">);</span>
 
 <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
 <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
-<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">CallLog</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">CallLog</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <blockquote>
-<p>replace <code>Voip.Line.LINE1</code> with <code>Voip.Line.LINE2</code> to get the call logs for second line</p>
+<p>replace <code>Line.LINE1</code> with <code>Line.LINE2</code> to get the call logs for second line</p>
 </blockquote>
 
 <p>Retrieve full call logs since last reboot. Call logs information include the following info :</p>
@@ -918,14 +949,14 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getWirelessInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wireless</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getWirelessInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wireless</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Wireless</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Wireless</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>
@@ -944,11 +975,11 @@ This API doesn't require authentication
         <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wireless</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getWirelessInfoSync</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wireless</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getWirelessInfoSync</span><span class="o">();</span>
 
 <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
 <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
-<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wireless</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wireless</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <p>Get wireless information including : </p>
@@ -1070,7 +1101,7 @@ This API doesn't require authentication
 <blockquote>
 <p>Asynchronous</p>
 </blockquote>
-<pre class="highlight kotlin tab-kotlin"><code><span class="n">bboxapi</span><span class="p">.</span><span class="n">voipDial</span><span class="p">(</span><span class="n">line</span> <span class="p">=</span> <span class="n">Voip</span><span class="p">.</span><span class="n">Line</span><span class="p">.</span><span class="n">LINE1</span><span class="p">,</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="s">"012345678"</span><span class="p">)</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
+<pre class="highlight kotlin tab-kotlin"><code><span class="n">bboxapi</span><span class="p">.</span><span class="n">voipDial</span><span class="p">(</span><span class="n">line</span> <span class="p">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">LINE1</span><span class="p">,</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="s">"012345678"</span><span class="p">)</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
     <span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
             <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
@@ -1081,7 +1112,7 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">voipDial</span><span class="o">(</span><span class="n">Voip</span><span class="o">.</span><span class="na">Line</span><span class="o">.</span><span class="na">LINE1</span><span class="o">,</span> <span class="s">"0123456789"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">voipDial</span><span class="o">(</span><span class="n">Line</span><span class="o">.</span><span class="na">LINE1</span><span class="o">,</span> <span class="s">"0123456789"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
@@ -1096,7 +1127,7 @@ This API doesn't require authentication
 <blockquote>
 <p>Synchronous</p>
 </blockquote>
-<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="err">(</span><span class="py">_</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">voipDialSync</span><span class="p">(</span><span class="n">line</span> <span class="p">=</span> <span class="n">Voip</span><span class="p">.</span><span class="n">Line</span><span class="p">.</span><span class="n">LINE1</span><span class="p">,</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="s">"012345678"</span><span class="p">)</span>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="err">(</span><span class="py">_</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">voipDialSync</span><span class="p">(</span><span class="n">line</span> <span class="p">=</span> <span class="n">Line</span><span class="p">.</span><span class="n">LINE1</span><span class="p">,</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="s">"012345678"</span><span class="p">)</span>
 <span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
         <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
@@ -1106,7 +1137,7 @@ This API doesn't require authentication
         <span class="n">println</span><span class="p">(</span><span class="n">res</span><span class="p">.</span><span class="n">statusCode</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">voipDialSync</span><span class="o">(</span><span class="n">Voip</span><span class="o">.</span><span class="na">Line</span><span class="o">.</span><span class="na">LINE1</span><span class="o">,</span> <span class="s">"0123456789"</span><span class="o">);</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">voipDialSync</span><span class="o">(</span><span class="n">Line</span><span class="o">.</span><span class="na">LINE1</span><span class="o">,</span> <span class="s">"0123456789"</span><span class="o">);</span>
 
 <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
 <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
@@ -1114,7 +1145,7 @@ This API doesn't require authentication
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getStatusCode</span><span class="o">());</span>
 </code></pre>
 <blockquote>
-<p>replace <code>Voip.Line.LINE1</code> with <code>Voip.Line.LINE2</code> to call on second line</p>
+<p>replace <code>Line.LINE1</code> with <code>Line.LINE2</code> to call on second line</p>
 </blockquote>
 
 <p>Compose phone number on landline phone on line 1 or line 2 of Bbox. Also called click-to-call, the phone will ring &amp; the call is triggered when someone pick up the phone</p>
@@ -1186,14 +1217,14 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getXdslInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getXdslInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>
@@ -1212,11 +1243,11 @@ This API doesn't require authentication
         <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getXdslInfoSync</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getXdslInfoSync</span><span class="o">();</span>
 
 <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
 <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
-<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <p>Get information about link type including : </p>
@@ -1249,14 +1280,14 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getWanIpInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getWanIpInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>
@@ -1275,11 +1306,11 @@ This API doesn't require authentication
         <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getWanIpInfoSync</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getWanIpInfoSync</span><span class="o">();</span>
 
 <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
 <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
-<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Wan</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <p>Information about WAN interface :</p>
@@ -1363,14 +1394,14 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getWifiMacFilter</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Acl</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">getWifiMacFilter</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Acl</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Acl</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Acl</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>
@@ -1389,11 +1420,11 @@ This API doesn't require authentication
         <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Acl</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getWifiMacFilterSync</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Acl</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getWifiMacFilterSync</span><span class="o">();</span>
 
 <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
 <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
-<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Acl</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">wifiMacFilter</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Acl</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">wifiMacFilter</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">wifiMacFilter</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <p>Retrieve all mac filter rules</p>
@@ -1567,6 +1598,214 @@ This API doesn't require authentication
 <p>Delete wifi mac filter rule by index</p>
 
 <aside class="warning">This API requires authentication</aside>
+<h2 id='logout'>Logout</h2>
+<blockquote>
+<p>Asynchronous</p>
+</blockquote>
+<pre class="highlight kotlin tab-kotlin"><code><span class="n">bboxapi</span><span class="p">.</span><span class="n">logout</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
+    <span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
+            <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
+            <span class="n">println</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Success</span> <span class="p">-&gt;</span> <span class="p">{</span>
+            <span class="n">println</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">statusCode</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">logout</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getStatusCode</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">});</span>
+</code></pre>
+<blockquote>
+<p>Synchronous</p>
+</blockquote>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="err">(</span><span class="py">_</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">logoutSync</span><span class="p">()</span>
+<span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Success</span> <span class="p">-&gt;</span> <span class="p">{</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">statusCode</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[],</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">logoutSync</span><span class="o">();</span>
+
+<span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
+<span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[],</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getStatusCode</span><span class="o">());</span>
+</code></pre>
+<p>Logout. This will set the authenticated state to <code>false</code></p>
+
+<aside class="success">
+This API doesn't require authentication
+</aside>
+<h2 id='start-password-recovery'>Start password recovery</h2>
+<blockquote>
+<p>Asynchronous</p>
+</blockquote>
+<pre class="highlight kotlin tab-kotlin"><code><span class="n">bboxapi</span><span class="p">.</span><span class="n">startPaswordRecovery</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
+    <span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
+            <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
+            <span class="n">println</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Success</span> <span class="p">-&gt;</span> <span class="p">{</span>
+            <span class="n">println</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">statusCode</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">startPaswordRecovery</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getStatusCode</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">});</span>
+</code></pre>
+<blockquote>
+<p>Synchronous</p>
+</blockquote>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="err">(</span><span class="py">_</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">startPaswordRecoverySync</span><span class="p">()</span>
+<span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Success</span> <span class="p">-&gt;</span> <span class="p">{</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">statusCode</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[],</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">startPaswordRecoverySync</span><span class="o">();</span>
+
+<span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
+<span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[],</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getStatusCode</span><span class="o">());</span>
+</code></pre>
+<p>Start password recovery process. This call is usually followed by a polling on <code>verifyPasswordRecovery</code> to check if the user has pressed the Wifi button on Bbox</p>
+
+<aside class="success">
+This API doesn't require authentication
+</aside>
+<h2 id='verify-password-recovery'>Verify password recovery</h2>
+<blockquote>
+<p>Asynchronous</p>
+</blockquote>
+<pre class="highlight kotlin tab-kotlin"><code><span class="n">bboxapi</span><span class="p">.</span><span class="n">verifyPasswordRecovery</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
+    <span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
+            <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
+            <span class="n">println</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Success</span> <span class="p">-&gt;</span> <span class="p">{</span>
+            <span class="kd">val</span> <span class="py">data</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="k">get</span><span class="p">()</span>
+            <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">verifyPasswordRecovery</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RecoveryVerify</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RecoveryVerify</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">});</span>
+</code></pre>
+<blockquote>
+<p>Synchronous</p>
+</blockquote>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="err">(</span><span class="py">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">verifyPasswordRecoverySync</span><span class="p">()</span>
+<span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Success</span> <span class="p">-&gt;</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">data</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="k">get</span><span class="p">()</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RecoveryVerify</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">verifyPasswordRecoverySync</span><span class="o">();</span>
+
+<span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
+<span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
+<span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">RecoveryVerify</span><span class="o">&gt;,</span> <span class="n">FuelError</span><span class="o">&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">();</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">get</span><span class="o">());</span>
+</code></pre>
+<p>Check the remaining time for the user to push the Wifi button on Bbox to set password. This API will return a <code>List&lt;RecoveryVerify&gt;</code> object only if the user has not pressed the button yet. When the user push the button, the next call to <code>verifyPasswordRecovery</code> will return an empty String (eg a <code>null</code> result) with the authentication cookie.</p>
+
+<p>When an empty response (or a null result) is detected, you may want to reset password with <code>resetPassword</code>.</p>
+
+<aside class="success">
+This API doesn't require authentication
+</aside>
+<h2 id='reset-password'>Reset password</h2>
+<blockquote>
+<p>Asynchronous</p>
+</blockquote>
+<pre class="highlight kotlin tab-kotlin"><code><span class="n">bboxapi</span><span class="p">.</span><span class="n">resetPassword</span><span class="p">(</span><span class="n">password</span> <span class="p">=</span> <span class="s">"123456"</span><span class="p">)</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
+    <span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
+            <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
+            <span class="n">println</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Success</span> <span class="p">-&gt;</span> <span class="p">{</span>
+            <span class="n">println</span><span class="p">(</span><span class="n">res</span><span class="p">.</span><span class="n">statusCode</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">resetPassword</span><span class="o">(</span><span class="s">"123456"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">String</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getStatusCode</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">});</span>
+</code></pre>
+<blockquote>
+<p>Synchronous</p>
+</blockquote>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="err">(</span><span class="py">_</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">resetPasswordSync</span><span class="p">(</span><span class="n">password</span> <span class="p">=</span> <span class="s">"123456"</span><span class="p">)</span>
+<span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Success</span> <span class="p">-&gt;</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">data</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="k">get</span><span class="p">()</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">res</span><span class="p">.</span><span class="n">statusCode</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">bboxApi</span><span class="o">.</span><span class="na">resetPasswordSync</span><span class="o">(</span><span class="s">"123456"</span><span class="o">);</span>
+
+<span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
+</code></pre>
+<p>Reset password by setting a new one</p>
+
+<aside class="warning">This API requires authentication</aside>
 <h2 id='custom-http-request'>Custom HTTP request</h2>
 <blockquote>
 <p>Asynchronous</p>
@@ -1613,7 +1852,34 @@ This API doesn't require authentication
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">().</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <p>Create your own HTTP request, this can be useful for not relying on the library implementation</p>
-<h1 id='errors'>Errors</h1>
+<h1 id='setting-password'>Setting Password</h1>
+<p>The first time user connects to Bbox admin interface or when a user lose his/her password, the password should be resetted. User will have to do the following things : </p>
+
+<ul>
+<li>trigger a call to <code>startPasswordRecovery</code>, on the admin interface, this is done by clicking a button</li>
+<li>call <code>verifyPasswordRecovery</code> many times (polling) to check if user has pressed the button on Bbox device</li>
+<li>when user has pressed the button the next call to <code>verifyPasswordRecovery</code> will grant authentication</li>
+<li>a call to <code>resetPassword(&quot;yourNewPassword&quot;)</code> is used to set a new password</li>
+</ul>
+
+<p>You can simply use <code>waitForPushButton</code> to wait for an amount of time for the user to press the button with a configurable polling interval (default 1 second)</p>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApi</span><span class="p">()</span>
+<span class="n">println</span><span class="p">(</span><span class="s">"push the button on your Bbox for setting your password, you have 20 seconds"</span><span class="p">)</span>
+<span class="kd">val</span> <span class="py">state</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">waitForPushButton</span><span class="p">(</span><span class="n">maxDuration</span> <span class="p">=</span> <span class="m">20000</span><span class="p">)</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="py">setPasswordRes</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">resetPasswordSync</span><span class="p">(</span><span class="n">password</span> <span class="p">=</span> <span class="s">"admin2"</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">"set password : ${setPasswordRes.second.statusCode}"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApi</span><span class="o">();</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"push the button on your Bbox for setting your password, you have 20 seconds"</span><span class="o">);</span>
+<span class="n">Boolean</span> <span class="n">state</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">waitForPushButton</span><span class="o">(</span><span class="mi">20000</span><span class="o">,</span> <span class="mi">1000</span><span class="o">);</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">state</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">resetPasswordSync</span><span class="o">(</span><span class="s">"123456"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"set password : "</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="na">component2</span><span class="o">().</span><span class="na">getStatusCode</span><span class="o">());</span>
+<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"didn't detect the push button"</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre><h1 id='errors'>Errors</h1>
 <blockquote>
 <p>check exception type &amp; response status code on failure :</p>
 </blockquote>
@@ -1639,7 +1905,7 @@ This API doesn't require authentication
 </code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApi</span><span class="o">();</span>
 <span class="n">bboxapi</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="s">"root"</span><span class="o">);</span>
 
-<span class="n">bboxapi</span><span class="o">.</span><span class="na">getVoipInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+<span class="n">bboxapi</span><span class="o">.</span><span class="na">getVoipInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">error</span><span class="o">.</span><span class="na">getException</span><span class="o">()</span> <span class="k">instanceof</span> <span class="n">UnknownHostException</span><span class="o">)</span> <span class="o">{</span>

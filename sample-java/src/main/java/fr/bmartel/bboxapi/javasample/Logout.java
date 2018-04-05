@@ -6,20 +6,19 @@ import com.github.kittinunf.fuel.core.Request;
 import com.github.kittinunf.fuel.core.Response;
 import com.github.kittinunf.result.Result;
 import fr.bmartel.bboxapi.BboxApi;
-import fr.bmartel.bboxapi.model.Wan;
 import kotlin.Triple;
 
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-class IpInfo {
+public class Logout {
 
     public static void main(String args[]) throws InterruptedException {
         BboxApi bboxapi = new BboxApi();
+        bboxapi.setPassword("admin");
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
-        bboxapi.getWanIpInfo(new Handler<List<Wan>>() {
+        bboxapi.logout(new Handler<byte[]>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -27,18 +26,18 @@ class IpInfo {
             }
 
             @Override
-            public void success(Request request, Response response, List<Wan> data) {
-                System.out.println(data);
+            public void success(Request request, Response response, byte[] data) {
+                System.out.println(response.getStatusCode());
                 latch.countDown();
             }
         });
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<List<Wan>, FuelError>> data = bboxapi.getWanIpInfoSync();
+        Triple<Request, Response, Result<byte[], FuelError>> data = bboxapi.logoutSync();
         Request request = data.getFirst();
         Response response = data.getSecond();
-        Result<List<Wan>, FuelError> obj = data.getThird();
-        System.out.println(obj.get());
+        Result<byte[], FuelError> obj = data.getThird();
+        System.out.println(response.getStatusCode());
     }
 }

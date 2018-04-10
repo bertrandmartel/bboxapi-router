@@ -148,6 +148,9 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 dokka {
     outputFormat = 'html'
     outputDirectory = "$buildDir/javadoc"
+    kotlinTasks { [] } // Disable Kotlin-Android based autoconfiguration
+    sourceDirs = project.files('src/main/kotlin')
+    classpath = new ArrayList<File>(project.tasks['assemble'].outputs.files.files)
 }
 
 artifacts {

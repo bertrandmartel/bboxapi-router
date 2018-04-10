@@ -380,9 +380,9 @@ class TestUtils {
         fun checkFullError(fuelError: FuelError?, expectedException: Exception) {
             MatcherAssert.assertThat(fuelError, CoreMatchers.notNullValue())
             MatcherAssert.assertThat(fuelError?.exception, CoreMatchers.notNullValue())
-            if (expectedException is BboxApi.BboxAuthException) {
-                assertTrue(fuelError?.exception is BboxApi.BboxAuthException)
-                val exception = fuelError?.exception as BboxApi.BboxAuthException
+            if (expectedException is BboxApiRouter.BboxAuthException) {
+                assertTrue(fuelError?.exception is BboxApiRouter.BboxAuthException)
+                val exception = fuelError?.exception as BboxApiRouter.BboxAuthException
                 Assert.assertEquals(exception.error.exception?.code, exception.error.exception?.code)
                 Assert.assertEquals(exception.error.exception?.domain, exception.error.exception?.domain)
             } else if (expectedException is UnknownHostException) {

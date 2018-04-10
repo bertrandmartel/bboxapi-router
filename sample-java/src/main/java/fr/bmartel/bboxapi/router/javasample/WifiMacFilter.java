@@ -5,7 +5,7 @@ import com.github.kittinunf.fuel.core.Handler;
 import com.github.kittinunf.fuel.core.Request;
 import com.github.kittinunf.fuel.core.Response;
 import com.github.kittinunf.result.Result;
-import fr.bmartel.bboxapi.router.BboxApi;
+import fr.bmartel.bboxapi.router.BboxApiRouter;
 import fr.bmartel.bboxapi.router.model.Acl;
 import fr.bmartel.bboxapi.router.model.MacFilterRule;
 import kotlin.Triple;
@@ -18,7 +18,7 @@ public class WifiMacFilter {
     private static CountDownLatch latch;
 
     public static void main(String args[]) throws InterruptedException {
-        BboxApi bboxapi = new BboxApi();
+        BboxApiRouter bboxapi = new BboxApiRouter();
         bboxapi.setPassword("admin");
 
         /**
@@ -139,7 +139,7 @@ public class WifiMacFilter {
         deleteAllRules(bboxapi, 2);
     }
 
-    private static void deleteAllRules(BboxApi bboxApi, int size) {
+    private static void deleteAllRules(BboxApiRouter bboxApi, int size) {
         for (int i = 0; i < size; i++) {
             Triple<Request, Response, Result<String, FuelError>> result = bboxApi.deleteMacFilterRuleSync(i + 1);
             Response response = result.getSecond();
@@ -147,7 +147,7 @@ public class WifiMacFilter {
         }
     }
 
-    private static void showNewSize(BboxApi bboxApi) {
+    private static void showNewSize(BboxApiRouter bboxApi) {
         Triple<Request, Response, Result<List<Acl>, FuelError>> result = bboxApi.getWifiMacFilterSync();
         Result<List<Acl>, FuelError> wifiMacFilter = result.getThird();
         System.out.println("new size : " + wifiMacFilter.get().get(0).getAcl().getRules().size());

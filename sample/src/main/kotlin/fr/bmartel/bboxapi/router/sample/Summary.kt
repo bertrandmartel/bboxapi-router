@@ -2,12 +2,12 @@ package fr.bmartel.bboxapi.router.sample
 
 import com.github.kittinunf.fuel.core.HttpException
 import com.github.kittinunf.result.Result
-import fr.bmartel.bboxapi.router.BboxApi
+import fr.bmartel.bboxapi.router.BboxApiRouter
 import java.net.UnknownHostException
 import java.util.concurrent.CountDownLatch
 
 fun main(args: Array<String>) {
-    val bboxapi = BboxApi()
+    val bboxapi = BboxApiRouter()
 
     println("authentication attempts : ${bboxapi.attempts}")
     println("user is authenticated   : ${bboxapi.authenticated}")

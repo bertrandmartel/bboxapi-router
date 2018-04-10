@@ -2,7 +2,7 @@ package fr.bmartel.bboxapi.router.javasample;
 
 import com.github.kittinunf.fuel.core.*;
 import com.github.kittinunf.result.Result;
-import fr.bmartel.bboxapi.router.BboxApi;
+import fr.bmartel.bboxapi.router.BboxApiRouter;
 import kotlin.Triple;
 
 import java.net.UnknownHostException;
@@ -12,7 +12,7 @@ import java.util.concurrent.CountDownLatch;
 public class Summary {
 
     public static void main(String args[]) throws InterruptedException {
-        BboxApi bboxapi = new BboxApi();
+        BboxApiRouter bboxapi = new BboxApiRouter();
 
         System.out.println("authentication attempts : " + bboxapi.getAttempts());
         System.out.println("user is authenticated   : " + bboxapi.getAuthenticated());

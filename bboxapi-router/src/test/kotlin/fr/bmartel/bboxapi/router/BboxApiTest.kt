@@ -21,7 +21,7 @@ open class BboxApiTest : TestCase() {
     companion object {
 
         private val mockServer = MockWebServer()
-        private val bboxApi = BboxApi()
+        private val bboxApi = BboxApiRouter()
 
         private val password = "admin@box"
 
@@ -157,7 +157,7 @@ open class BboxApiTest : TestCase() {
                 body = bboxApi::getVoipInfoSync,
                 expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
         Assert.assertEquals(2, attempts)
-        val exception = BboxApi.BboxAuthException(BboxException(
+        val exception = BboxApiRouter.BboxAuthException(BboxException(
                 ApiException(domain = "v1/login", code = "429", errors = listOf())
         ))
         Assert.assertFalse(bboxApi.blocked)
@@ -194,7 +194,7 @@ open class BboxApiTest : TestCase() {
         Assert.assertFalse(bboxApi.blocked)
         Assert.assertEquals(2, bboxApi.attempts)
         lock = CountDownLatch(1)
-        TestUtils.executeAsync(testcase = this, filename = "device.json", body = bboxApi::getVoipInfo, expectedException = BboxApi.BboxAuthException(error))
+        TestUtils.executeAsync(testcase = this, filename = "device.json", body = bboxApi::getVoipInfo, expectedException = BboxApiRouter.BboxAuthException(error))
         Assert.assertEquals(3, attempts)
         Assert.assertTrue(bboxApi.blocked)
         Assert.assertEquals(3, bboxApi.attempts)

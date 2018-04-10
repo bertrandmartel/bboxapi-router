@@ -1,12 +1,12 @@
 package fr.bmartel.bboxapi.router.sample
 
 import com.github.kittinunf.result.Result
-import fr.bmartel.bboxapi.router.BboxApi
+import fr.bmartel.bboxapi.router.BboxApiRouter
 import fr.bmartel.bboxapi.router.model.MacFilterRule
 import java.util.concurrent.CountDownLatch
 
 fun main(args: Array<String>) {
-    val bboxapi = BboxApi()
+    val bboxapi = BboxApiRouter()
     bboxapi.password = "admin"
 
     /**
@@ -151,7 +151,7 @@ fun main(args: Array<String>) {
     deleteAllRules(bboxapi = bboxapi, size = 2)
 }
 
-fun showNewSize(bboxapi: BboxApi) {
+fun showNewSize(bboxapi: BboxApiRouter) {
     val (_, _, wifiMacFilter2) = bboxapi.getWifiMacFilterSync()
     when (wifiMacFilter2) {
         is Result.Failure -> {
@@ -164,7 +164,7 @@ fun showNewSize(bboxapi: BboxApi) {
     }
 }
 
-fun deleteAllRules(bboxapi: BboxApi, size: Int) {
+fun deleteAllRules(bboxapi: BboxApiRouter, size: Int) {
     for (i in 1..size) {
         val (_, res, stateResult) = bboxapi.deleteMacFilterRuleSync(ruleIndex = i)
         when (stateResult) {

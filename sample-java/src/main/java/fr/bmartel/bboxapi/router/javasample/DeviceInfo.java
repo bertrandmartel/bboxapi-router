@@ -5,7 +5,7 @@ import com.github.kittinunf.fuel.core.Handler;
 import com.github.kittinunf.fuel.core.Request;
 import com.github.kittinunf.fuel.core.Response;
 import com.github.kittinunf.result.Result;
-import fr.bmartel.bboxapi.router.BboxApi;
+import fr.bmartel.bboxapi.router.BboxApiRouter;
 import fr.bmartel.bboxapi.router.model.Device;
 import kotlin.Triple;
 
@@ -15,7 +15,7 @@ import java.util.concurrent.CountDownLatch;
 public class DeviceInfo {
 
     public static void main(String args[]) throws InterruptedException {
-        BboxApi bboxapi = new BboxApi();
+        BboxApiRouter bboxapi = new BboxApiRouter();
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);

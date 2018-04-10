@@ -1,11 +1,11 @@
 package fr.bmartel.bboxapi.router.sample
 
 import com.github.kittinunf.result.Result
-import fr.bmartel.bboxapi.router.BboxApi
+import fr.bmartel.bboxapi.router.BboxApiRouter
 import java.util.concurrent.CountDownLatch
 
 fun main(args: Array<String>) {
-    val bboxapi = BboxApi()
+    val bboxapi = BboxApiRouter()
 
     //asynchronous call
     val latch = CountDownLatch(1)

@@ -14,7 +14,7 @@ import java.util.*
 import java.util.regex.Pattern
 import kotlin.concurrent.schedule
 
-class BboxApi {
+class BboxApiRouter {
 
     var password: String = ""
     var bboxId: String = ""

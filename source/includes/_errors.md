@@ -3,7 +3,7 @@
 > check exception type & response status code on failure :
 
 ```kotlin
-val bboxapi = BboxApi()
+val bboxapi = BboxApiRouter()
 bboxapi.setPassword("root")
 
 bboxapi.getVoipInfo { _, response, result ->
@@ -25,7 +25,7 @@ bboxapi.getVoipInfo { _, response, result ->
 ```
 
 ```java
-BboxApi bboxapi = new BboxApi();
+BboxApi bboxapi = new BboxApiRouter();
 bboxapi.setPassword("root");
 
 bboxapi.getVoipInfo(new Handler<List<Voip>>() {
@@ -41,7 +41,7 @@ bboxapi.getVoipInfo(new Handler<List<Voip>>() {
     }
 
     @Override
-    public void success(Request request, Response response, List<Voip.Model> data) {
+    public void success(Request request, Response response, List<Voip> data) {
         System.out.println(data);
     }
 });

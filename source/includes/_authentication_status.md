@@ -1,7 +1,7 @@
 # Authentication status
 
 ```kotlin
-val bboxapi = BboxApi()
+val bboxapi = BboxApiRouter()
 
 println("authentication attempts : ${bboxapi.attempts}")
 println("user is authenticated   : ${bboxapi.authenticated}")
@@ -10,7 +10,7 @@ println("ban expiration date     : ${bboxapi.blockedUntil}")
 ```
 
 ```java
-BboxApi bboxapi = new BboxApi();
+BboxApi bboxapi = new BboxApiRouter();
 
 System.out.println("authentication attempts : " + bboxapi.getAttempts());
 System.out.println("user is authenticated   : " + bboxapi.getAuthenticated());

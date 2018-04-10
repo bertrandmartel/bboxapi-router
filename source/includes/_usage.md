@@ -11,8 +11,8 @@ repositories {
 }
 
 dependencies {
-    compile 'fr.bmartel:bboxapi-router:2.1.0' //for JVM
-    compile 'fr.bmartel:bboxapi-router-android:2.1.0' //for Android
+    compile 'fr.bmartel:bboxapi-router:2.1.1' //for JVM
+    compile 'fr.bmartel:bboxapi-router-android:2.1.1' //for Android
 }
 ```
 

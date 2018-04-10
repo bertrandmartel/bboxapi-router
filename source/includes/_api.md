@@ -1385,7 +1385,7 @@ Reset password by setting a new one
 > Asynchronous
 
 ```kotlin
-bboxapi.createCustomRequest(request = Fuel.get("/summary"), auth = false) { _, _, result ->
+bboxapi.createCustomRequest(request = bboxapi.manager.request(method = Method.GET, path = "/summary"), auth = false) { _, _, result ->
     when (result) {
         is Result.Failure -> {
             val ex = result.getException()
@@ -1400,7 +1400,7 @@ bboxapi.createCustomRequest(request = Fuel.get("/summary"), auth = false) { _, _
 ```
 
 ```java
-bboxapi.createCustomRequest(Fuel.get("/summary"), false, new Handler<String>() {
+bboxapi.createCustomRequest(bboxapi.getManager().request(Method.GET, "/summary", null), false, new Handler<String>() {
     @Override
     public void failure(Request request, Response response, FuelError error) {
         error.printStackTrace();
@@ -1416,7 +1416,7 @@ bboxapi.createCustomRequest(Fuel.get("/summary"), false, new Handler<String>() {
 > Synchronous
 
 ```kotlin
-val (_, _, result) = bboxapi.createCustomRequestSync(request = Fuel.get("/voip"), auth = true)
+val (_, _, result) = bboxapi.createCustomRequestSync(request = bboxapi.manager.request(method = Method.GET, path = "/voip"), auth = true)
 when (result) {
     is Result.Failure -> {
         val ex = result.getException()
@@ -1430,7 +1430,7 @@ when (result) {
 ```
 
 ```java
-Triple<Request, Response, Result<String, FuelError>> data = bboxapi.createCustomRequestSync(Fuel.get("/voip"), true);
+Triple<Request, Response, Result<String, FuelError>> data = bboxapi.createCustomRequestSync(bboxapi.getManager().request(Method.GET, "/voip", null), true);
 System.out.println(data.getThird().get());
 ```
 

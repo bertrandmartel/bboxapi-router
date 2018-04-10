@@ -1,6 +1,6 @@
 package fr.bmartel.bboxapi.router.sample
 
-import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.result.Result
 import fr.bmartel.bboxapi.router.BboxApiRouter
 import java.util.concurrent.CountDownLatch
@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
     val latch = CountDownLatch(1)
 
 
-    bboxapi.createCustomRequest(request = Fuel.get("/summary"), auth = false) { _, _, result ->
+    bboxapi.createCustomRequest(request = bboxapi.manager.request(method = Method.GET, path = "/summary"), auth = false) { _, _, result ->
         when (result) {
             is Result.Failure -> {
                 val ex = result.getException()
@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
     latch.await()
 
     //synchronous call
-    val (_, _, result) = bboxapi.createCustomRequestSync(request = Fuel.get("/voip"), auth = true)
+    val (_, _, result) = bboxapi.createCustomRequestSync(request = bboxapi.manager.request(method = Method.GET, path = "/voip"), auth = true)
     when (result) {
         is Result.Failure -> {
             val ex = result.getException()

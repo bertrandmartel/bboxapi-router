@@ -1,7 +1,7 @@
 package fr.bmartel.bboxapi.router
 
-import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.HttpException
+import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
 import com.google.gson.Gson
@@ -806,7 +806,7 @@ open class BboxApiTest : TestCase() {
     fun createCustomRequest() {
         TestUtils.checkCustomResponse<List<Summary>>(
                 testcase = this,
-                inputReq = Fuel.get("/summary"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/summary"),
                 auth = false,
                 expectedException = null,
                 filename = "summary.json",
@@ -819,7 +819,7 @@ open class BboxApiTest : TestCase() {
         bboxApi.password = password
         TestUtils.checkCustomResponse<List<Voip>>(
                 testcase = this,
-                inputReq = Fuel.get("/voip"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/voip"),
                 auth = true,
                 expectedException = null,
                 filename = "voip.json",
@@ -832,7 +832,7 @@ open class BboxApiTest : TestCase() {
         bboxApi.password = password
         TestUtils.checkCustomResponse<List<Voip>>(
                 testcase = this,
-                inputReq = Fuel.get("/voip"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/voip"),
                 auth = false,
                 expectedException = HttpException(401, "Client Error"),
                 filename = null,
@@ -844,7 +844,7 @@ open class BboxApiTest : TestCase() {
     fun createCustomRequestCb() {
         TestUtils.checkCustomResponseCb<List<Summary>>(
                 testcase = this,
-                inputReq = Fuel.get("/summary"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/summary"),
                 auth = false,
                 expectedException = null,
                 filename = "summary.json",
@@ -857,7 +857,7 @@ open class BboxApiTest : TestCase() {
         bboxApi.password = password
         TestUtils.checkCustomResponseCb<List<Voip>>(
                 testcase = this,
-                inputReq = Fuel.get("/voip"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/voip"),
                 auth = true,
                 expectedException = null,
                 filename = "voip.json",
@@ -870,7 +870,7 @@ open class BboxApiTest : TestCase() {
         bboxApi.password = password
         TestUtils.checkCustomResponseCb<List<Voip>>(
                 testcase = this,
-                inputReq = Fuel.get("/voip"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/voip"),
                 auth = false,
                 expectedException = HttpException(401, "Client Error"),
                 filename = null,
@@ -881,7 +881,7 @@ open class BboxApiTest : TestCase() {
     @Test
     fun createCustomRequestSync() {
         TestUtils.checkCustomResponseSync<List<Summary>>(
-                inputReq = Fuel.get("/summary"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/summary"),
                 auth = false,
                 expectedException = null,
                 filename = "summary.json",
@@ -893,7 +893,7 @@ open class BboxApiTest : TestCase() {
     fun createCustomRequestSecuredSync() {
         bboxApi.password = password
         TestUtils.checkCustomResponseSync<List<Voip>>(
-                inputReq = Fuel.get("/voip"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/voip"),
                 auth = true,
                 expectedException = null,
                 filename = "voip.json",
@@ -905,7 +905,7 @@ open class BboxApiTest : TestCase() {
     fun createCustomRequestSecuredUnauthorizedSync() {
         bboxApi.password = password
         TestUtils.checkCustomResponseSync<List<Voip>>(
-                inputReq = Fuel.get("/voip"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/voip"),
                 auth = false,
                 expectedException = HttpException(401, "Client Error"),
                 filename = null,
@@ -917,7 +917,7 @@ open class BboxApiTest : TestCase() {
     fun createCustomRequestNotAuthenticatedWrongHost() {
         bboxApi.setBasePath("https://google.fr")
         TestUtils.checkCustomResponseSync<List<Summary>>(
-                inputReq = Fuel.get("/summary"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/summary"),
                 auth = false,
                 expectedException = HttpException(401, "Client Error"),
                 filename = "summary.json",
@@ -929,7 +929,7 @@ open class BboxApiTest : TestCase() {
     fun createCustomRequestAuthenticatedWrongHost() {
         bboxApi.setBasePath("https://google.fr")
         TestUtils.checkCustomResponseSync<List<Summary>>(
-                inputReq = Fuel.get("/summary"),
+                inputReq = bboxApi.manager.request(method = Method.GET, path = "/summary"),
                 auth = true,
                 expectedException = JsonSyntaxException("Error"),
                 filename = "summary.json",

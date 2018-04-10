@@ -1,10 +1,6 @@
 package fr.bmartel.bboxapi.router.javasample;
 
-import com.github.kittinunf.fuel.Fuel;
-import com.github.kittinunf.fuel.core.FuelError;
-import com.github.kittinunf.fuel.core.Handler;
-import com.github.kittinunf.fuel.core.Request;
-import com.github.kittinunf.fuel.core.Response;
+import com.github.kittinunf.fuel.core.*;
 import com.github.kittinunf.result.Result;
 import fr.bmartel.bboxapi.router.BboxApiRouter;
 import kotlin.Triple;
@@ -19,7 +15,7 @@ public class CustomRequest {
 
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
-        bboxapi.createCustomRequest(Fuel.get("/summary"), false, new Handler<String>() {
+        bboxapi.createCustomRequest(bboxapi.getManager().request(Method.GET, "/summary", null), false, new Handler<String>() {
             @Override
             public void failure(Request request, Response response, FuelError error) {
                 error.printStackTrace();
@@ -35,7 +31,7 @@ public class CustomRequest {
         latch.await();
 
         //synchronous call
-        Triple<Request, Response, Result<String, FuelError>> data = bboxapi.createCustomRequestSync(Fuel.get("/voip"), true);
+        Triple<Request, Response, Result<String, FuelError>> data = bboxapi.createCustomRequestSync(bboxapi.getManager().request(Method.GET, "/voip", null), true);
         System.out.println(data.getThird().get());
     }
 }

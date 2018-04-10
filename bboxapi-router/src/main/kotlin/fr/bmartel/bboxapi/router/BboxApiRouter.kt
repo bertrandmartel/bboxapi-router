@@ -1,6 +1,5 @@
 package fr.bmartel.bboxapi.router
 
-import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.*
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.github.kittinunf.result.Result
@@ -41,80 +40,82 @@ class BboxApiRouter {
      */
     var attempts: Int = 0
 
+    val manager = FuelManager()
+
     init {
-        FuelManager.instance.basePath = "http://bbox.lan/api/v1"
+        manager.basePath = "http://bbox.lan/api/v1"
     }
 
     fun setBasePath(basePath: String) {
-        FuelManager.instance.basePath = basePath
+        manager.basePath = basePath
     }
 
     private fun buildLoginRequest(): Request {
-        return Fuel.post("/login", parameters = listOf("password" to password, "remember" to 1))
+        return manager.request(method = Method.POST, path = "/login", param = listOf("password" to password, "remember" to 1))
     }
 
     private fun buildSummaryRequest(): Request {
-        return Fuel.get("/summary")
+        return manager.request(method = Method.GET, path = "/summary")
     }
 
     private fun buildXdslRequest(): Request {
-        return Fuel.get("/wan/xdsl")
+        return manager.request(method = Method.GET, path = "/wan/xdsl")
     }
 
     private fun buildHostRequest(): Request {
-        return Fuel.get("/hosts")
+        return manager.request(method = Method.GET, path = "/hosts")
     }
 
     private fun buildWanIpInfoRequest(): Request {
-        return Fuel.get("/wan/ip")
+        return manager.request(method = Method.GET, path = "/wan/ip")
     }
 
     private fun buildDeviceInfoRequest(): Request {
-        return Fuel.get("/device")
+        return manager.request(method = Method.GET, path = "/device")
     }
 
     private fun buildVoipRequest(): Request {
-        return Fuel.get("/voip")
+        return manager.request(method = Method.GET, path = "/voip")
     }
 
     private fun buildWirelessRequest(): Request {
-        return Fuel.get("/wireless")
+        return manager.request(method = Method.GET, path = "/wireless")
     }
 
     private fun buildCallLogsRequest(line: Line): Request {
-        return Fuel.get("/voip/fullcalllog/${if (line == Line.LINE1) 1 else 2}")
+        return manager.request(method = Method.GET, path = "/voip/fullcalllog/${if (line == Line.LINE1) 1 else 2}")
     }
 
     private fun buildWifiStateRequest(state: Boolean): Request {
-        return Fuel.put("/wireless?radio.enable=${if (state) 1 else 0}")
+        return manager.request(method = Method.PUT, path = "/wireless?radio.enable=${if (state) 1 else 0}")
     }
 
     private fun buildDisplayStateRequest(state: Boolean): Request {
-        return Fuel.put("/device/display?luminosity=${if (state) 100 else 0}")
+        return manager.request(method = Method.PUT, path = "/device/display?luminosity=${if (state) 100 else 0}")
     }
 
     private fun buildVoipDialRequest(line: Line, phoneNumber: String): Request {
-        return Fuel.put("/voip/dial?line=${if (line == Line.LINE1) 1 else 2}&number=$phoneNumber")
+        return manager.request(method = Method.PUT, path = "/voip/dial?line=${if (line == Line.LINE1) 1 else 2}&number=$phoneNumber")
     }
 
     private fun buildTokenRequest(): Request {
-        return Fuel.get("/device/token")
+        return manager.request(method = Method.GET, path = "/device/token")
     }
 
     private fun buildRebootRequest(btoken: String?): Request {
-        return Fuel.post("/device/reboot?btoken=$btoken")
+        return manager.request(method = Method.POST, path = "/device/reboot?btoken=$btoken")
     }
 
     private fun buildGetAclRequest(): Request {
-        return Fuel.get("/wireless/acl")
+        return manager.request(method = Method.GET, path = "/wireless/acl")
     }
 
     private fun buildSetWifiMacFilterRequest(state: Boolean): Request {
-        return Fuel.put("/wireless/acl?enable=${if (state) 1 else 0}")
+        return manager.request(method = Method.PUT, path = "/wireless/acl?enable=${if (state) 1 else 0}")
     }
 
     private fun buildDeleteAclRequest(ruleIndex: Int): Request {
-        return Fuel.delete("/wireless/acl/rules/$ruleIndex")
+        return manager.request(method = Method.DELETE, path = "/wireless/acl/rules/$ruleIndex")
     }
 
     private fun buildUpdateAclRequest(ruleIndex: Int, rule: MacFilterRule): Request {
@@ -123,7 +124,7 @@ class BboxApiRouter {
                 "macaddress" to rule.macaddress,
                 "device" to (if (rule.ip == "") -1 else rule.ip)
         )
-        return Fuel.put("/wireless/acl/rules/$ruleIndex", data)
+        return manager.request(method = Method.PUT, path = "/wireless/acl/rules/$ruleIndex", param = data)
     }
 
     private fun buildCreateAclRequest(btoken: String?, rule: MacFilterRule): Request {
@@ -132,26 +133,26 @@ class BboxApiRouter {
                 "macaddress" to rule.macaddress,
                 "device" to (if (rule.ip == "") -1 else rule.ip)
         )
-        return Fuel.post("/wireless/acl/rules?btoken=$btoken", parameters = data)
+        return manager.request(method = Method.POST, path = "/wireless/acl/rules?btoken=$btoken", param = data)
     }
 
     private fun buildLogoutRequest(): Request {
-        return Fuel.post("/logout")
+        return manager.request(method = Method.POST, path = "/logout")
     }
 
     private fun buildStartRecoveryRequest(): Request {
-        return Fuel.post("/password-recovery")
+        return manager.request(method = Method.POST, path = "/password-recovery")
     }
 
     private fun buildVerifyRecoveryRequest(): Request {
-        return Fuel.get("/password-recovery/verify")
+        return manager.request(method = Method.GET, path = "/password-recovery/verify")
     }
 
     private fun buildResetPasswordRequest(btoken: String?): Request {
         val data = listOf(
                 "password" to password
         )
-        return Fuel.post("/reset-password?btoken=$btoken", parameters = data)
+        return manager.request(method = Method.POST, path = "/reset-password?btoken=$btoken", param = data)
     }
 
     private fun onAuthenticationSuccess(response: Response) {

@@ -1435,3 +1435,5 @@ System.out.println(data.getThird().get());
 ```
 
 Create your own HTTP request, this can be useful for not relying on the library implementation
+
+**All request construction are prefixed with [http://bbox.lan/api/v1](http://bbox.lan/api/v1) if host is not specified**

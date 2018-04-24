@@ -30,7 +30,8 @@ open class BboxApiTest : TestCase() {
         var macFilterRule: MacFilterRule? = null
         var PINCODE = "123456789"
         var changePassword = 0
-
+        const val clientSecret = "secret"
+        const val clientId = "client"
         //https://stackoverflow.com/a/33381385/2614364
         inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object : TypeToken<T>() {}.type)
 
@@ -1051,5 +1052,38 @@ open class BboxApiTest : TestCase() {
         val state = bboxApi.waitForPushButton(maxDuration = 2000, pollInterval = 250)
         Assert.assertTrue(state)
         timer.cancel()
+    }
+
+    @Test
+    fun authorize() {
+        val oauthParam = OauthParam(
+                clientId = clientId,
+                clientSecret = clientSecret,
+                grantType = GrantType.BUTTON,
+                responseType = ResponseType.CODE
+        )
+        TestUtils.executeAsyncOneParam(input = oauthParam, testcase = this, filename = "code.json", body = bboxApi::authorize)
+    }
+
+    @Test
+    fun authorizeSync() {
+        val oauthParam = OauthParam(
+                clientId = clientId,
+                clientSecret = clientSecret,
+                grantType = GrantType.BUTTON,
+                responseType = ResponseType.CODE
+        )
+        TestUtils.executeSyncOneParam(input = oauthParam, filename = "code.json", body = bboxApi::authorizeSync)
+    }
+
+    @Test
+    fun authorizeCb() {
+        val oauthParam = OauthParam(
+                clientId = clientId,
+                clientSecret = clientSecret,
+                grantType = GrantType.BUTTON,
+                responseType = ResponseType.CODE
+        )
+        TestUtils.executeAsyncOneParamCb(input = oauthParam, testcase = this, filename = "code.json", body = bboxApi::authorize)
     }
 }

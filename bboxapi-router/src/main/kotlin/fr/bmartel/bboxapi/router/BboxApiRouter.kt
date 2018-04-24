@@ -155,6 +155,18 @@ class BboxApiRouter {
         return manager.request(method = Method.POST, path = "/reset-password?btoken=$btoken", param = data)
     }
 
+    private fun buildOauthAuthorizeRequest(oauthParam: OauthParam): Request {
+        var scopeStr = ""
+        oauthParam.scope.map { scopeStr += "${it.field} " }
+        val data = mutableListOf(
+                "grant_type" to oauthParam.grantType.field,
+                "client_id" to oauthParam.clientId,
+                "client_secret" to oauthParam.clientSecret,
+                "response_type" to oauthParam.responseType.field
+        )
+        return manager.request(method = Method.POST, path = "/oauth/authorize", param = data)
+    }
+
     private fun onAuthenticationSuccess(response: Response) {
         response.headers["Set-Cookie"]?.flatMap { HttpCookie.parse(it) }?.find { it.name == "BBOX_ID" }?.let {
             bboxId = it.value
@@ -753,5 +765,17 @@ class BboxApiRouter {
         }
         listenTimer?.cancel()
         return false
+    }
+
+    fun authorize(oauthParam: OauthParam, handler: (Request, Response, Result<CodeResponse, FuelError>) -> Unit) {
+        buildOauthAuthorizeRequest(oauthParam).responseObject(gsonDeserializerOf(), handler)
+    }
+
+    fun authorize(oauthParam: OauthParam, handler: Handler<CodeResponse>) {
+        buildOauthAuthorizeRequest(oauthParam).responseObject(gsonDeserializerOf(), handler)
+    }
+
+    fun authorizeSync(oauthParam: OauthParam): Triple<Request, Response, Result<CodeResponse, FuelError>> {
+        return buildOauthAuthorizeRequest(oauthParam).responseObject(gsonDeserializerOf())
     }
 }

@@ -60,6 +60,7 @@ class MockDispatcher : Dispatcher() {
             request.method == "POST" && request.path == "/password-recovery" -> MockResponse().setResponseCode(200)
             request.method == "POST" && request.path.startsWith("/reset-password") -> resetPassword(request)
             request.method == "POST" && request.path.startsWith("/oauth/authorize") -> authorize(request)
+            request.method == "POST" && request.path.startsWith("/oauth/token") -> getToken(request)
             request.method == "GET" && request.path == "/password-recovery/verify" -> verifyPassword()
             else -> MockResponse().setResponseCode(404)
         }
@@ -264,6 +265,19 @@ class MockDispatcher : Dispatcher() {
                 formData.containsKey("client_secret") && formData.get("client_secret")?.get(0).equals(BboxApiTest.clientSecret) &&
                 formData.containsKey("response_type") && formData.get("response_type")?.get(0).equals("code")) {
             sendResponse(fileName = "code.json")
+        } else {
+            MockResponse().setResponseCode(403)
+        }
+    }
+
+    private fun getToken(request: RecordedRequest): MockResponse {
+        val formData = TestUtils.splitQuery(request.body.readUtf8())
+        return if (formData.containsKey("grant_type") &&
+                formData.containsKey("client_id") && formData.get("client_id")?.get(0).equals(BboxApiTest.clientId) &&
+                formData.containsKey("client_secret") && formData.get("client_secret")?.get(0).equals(BboxApiTest.clientSecret) &&
+                formData.containsKey("code") && formData.get("code")?.get(0).equals(BboxApiTest.code) &&
+                formData.containsKey("scope")) {
+            sendResponse(fileName = "oauth_token.json")
         } else {
             MockResponse().setResponseCode(403)
         }

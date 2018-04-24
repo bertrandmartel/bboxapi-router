@@ -11,6 +11,7 @@ import fr.bmartel.bboxapi.router.model.*
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.CoreMatchers
 import org.junit.*
+import org.skyscreamer.jsonassert.JSONAssert
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.CountDownLatch
@@ -32,6 +33,7 @@ open class BboxApiTest : TestCase() {
         var changePassword = 0
         const val clientSecret = "secret"
         const val clientId = "client"
+        const val code = "B1.4.426b.R0IkGG5QpS5i9fOb.GvLWGP2b0D4fMe2HQePsnE9pJdyTe0aA4zCFmjJSfak"
         //https://stackoverflow.com/a/33381385/2614364
         inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object : TypeToken<T>() {}.type)
 
@@ -1085,5 +1087,66 @@ open class BboxApiTest : TestCase() {
                 responseType = ResponseType.CODE
         )
         TestUtils.executeAsyncOneParamCb(input = oauthParam, testcase = this, filename = "code.json", body = bboxApi::authorize)
+    }
+
+    @Test
+    fun getToken() {
+        val oauthParam = OauthParam(
+                clientId = clientId,
+                clientSecret = clientSecret,
+                grantType = GrantType.BUTTON,
+                code = code,
+                scope = listOf(Scope.ALL))
+        TestUtils.executeAsyncOneParam(input = oauthParam, testcase = this, filename = "oauth_token.json", body = bboxApi::getToken)
+    }
+
+    @Test
+    fun getTokenSync() {
+        val oauthParam = OauthParam(
+                clientId = clientId,
+                clientSecret = clientSecret,
+                grantType = GrantType.BUTTON,
+                code = code,
+                scope = listOf(Scope.ALL))
+        TestUtils.executeSyncOneParam(input = oauthParam, filename = "oauth_token.json", body = bboxApi::getTokenSync)
+    }
+
+
+    @Test
+    fun getTokenCb() {
+        val oauthParam = OauthParam(
+                clientId = clientId,
+                clientSecret = clientSecret,
+                grantType = GrantType.BUTTON,
+                code = code,
+                scope = listOf(Scope.ALL))
+        TestUtils.executeAsyncOneParamCb(input = oauthParam, testcase = this, filename = "oauth_token.json", body = bboxApi::getToken)
+    }
+
+    @Test
+    fun waitForPushButtonOauth() {
+        var triple = bboxApi.waitForPushButtonOauth(clientId = clientId, clientSecret = clientSecret, maxDuration = 2000, pollInterval = 250)
+        Assert.assertNotNull(triple.third.component2())
+        Assert.assertEquals("push button failure", triple.third.component2()?.exception?.message)
+        changePassword = 1
+        triple = bboxApi.waitForPushButtonOauth(clientId = clientId, clientSecret = clientSecret, maxDuration = 2000, pollInterval = 250)
+        Assert.assertNull(triple.third.component2())
+        Assert.assertEquals(200, triple.second.statusCode)
+        JSONAssert.assertEquals(TestUtils.getResFile(fileName = "oauth_token.json"), Gson().toJson(triple.third.get()), false)
+        changePassword = 0
+    }
+
+    @Test
+    fun waitForPushButtonOauthSimuButton() {
+        val timer = Timer()
+        timer.schedule(delay = 1000) {
+            changePassword = 1
+        }
+        changePassword = 2
+        val triple = bboxApi.waitForPushButtonOauth(clientId = clientId, clientSecret = clientSecret, maxDuration = 2000, pollInterval = 250)
+        Assert.assertNull(triple.third.component2())
+        Assert.assertEquals(200, triple.second.statusCode)
+        JSONAssert.assertEquals(TestUtils.getResFile(fileName = "oauth_token.json"), Gson().toJson(triple.third.get()), false)
+        timer.cancel()
     }
 }

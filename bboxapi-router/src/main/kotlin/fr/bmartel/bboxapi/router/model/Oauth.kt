@@ -12,6 +12,8 @@ data class OauthParam(
 
 data class CodeResponse(val code: String, val interval: Int, val token_type: String, val expires_in: Int, val issued_at: String)
 
+data class TokenResponse(val access_token: String, val refresh_token: String, val token_type: String, val expires_in: Int, val issued_at: String)
+
 enum class GrantType(val field: String) {
     ACCESS_TOKEN("access_token"),
     REFRESH_TOKEN("refresh_token"),

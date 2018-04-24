@@ -156,8 +156,6 @@ class BboxApiRouter {
     }
 
     private fun buildOauthAuthorizeRequest(oauthParam: OauthParam): Request {
-        var scopeStr = ""
-        oauthParam.scope.map { scopeStr += "${it.field} " }
         val data = mutableListOf(
                 "grant_type" to oauthParam.grantType.field,
                 "client_id" to oauthParam.clientId,
@@ -165,6 +163,19 @@ class BboxApiRouter {
                 "response_type" to oauthParam.responseType.field
         )
         return manager.request(method = Method.POST, path = "/oauth/authorize", param = data)
+    }
+
+    private fun buildOauthTokenRequest(oauthParam: OauthParam): Request {
+        var scopeStr = ""
+        oauthParam.scope.map { scopeStr += "${it.field} " }
+        val data = mutableListOf(
+                "grant_type" to oauthParam.grantType.field,
+                "client_id" to oauthParam.clientId,
+                "client_secret" to oauthParam.clientSecret,
+                "code" to oauthParam.code,
+                "scope" to "*"
+        )
+        return manager.request(method = Method.POST, path = "/oauth/token", param = data)
     }
 
     private fun onAuthenticationSuccess(response: Response) {
@@ -739,31 +750,9 @@ class BboxApiRouter {
 
     fun waitForPushButton(maxDuration: Long, pollInterval: Long = 1000): Boolean {
         val (_, response, _) = startPasswordRecoverySync()
-        var listenTimer: Timer? = null
         if (response.statusCode == 200) {
-            val (_, response, result) = verifyPasswordRecoverySync()
-            if (response.statusCode == 200 && result?.get() == null) {
-                return true
-            }
-            var expire: Int = result?.get()?.get(0)?.expires ?: 0
-            if (expire > 0) {
-                var stop = false
-                listenTimer = Timer()
-                listenTimer.schedule(delay = maxDuration) {
-                    stop = true
-                }
-                while (expire > 0 && !stop) {
-                    val (_, res, verify) = verifyPasswordRecoverySync()
-                    if (res.statusCode == 200 && verify?.get() == null) {
-                        return true
-                    } else {
-                        expire = verify?.get()?.get(0)?.expires ?: 0
-                    }
-                    Thread.sleep(pollInterval)
-                }
-            }
+            return waitForPush(maxDuration, pollInterval)
         }
-        listenTimer?.cancel()
         return false
     }
 
@@ -777,5 +766,78 @@ class BboxApiRouter {
 
     fun authorizeSync(oauthParam: OauthParam): Triple<Request, Response, Result<CodeResponse, FuelError>> {
         return buildOauthAuthorizeRequest(oauthParam).responseObject(gsonDeserializerOf())
+    }
+
+    fun getToken(oauthParam: OauthParam, handler: (Request, Response, Result<TokenResponse, FuelError>) -> Unit) {
+        buildOauthTokenRequest(oauthParam).responseObject(gsonDeserializerOf(), handler)
+    }
+
+    fun getToken(oauthParam: OauthParam, handler: Handler<TokenResponse>) {
+        buildOauthTokenRequest(oauthParam).responseObject(gsonDeserializerOf(), handler)
+    }
+
+    fun getTokenSync(oauthParam: OauthParam): Triple<Request, Response, Result<TokenResponse, FuelError>> {
+        return buildOauthTokenRequest(oauthParam).responseObject(gsonDeserializerOf())
+    }
+
+    private fun waitForPush(maxDuration: Long, pollInterval: Long = 1000): Boolean {
+        var listenTimer: Timer? = null
+        val (_, response, result) = verifyPasswordRecoverySync()
+        if (response.statusCode == 200 && result?.get() == null) {
+            listenTimer?.cancel()
+            return true
+        }
+        var expire: Int = result?.get()?.get(0)?.expires ?: 0
+        if (expire > 0) {
+            var stop = false
+            listenTimer = Timer()
+            listenTimer.schedule(delay = maxDuration) {
+                stop = true
+            }
+            while (expire > 0 && !stop) {
+                val (_, res, verify) = verifyPasswordRecoverySync()
+                if (res.statusCode == 200 && verify?.get() == null) {
+                    listenTimer?.cancel()
+                    return true
+                } else {
+                    expire = verify?.get()?.get(0)?.expires ?: 0
+                }
+                Thread.sleep(pollInterval)
+            }
+        }
+        listenTimer?.cancel()
+        return false
+    }
+
+    fun waitForPushButtonOauth(clientId: String,
+                               clientSecret: String,
+                               maxDuration: Long,
+                               pollInterval: Long = 1000,
+                               scope: List<Scope> = listOf(Scope.ALL)): Triple<Request, Response, Result<*, FuelError>> {
+        val authorizeTriple = authorizeSync(OauthParam(
+                clientId = clientId,
+                clientSecret = clientSecret,
+                grantType = GrantType.BUTTON,
+                responseType = ResponseType.CODE
+        ))
+        if (authorizeTriple.component2().statusCode == 200) {
+            if (waitForPush(maxDuration, pollInterval)) {
+                return getTokenSync(OauthParam(
+                        clientId = clientId,
+                        clientSecret = clientSecret,
+                        grantType = GrantType.BUTTON,
+                        code = authorizeTriple.component3().get().code,
+                        scope = scope
+                ))
+            }
+            //send custom error failure for pushing button
+            return Triple(
+                    authorizeTriple.component1(),
+                    authorizeTriple.component2(),
+                    Result.error(Exception("failure")).flatMapError {
+                        Result.error(FuelError(Exception("push button failure")))
+                    })
+        }
+        return authorizeTriple
     }
 }

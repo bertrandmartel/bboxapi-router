@@ -1,8 +1,6 @@
 package fr.bmartel.bboxapi.router.model
 
 data class OauthParam(
-        val clientId: String? = null,
-        val clientSecret: String? = null,
         val grantType: GrantType,
         val scope: List<Scope> = listOf(Scope.ALL),
         val code: String? = null,

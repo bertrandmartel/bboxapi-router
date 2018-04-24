@@ -13,7 +13,7 @@ import java.util.*
 import java.util.regex.Pattern
 import kotlin.concurrent.schedule
 
-class BboxApiRouter {
+class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = null) {
 
     var password: String = ""
     var bboxId: String = ""
@@ -39,6 +39,12 @@ class BboxApiRouter {
      * number of login attempts.
      */
     var attempts: Int = 0
+
+    /**
+     * use Oauth whether a clientId & clientSecret have been defined
+     */
+    var useOauth: Boolean = false
+        get() = (clientId != null && clientSecret != null)
 
     val manager = FuelManager()
 
@@ -155,35 +161,37 @@ class BboxApiRouter {
         return manager.request(method = Method.POST, path = "/reset-password?btoken=$btoken", param = data)
     }
 
-    private fun buildOauthAuthorizeRequest(oauthParam: OauthParam): Request {
+    private fun buildOauthAuthorizeRequest(grantType: GrantType, responseType: ResponseType): Request {
         val data = mutableListOf(
-                "grant_type" to oauthParam.grantType.field,
-                "client_id" to oauthParam.clientId,
-                "client_secret" to oauthParam.clientSecret,
-                "response_type" to oauthParam.responseType.field
+                "grant_type" to grantType.field,
+                "client_id" to clientId,
+                "client_secret" to clientSecret,
+                "response_type" to responseType.field
         )
         return manager.request(method = Method.POST, path = "/oauth/authorize", param = data)
     }
 
-    private fun buildOauthTokenRequest(oauthParam: OauthParam): Request {
+    private fun buildGetTokenRequest(grantType: GrantType, code: String, scope: List<Scope>): Request {
         var scopeStr = ""
-        oauthParam.scope.map { scopeStr += "${it.field} " }
+        scope.map { scopeStr += "${it.field} " }
         val data = mutableListOf(
-                "grant_type" to oauthParam.grantType.field,
-                "scope" to "*"
+                "client_id" to clientId,
+                "client_secret" to clientSecret,
+                "grant_type" to grantType.field,
+                "scope" to "*",
+                "code" to code
         )
-        if (oauthParam.clientId != null) {
-            data.add("client_id" to oauthParam.clientId)
-        }
-        if (oauthParam.clientSecret != null) {
-            data.add("client_secret" to oauthParam.clientSecret)
-        }
-        if (oauthParam.code != null) {
-            data.add("code" to oauthParam.code)
-        }
-        if (oauthParam.refreshToken != null) {
-            data.add("refresh_token" to oauthParam.refreshToken)
-        }
+        return manager.request(method = Method.POST, path = "/oauth/token", param = data)
+    }
+
+    private fun buildRefreshTokenRequest(refreshToken: String, scope: List<Scope>): Request {
+        var scopeStr = ""
+        scope.map { scopeStr += "${it.field} " }
+        val data = mutableListOf(
+                "grant_type" to GrantType.REFRESH_TOKEN.field,
+                "scope" to "*",
+                "refresh_token" to refreshToken
+        )
         return manager.request(method = Method.POST, path = "/oauth/token", param = data)
     }
 
@@ -765,57 +773,52 @@ class BboxApiRouter {
         return false
     }
 
-    fun authorize(oauthParam: OauthParam, handler: (Request, Response, Result<CodeResponse, FuelError>) -> Unit) {
-        buildOauthAuthorizeRequest(oauthParam).responseObject(gsonDeserializerOf(), handler)
+    fun authorize(grantType: GrantType, responseType: ResponseType, handler: (Request, Response, Result<CodeResponse, FuelError>) -> Unit) {
+        buildOauthAuthorizeRequest(grantType = grantType, responseType = responseType).responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun authorize(oauthParam: OauthParam, handler: Handler<CodeResponse>) {
-        buildOauthAuthorizeRequest(oauthParam).responseObject(gsonDeserializerOf(), handler)
+    fun authorize(grantType: GrantType, responseType: ResponseType, handler: Handler<CodeResponse>) {
+        buildOauthAuthorizeRequest(grantType = grantType, responseType = responseType).responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun authorizeSync(oauthParam: OauthParam): Triple<Request, Response, Result<CodeResponse, FuelError>> {
-        return buildOauthAuthorizeRequest(oauthParam).responseObject(gsonDeserializerOf())
+    fun authorizeSync(grantType: GrantType, responseType: ResponseType): Triple<Request, Response, Result<CodeResponse, FuelError>> {
+        return buildOauthAuthorizeRequest(grantType = grantType, responseType = responseType).responseObject(gsonDeserializerOf())
     }
 
-    fun getToken(oauthParam: OauthParam, handler: (Request, Response, Result<TokenResponse, FuelError>) -> Unit) {
-        buildOauthTokenRequest(oauthParam).responseObject(gsonDeserializerOf(), handler)
+    fun getToken(grantType: GrantType, code: String, scope: List<Scope>,
+                 handler: (Request, Response, Result<TokenResponse, FuelError>) -> Unit) {
+        buildGetTokenRequest(grantType = grantType, code = code, scope = scope).responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getToken(oauthParam: OauthParam, handler: Handler<TokenResponse>) {
-        buildOauthTokenRequest(oauthParam).responseObject(gsonDeserializerOf(), handler)
+    fun getToken(grantType: GrantType, code: String, scope: List<Scope>, handler: Handler<TokenResponse>) {
+        buildGetTokenRequest(grantType = grantType, code = code, scope = scope).responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getTokenSync(oauthParam: OauthParam): Triple<Request, Response, Result<TokenResponse, FuelError>> {
-        return buildOauthTokenRequest(oauthParam).responseObject(gsonDeserializerOf())
+    fun getTokenSync(grantType: GrantType, code: String, scope: List<Scope>): Triple<Request, Response, Result<TokenResponse, FuelError>> {
+        return buildGetTokenRequest(grantType = grantType, code = code, scope = scope).responseObject(gsonDeserializerOf())
     }
 
     fun refreshToken(refreshToken: String,
                      scope: List<Scope>,
                      handler: (Request, Response, Result<TokenResponse, FuelError>) -> Unit) {
-        buildOauthTokenRequest(OauthParam(
+        buildRefreshTokenRequest(
                 refreshToken = refreshToken,
-                grantType = GrantType.REFRESH_TOKEN,
-                scope = scope
-        )).responseObject(gsonDeserializerOf(), handler)
+                scope = scope).responseObject(gsonDeserializerOf(), handler)
     }
 
     fun refreshToken(refreshToken: String,
                      scope: List<Scope>,
                      handler: Handler<TokenResponse>) {
-        buildOauthTokenRequest(OauthParam(
+        buildRefreshTokenRequest(
                 refreshToken = refreshToken,
-                grantType = GrantType.REFRESH_TOKEN,
-                scope = scope
-        )).responseObject(gsonDeserializerOf(), handler)
+                scope = scope).responseObject(gsonDeserializerOf(), handler)
     }
 
     fun refreshTokenSync(refreshToken: String,
                          scope: List<Scope>): Triple<Request, Response, Result<TokenResponse, FuelError>> {
-        return buildOauthTokenRequest(OauthParam(
+        return buildRefreshTokenRequest(
                 refreshToken = refreshToken,
-                grantType = GrantType.REFRESH_TOKEN,
-                scope = scope
-        )).responseObject(gsonDeserializerOf())
+                scope = scope).responseObject(gsonDeserializerOf())
     }
 
     private fun waitForPush(maxDuration: Long, pollInterval: Long = 1000): Boolean {
@@ -847,26 +850,16 @@ class BboxApiRouter {
         return false
     }
 
-    fun waitForPushButtonOauth(clientId: String,
-                               clientSecret: String,
-                               maxDuration: Long,
+    fun waitForPushButtonOauth(maxDuration: Long,
                                pollInterval: Long = 1000,
                                scope: List<Scope> = listOf(Scope.ALL)): Triple<Request, Response, Result<*, FuelError>> {
-        val authorizeTriple = authorizeSync(OauthParam(
-                clientId = clientId,
-                clientSecret = clientSecret,
-                grantType = GrantType.BUTTON,
-                responseType = ResponseType.CODE
-        ))
+        val authorizeTriple = authorizeSync(grantType = GrantType.BUTTON, responseType = ResponseType.CODE)
         if (authorizeTriple.component2().statusCode == 200) {
             if (waitForPush(maxDuration, pollInterval)) {
-                return getTokenSync(OauthParam(
-                        clientId = clientId,
-                        clientSecret = clientSecret,
+                return getTokenSync(
                         grantType = GrantType.BUTTON,
                         code = authorizeTriple.component3().get().code,
-                        scope = scope
-                ))
+                        scope = scope)
             }
             //send custom error failure for pushing button
             return Triple(

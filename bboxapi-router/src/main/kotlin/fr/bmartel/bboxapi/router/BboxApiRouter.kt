@@ -170,11 +170,20 @@ class BboxApiRouter {
         oauthParam.scope.map { scopeStr += "${it.field} " }
         val data = mutableListOf(
                 "grant_type" to oauthParam.grantType.field,
-                "client_id" to oauthParam.clientId,
-                "client_secret" to oauthParam.clientSecret,
-                "code" to oauthParam.code,
                 "scope" to "*"
         )
+        if (oauthParam.clientId != null) {
+            data.add("client_id" to oauthParam.clientId)
+        }
+        if (oauthParam.clientSecret != null) {
+            data.add("client_secret" to oauthParam.clientSecret)
+        }
+        if (oauthParam.code != null) {
+            data.add("code" to oauthParam.code)
+        }
+        if (oauthParam.refreshToken != null) {
+            data.add("refresh_token" to oauthParam.refreshToken)
+        }
         return manager.request(method = Method.POST, path = "/oauth/token", param = data)
     }
 
@@ -778,6 +787,35 @@ class BboxApiRouter {
 
     fun getTokenSync(oauthParam: OauthParam): Triple<Request, Response, Result<TokenResponse, FuelError>> {
         return buildOauthTokenRequest(oauthParam).responseObject(gsonDeserializerOf())
+    }
+
+    fun refreshToken(refreshToken: String,
+                     scope: List<Scope>,
+                     handler: (Request, Response, Result<TokenResponse, FuelError>) -> Unit) {
+        buildOauthTokenRequest(OauthParam(
+                refreshToken = refreshToken,
+                grantType = GrantType.REFRESH_TOKEN,
+                scope = scope
+        )).responseObject(gsonDeserializerOf(), handler)
+    }
+
+    fun refreshToken(refreshToken: String,
+                     scope: List<Scope>,
+                     handler: Handler<TokenResponse>) {
+        buildOauthTokenRequest(OauthParam(
+                refreshToken = refreshToken,
+                grantType = GrantType.REFRESH_TOKEN,
+                scope = scope
+        )).responseObject(gsonDeserializerOf(), handler)
+    }
+
+    fun refreshTokenSync(refreshToken: String,
+                         scope: List<Scope>): Triple<Request, Response, Result<TokenResponse, FuelError>> {
+        return buildOauthTokenRequest(OauthParam(
+                refreshToken = refreshToken,
+                grantType = GrantType.REFRESH_TOKEN,
+                scope = scope
+        )).responseObject(gsonDeserializerOf())
     }
 
     private fun waitForPush(maxDuration: Long, pollInterval: Long = 1000): Boolean {

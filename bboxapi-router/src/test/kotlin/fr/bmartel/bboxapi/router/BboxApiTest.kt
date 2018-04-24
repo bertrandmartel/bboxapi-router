@@ -34,6 +34,7 @@ open class BboxApiTest : TestCase() {
         const val clientSecret = "secret"
         const val clientId = "client"
         const val code = "B1.4.426b.R0IkGG5QpS5i9fOb.GvLWGP2b0D4fMe2HQePsnE9pJdyTe0aA4zCFmjJSfak"
+        const val refreshToken = "r1.BtwazByYlp15S-xf.8s6lNYrTUNBXCSMGcGa_1vehZS6hHmUf1tHUiw3ye_k"
         //https://stackoverflow.com/a/33381385/2614364
         inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object : TypeToken<T>() {}.type)
 
@@ -1148,5 +1149,34 @@ open class BboxApiTest : TestCase() {
         Assert.assertEquals(200, triple.second.statusCode)
         JSONAssert.assertEquals(TestUtils.getResFile(fileName = "oauth_token.json"), Gson().toJson(triple.third.get()), false)
         timer.cancel()
+    }
+
+    @Test
+    fun refreshToken() {
+        TestUtils.executeAsyncTwoParam(
+                input1 = refreshToken,
+                input2 = listOf(Scope.ALL),
+                testcase = this,
+                filename = "oauth_token_without_rt.json",
+                body = bboxApi::refreshToken)
+    }
+
+    @Test
+    fun refreshTokenCb() {
+        TestUtils.executeAsyncTwoParamCb(
+                input1 = refreshToken,
+                input2 = listOf(Scope.ALL),
+                testcase = this,
+                filename = "oauth_token_without_rt.json",
+                body = bboxApi::refreshToken)
+    }
+
+    @Test
+    fun refreshTokenSync() {
+        TestUtils.executeSyncTwoParam(
+                input1 = refreshToken,
+                input2 = listOf(Scope.ALL),
+                filename = "oauth_token_without_rt.json",
+                body = bboxApi::refreshTokenSync)
     }
 }

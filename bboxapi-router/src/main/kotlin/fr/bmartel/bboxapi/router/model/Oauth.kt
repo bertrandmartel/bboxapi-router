@@ -1,8 +1,8 @@
 package fr.bmartel.bboxapi.router.model
 
 data class OauthParam(
-        val clientId: String,
-        val clientSecret: String,
+        val clientId: String? = null,
+        val clientSecret: String? = null,
         val grantType: GrantType,
         val scope: List<Scope> = listOf(Scope.ALL),
         val code: String? = null,
@@ -15,7 +15,6 @@ data class CodeResponse(val code: String, val interval: Int, val token_type: Str
 data class TokenResponse(val access_token: String, val refresh_token: String, val token_type: String, val expires_in: Int, val issued_at: String)
 
 enum class GrantType(val field: String) {
-    ACCESS_TOKEN("access_token"),
     REFRESH_TOKEN("refresh_token"),
     BUTTON("urn:bouyguestelecom:params:oauth:grant-type:button")
 }

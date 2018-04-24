@@ -1,10 +1,7 @@
 package fr.bmartel.bboxapi.router
 
 import com.google.gson.Gson
-import fr.bmartel.bboxapi.router.model.ApiError
-import fr.bmartel.bboxapi.router.model.ApiException
-import fr.bmartel.bboxapi.router.model.BboxException
-import fr.bmartel.bboxapi.router.model.MacFilterRule
+import fr.bmartel.bboxapi.router.model.*
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
@@ -272,14 +269,24 @@ class MockDispatcher : Dispatcher() {
 
     private fun getToken(request: RecordedRequest): MockResponse {
         val formData = TestUtils.splitQuery(request.body.readUtf8())
-        return if (formData.containsKey("grant_type") &&
-                formData.containsKey("client_id") && formData.get("client_id")?.get(0).equals(BboxApiTest.clientId) &&
-                formData.containsKey("client_secret") && formData.get("client_secret")?.get(0).equals(BboxApiTest.clientSecret) &&
-                formData.containsKey("code") && formData.get("code")?.get(0).equals(BboxApiTest.code) &&
-                formData.containsKey("scope")) {
-            sendResponse(fileName = "oauth_token.json")
-        } else {
-            MockResponse().setResponseCode(403)
+        return when {
+            formData["grant_type"]?.get(0).equals(GrantType.BUTTON.field) ->
+                if (formData.containsKey("client_id") && formData["client_id"]?.get(0).equals(BboxApiTest.clientId) &&
+                        formData.containsKey("client_secret") && formData["client_secret"]?.get(0).equals(BboxApiTest.clientSecret) &&
+                        formData.containsKey("code") && formData["code"]?.get(0).equals(BboxApiTest.code) &&
+                        formData.containsKey("scope")) {
+                    sendResponse(fileName = "oauth_token.json")
+                } else {
+                    MockResponse().setResponseCode(400)
+                }
+            formData["grant_type"]?.get(0).equals(GrantType.REFRESH_TOKEN.field) ->
+                if (formData.containsKey("scope")) {
+                    sendResponse(fileName = "oauth_token_without_rt.json")
+                } else {
+                    MockResponse().setResponseCode(400)
+                }
+            else ->
+                MockResponse().setResponseCode(403)
         }
     }
 

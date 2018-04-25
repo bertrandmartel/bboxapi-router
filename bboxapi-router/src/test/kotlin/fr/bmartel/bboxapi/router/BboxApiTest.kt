@@ -1199,4 +1199,13 @@ open class BboxApiTest : TestCase() {
                 filename = "oauth_token_without_rt.json",
                 body = bboxApi::refreshTokenSync)
     }
+
+    @Test
+    fun authorizeOauthPassword() {
+        bboxApi.password = password
+        TestUtils.executeSyncOneParam(
+                input = listOf(Scope.ALL),
+                filename = "oauth_token.json",
+                body = bboxApi::authenticateOauthPassword)
+    }
 }

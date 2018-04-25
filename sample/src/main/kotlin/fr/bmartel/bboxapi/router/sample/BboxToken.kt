@@ -10,7 +10,7 @@ fun main(args: Array<String>) {
 
     //asynchronous call
     val latch = CountDownLatch(1)
-    bboxapi.getToken { _, _, result ->
+    bboxapi.getBboxToken { _, _, result ->
         when (result) {
             is Result.Failure -> {
                 val ex = result.getException()
@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
     latch.await()
 
     //synchronous call
-    val (_, _, result) = bboxapi.getTokenSync()
+    val (_, _, result) = bboxapi.getBboxTokenSync()
     when (result) {
         is Result.Failure -> {
             val ex = result.getException()

@@ -585,19 +585,19 @@ open class BboxApiTest : TestCase() {
     @Test
     fun getBboxToken() {
         bboxApi.password = password
-        TestUtils.executeAsync(testcase = this, filename = "token.json", body = bboxApi::getToken)
+        TestUtils.executeAsync(testcase = this, filename = "token.json", body = bboxApi::getBboxToken)
     }
 
     @Test
     fun getBboxTokenCb() {
         bboxApi.password = password
-        TestUtils.executeAsyncCb(testcase = this, filename = "token.json", body = bboxApi::getToken)
+        TestUtils.executeAsyncCb(testcase = this, filename = "token.json", body = bboxApi::getBboxToken)
     }
 
     @Test
     fun getBboxTokenSync() {
         bboxApi.password = password
-        TestUtils.executeSync(filename = "token.json", body = bboxApi::getTokenSync)
+        TestUtils.executeSync(filename = "token.json", body = bboxApi::getBboxTokenSync)
     }
 
     @Test

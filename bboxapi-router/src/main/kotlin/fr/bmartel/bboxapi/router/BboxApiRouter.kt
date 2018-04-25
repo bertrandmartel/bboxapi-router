@@ -520,20 +520,20 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
                 json = false)
     }
 
-    fun getToken(handler: (Request, Response, Result<List<Token>, FuelError>) -> Unit) {
+    fun getBboxToken(handler: (Request, Response, Result<List<Token>, FuelError>) -> Unit) {
         processSecureApi(request = buildTokenRequest(), handler = handler)
     }
 
-    fun getToken(handler: Handler<List<Token>>) {
+    fun getBboxToken(handler: Handler<List<Token>>) {
         processSecureApi(request = buildTokenRequest(), handler = handler)
     }
 
-    fun getTokenSync(): Triple<Request, Response, Result<List<Token>, FuelError>> {
+    fun getBboxTokenSync(): Triple<Request, Response, Result<List<Token>, FuelError>> {
         return processSecureApiSync(request = buildTokenRequest())
     }
 
     fun reboot(handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        getToken { _, _, result ->
+        getBboxToken { _, _, result ->
             processSecureApi(
                     request = buildRebootRequest(btoken = result.get()[0].device?.token),
                     handler = handler,
@@ -542,7 +542,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun reboot(handler: Handler<String>) {
-        getToken { _, _, result ->
+        getBboxToken { _, _, result ->
             processSecureApi(
                     request = buildRebootRequest(btoken = result.get()[0].device?.token),
                     handler = handler,
@@ -551,7 +551,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun rebootSync(): Triple<Request, Response, Result<String, FuelError>> {
-        val (_, _, result) = getTokenSync()
+        val (_, _, result) = getBboxTokenSync()
         return processSecureApiSync(request = buildRebootRequest(btoken = result.get()[0].device?.token), json = false)
     }
 
@@ -604,7 +604,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun createMacFilterRule(rule: MacFilterRule, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        getToken { _, _, result ->
+        getBboxToken { _, _, result ->
             processSecureApi(
                     request = buildCreateAclRequest(btoken = result.get()[0].device?.token, rule = rule),
                     handler = handler,
@@ -613,7 +613,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun createMacFilterRule(rule: MacFilterRule, handler: Handler<String>) {
-        getToken { _, _, result ->
+        getBboxToken { _, _, result ->
             processSecureApi(
                     request = buildCreateAclRequest(btoken = result.get()[0].device?.token, rule = rule),
                     handler = handler,
@@ -622,7 +622,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun createMacFilterRuleSync(rule: MacFilterRule): Triple<Request, Response, Result<String, FuelError>> {
-        val (_, _, result) = getTokenSync()
+        val (_, _, result) = getBboxTokenSync()
         return processSecureApiSync(
                 request = buildCreateAclRequest(btoken = result.get()[0].device?.token, rule = rule),
                 json = false)
@@ -730,7 +730,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun resetPassword(password: String, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        getToken { _, _, result ->
+        getBboxToken { _, _, result ->
             processSecureApi(
                     request = buildResetPasswordRequest(btoken = result.get()[0].device?.token),
                     handler = { req: Request, res: Response, resetResult: Result<String, FuelError> ->
@@ -744,7 +744,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun resetPassword(password: String, handler: Handler<String>) {
-        getToken { _, _, result ->
+        getBboxToken { _, _, result ->
             processSecureApi(
                     request = buildResetPasswordRequest(btoken = result.get()[0].device?.token),
                     handler = { req: Request, res: Response, resetResult: Result<String, FuelError> ->
@@ -765,7 +765,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun resetPasswordSync(password: String): Triple<Request, Response, Result<String, FuelError>> {
-        val (_, _, result) = getTokenSync()
+        val (_, _, result) = getBboxTokenSync()
         val resetResult: Triple<Request, Response, Result<String, FuelError>> = processSecureApiSync(
                 request = buildResetPasswordRequest(btoken = result.get()[0].device?.token),
                 json = false)

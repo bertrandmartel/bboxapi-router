@@ -24,6 +24,45 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         var error = error
     }
 
+    companion object {
+        fun getPasswordStrength(input: String, strength: PasswordStrength): Boolean {
+            when (strength) {
+                PasswordStrength.MEDIUM -> {
+                    return checkStrength(
+                            input = input,
+                            minimumCharCount = 6,
+                            minimumLowercaseCount = 1,
+                            minimumUppercaseCount = 1,
+                            minimumDigitCount = 1,
+                            minimumSpecialCharCount = 1)
+                }
+                PasswordStrength.STRONG -> {
+                    return checkStrength(
+                            input = input,
+                            minimumCharCount = 10,
+                            minimumLowercaseCount = 2,
+                            minimumUppercaseCount = 1,
+                            minimumDigitCount = 2,
+                            minimumSpecialCharCount = 1)
+                }
+            }
+        }
+
+        private fun checkStrength(input: String,
+                                  minimumCharCount: Int,
+                                  minimumLowercaseCount: Int,
+                                  minimumUppercaseCount: Int,
+                                  minimumDigitCount: Int,
+                                  minimumSpecialCharCount: Int): Boolean {
+            return (Regex(".{$minimumCharCount,}").find(input)?.value != null &&
+                    Regex("([^a-z]*[a-z]){$minimumLowercaseCount,}").find(input)?.value != null &&
+                    Regex("([^A-Z]*[A-Z]){$minimumUppercaseCount,}").find(input)?.value != null &&
+                    Regex("([^\\d]*\\d){$minimumDigitCount,}").find(input)?.value != null &&
+                    Regex("([^\\!\\\"\\#\\\$\\%\\&\\'\\(\\)\\*\\+\\,\\-\\.\\/]*[\\!\\\"\\#\\\$\\%\\&\\'\\(\\)\\*\\+\\,\\-\\.\\/]){$minimumSpecialCharCount,}").find(input)?.value != null // at least 1 special character
+                    )
+        }
+    }
+
     /**
      * whether or not client is blocked by too many attempts.
      */

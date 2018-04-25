@@ -1256,4 +1256,21 @@ open class BboxApiTest : TestCase() {
         TestUtils.executeSyncOneParam(input = true, filename = null, body = bboxApi::configureRemoteAccessSync)
         TestUtils.executeSyncOneParam(input = false, filename = null, body = bboxApi::configureRemoteAccessSync)
     }
+
+    @Test
+    fun getPasswordStrength() {
+        Assert.assertFalse(BboxApiRouter.getPasswordStrength(input = "", strength = PasswordStrength.MEDIUM)) //minimum char
+        Assert.assertFalse(BboxApiRouter.getPasswordStrength(input = "AAAAAA", strength = PasswordStrength.MEDIUM)) // lowercase
+        Assert.assertFalse(BboxApiRouter.getPasswordStrength(input = "aaaaaa", strength = PasswordStrength.MEDIUM)) // uppercase
+        Assert.assertFalse(BboxApiRouter.getPasswordStrength(input = "aaaaaA", strength = PasswordStrength.MEDIUM)) // digit
+        Assert.assertFalse(BboxApiRouter.getPasswordStrength(input = "aaaaaA1", strength = PasswordStrength.MEDIUM)) // special
+        Assert.assertTrue(BboxApiRouter.getPasswordStrength(input = "aaaaaA1*", strength = PasswordStrength.MEDIUM)) // OK
+
+        Assert.assertFalse(BboxApiRouter.getPasswordStrength(input = "", strength = PasswordStrength.STRONG)) //minimum char
+        Assert.assertFalse(BboxApiRouter.getPasswordStrength(input = "AAAAAAAAAA", strength = PasswordStrength.STRONG)) // lowercase
+        Assert.assertFalse(BboxApiRouter.getPasswordStrength(input = "aaaaaaaaaa", strength = PasswordStrength.STRONG)) // uppercase
+        Assert.assertFalse(BboxApiRouter.getPasswordStrength(input = "aaaaaaaaaA", strength = PasswordStrength.STRONG)) // digit
+        Assert.assertFalse(BboxApiRouter.getPasswordStrength(input = "aaaaaaaaaA12", strength = PasswordStrength.STRONG)) // special
+        Assert.assertTrue(BboxApiRouter.getPasswordStrength(input = "aaaaaaaaaA12*", strength = PasswordStrength.STRONG)) // OK
+    }
 }

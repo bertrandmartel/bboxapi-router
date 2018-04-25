@@ -25,7 +25,7 @@ open class BboxApiTest : TestCase() {
         private val mockServer = MockWebServer()
         private val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
 
-        private val password = "admin@box"
+        val password = "admin@box"
 
         val cookie = "2.215.7fffffff.a60bd4fcc583ae1b745b5947d1f04da491b01cefcdf39dd9d2676e1a499ecff0a9a3ec6f269a8a9af5e3e1c7d32f6b65df8754ac7af2854c59f367a29136923b.d2614b3af80b5eb35cd890de5760893330372ab2"
         var attempts = 0
@@ -1073,33 +1073,72 @@ open class BboxApiTest : TestCase() {
     }
 
     @Test
-    fun getToken() {
-        TestUtils.executeAsyncThreeParam(
+    fun getTokenButton() {
+        TestUtils.executeAsyncFourParam(
                 input1 = GrantType.BUTTON,
                 input2 = code,
                 input3 = listOf(Scope.ALL),
+                input4 = null,
                 testcase = this,
                 filename = "oauth_token.json",
                 body = bboxApi::getToken)
     }
 
     @Test
-    fun getTokenSync() {
-        TestUtils.executeSyncThreeParam(
+    fun getTokenButtonSync() {
+        TestUtils.executeSyncFourParam(
                 input1 = GrantType.BUTTON,
                 input2 = code,
                 input3 = listOf(Scope.ALL),
+                input4 = null,
                 filename = "oauth_token.json",
                 body = bboxApi::getTokenSync)
     }
 
 
     @Test
-    fun getTokenCb() {
-        TestUtils.executeAsyncThreeParamCb(
+    fun getTokenButtonCb() {
+        TestUtils.executeAsyncFourParamCb(
                 input1 = GrantType.BUTTON,
                 input2 = code,
                 input3 = listOf(Scope.ALL),
+                input4 = null,
+                testcase = this,
+                filename = "oauth_token.json",
+                body = bboxApi::getToken)
+    }
+
+    @Test
+    fun getTokenPassword() {
+        TestUtils.executeAsyncFourParam(
+                input1 = GrantType.PASSWORD,
+                input2 = code,
+                input3 = listOf(Scope.ALL),
+                input4 = password,
+                testcase = this,
+                filename = "oauth_token.json",
+                body = bboxApi::getToken)
+    }
+
+    @Test
+    fun getTokenPasswordSync() {
+        TestUtils.executeSyncFourParam(
+                input1 = GrantType.PASSWORD,
+                input2 = code,
+                input3 = listOf(Scope.ALL),
+                input4 = password,
+                filename = "oauth_token.json",
+                body = bboxApi::getTokenSync)
+    }
+
+
+    @Test
+    fun getTokenPasswordCb() {
+        TestUtils.executeAsyncFourParamCb(
+                input1 = GrantType.PASSWORD,
+                input2 = code,
+                input3 = listOf(Scope.ALL),
+                input4 = password,
                 testcase = this,
                 filename = "oauth_token.json",
                 body = bboxApi::getToken)
@@ -1107,11 +1146,11 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun waitForPushButtonOauth() {
-        var triple = bboxApi.waitForPushButtonOauth(maxDuration = 2000, pollInterval = 250)
+        var triple = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
         Assert.assertNotNull(triple.third.component2())
         Assert.assertEquals("push button failure", triple.third.component2()?.exception?.message)
         changePassword = 1
-        triple = bboxApi.waitForPushButtonOauth(maxDuration = 2000, pollInterval = 250)
+        triple = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
         Assert.assertNull(triple.third.component2())
         Assert.assertEquals(200, triple.second.statusCode)
         JSONAssert.assertEquals(TestUtils.getResFile(fileName = "oauth_token.json"), Gson().toJson(triple.third.get()), false)
@@ -1125,7 +1164,7 @@ open class BboxApiTest : TestCase() {
             changePassword = 1
         }
         changePassword = 2
-        val triple = bboxApi.waitForPushButtonOauth(maxDuration = 2000, pollInterval = 250)
+        val triple = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
         Assert.assertNull(triple.third.component2())
         Assert.assertEquals(200, triple.second.statusCode)
         JSONAssert.assertEquals(TestUtils.getResFile(fileName = "oauth_token.json"), Gson().toJson(triple.third.get()), false)

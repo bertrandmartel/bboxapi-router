@@ -71,10 +71,10 @@ class TestUtils {
             checkSyncResult(filename = filename, response = response, data = data, err = err, expectedException = expectedException)
         }
 
-        fun <T, X, Y, Z> executeSyncThreeParam(filename: String?,
-                                               input1: X, input2: Y, input3: Z,
-                                               body: (input1: X, input2: Y, input3: Z) -> T, expectedException: Exception? = null) {
-            val (_, response, result) = body(input1, input2, input3) as Triple<Request, Response, *>
+        fun <T, W, X, Y, Z> executeSyncFourParam(filename: String?,
+                                                 input1: W, input2: X, input3: Y, input4: Z,
+                                                 body: (input1: W, input2: X, input3: Y, input4: Z) -> T, expectedException: Exception? = null) {
+            val (_, response, result) = body(input1, input2, input3, input4) as Triple<Request, Response, *>
             val (data, err) = result as Result<*, FuelError>
             checkSyncResult(filename = filename, response = response, data = data, err = err, expectedException = expectedException)
         }
@@ -230,15 +230,15 @@ class TestUtils {
                     expectedException = expectedException)
         }
 
-        fun <T, X, Y, Z> executeAsyncThreeParam(testcase: TestCase,
-                                                input1: X, input2: Y, input3: Z,
-                                                filename: String?,
-                                                body: (input1: X, input2: Y, input3: Z, handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
+        fun <T, W, X, Y, Z> executeAsyncFourParam(testcase: TestCase,
+                                                  input1: W, input2: X, input3: Y, input4: Z,
+                                                  filename: String?,
+                                                  body: (input1: W, input2: X, input3: Y, input4: Z, handler: (Request, Response, Result<*, FuelError>) -> Unit) -> T, expectedException: Exception? = null) {
             var request: Request? = null
             var response: Response? = null
             var data: Any? = null
             var err: FuelError? = null
-            body(input1, input2, input3) { req, res, result ->
+            body(input1, input2, input3, input4) { req, res, result ->
                 request = req
                 response = res
                 val (d, e) = result
@@ -290,15 +290,15 @@ class TestUtils {
                     expectedException = expectedException)
         }
 
-        fun <T, X, Y, Z> executeAsyncThreeParamCb(testcase: TestCase,
-                                                  input1: X, input2: Y, input3: Z,
-                                                  filename: String?,
-                                                  body: (input1: X, input2: Y, input3: Z, handler: Handler<T>) -> T, expectedException: Exception? = null) {
+        fun <T, W, X, Y, Z> executeAsyncFourParamCb(testcase: TestCase,
+                                                    input1: W, input2: X, input3: Y, input4: Z,
+                                                    filename: String?,
+                                                    body: (input1: W, input2: X, input3: Y, input4: Z, handler: Handler<T>) -> T, expectedException: Exception? = null) {
             var request: Request? = null
             var response: Response? = null
             var data: Any? = null
             var err: FuelError? = null
-            body(input1, input2, input3, object : Handler<T> {
+            body(input1, input2, input3, input4, object : Handler<T> {
                 override fun failure(req: Request, res: Response, e: FuelError) {
                     request = req
                     response = res

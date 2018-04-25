@@ -14,7 +14,8 @@ data class TokenResponse(val access_token: String, val refresh_token: String, va
 
 enum class GrantType(val field: String) {
     REFRESH_TOKEN("refresh_token"),
-    BUTTON("urn:bouyguestelecom:params:oauth:grant-type:button")
+    BUTTON("urn:bouyguestelecom:params:oauth:grant-type:button"),
+    PASSWORD("password")
 }
 
 enum class ResponseType(val field: String) {

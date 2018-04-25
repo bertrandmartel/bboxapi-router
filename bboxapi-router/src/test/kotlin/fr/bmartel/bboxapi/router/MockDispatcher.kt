@@ -285,6 +285,14 @@ class MockDispatcher : Dispatcher() {
                 } else {
                     MockResponse().setResponseCode(400)
                 }
+            formData["grant_type"]?.get(0).equals(GrantType.PASSWORD.field) ->
+                if (formData.containsKey("scope") &&
+                        formData.containsKey("username") && formData["username"]?.get(0).equals("admin") &&
+                        formData.containsKey("password") && formData["password"]?.get(0).equals(BboxApiTest.password)) {
+                    sendResponse(fileName = "oauth_token.json")
+                } else {
+                    MockResponse().setResponseCode(400)
+                }
             else ->
                 MockResponse().setResponseCode(403)
         }

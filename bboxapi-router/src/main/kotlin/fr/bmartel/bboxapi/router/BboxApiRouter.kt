@@ -171,7 +171,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         return manager.request(method = Method.POST, path = "/oauth/authorize", param = data)
     }
 
-    private fun buildGetTokenRequest(grantType: GrantType, code: String, scope: List<Scope>): Request {
+    private fun buildGetTokenRequest(grantType: GrantType, code: String, scope: List<Scope>, password: String?): Request {
         var scopeStr = ""
         scope.map { scopeStr += "${it.field} " }
         val data = mutableListOf(
@@ -181,6 +181,10 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
                 "scope" to "*",
                 "code" to code
         )
+        if (password != null) {
+            data.add("username" to "admin")
+            data.add("password" to password)
+        }
         return manager.request(method = Method.POST, path = "/oauth/token", param = data)
     }
 
@@ -241,6 +245,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     private inline fun <reified T : Any> processSecureApi(request: Request, handler: Handler<T>, json: Boolean = true) {
+        //if (!useOauth) {
         if (!authenticated) {
             authenticateAndExecute(request, handler, json = json)
         } else {
@@ -262,6 +267,11 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
                 }
             }
         }
+        /*
+        } else {
+            //TODO: implement oauth
+        }
+        */
     }
 
     private inline fun <reified T : Any> processSecureApi(request: Request, noinline handler: (Request, Response, Result<T, FuelError>) -> Unit, json: Boolean = true) {
@@ -785,17 +795,17 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         return buildOauthAuthorizeRequest(grantType = grantType, responseType = responseType).responseObject(gsonDeserializerOf())
     }
 
-    fun getToken(grantType: GrantType, code: String, scope: List<Scope>,
+    fun getToken(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null,
                  handler: (Request, Response, Result<TokenResponse, FuelError>) -> Unit) {
-        buildGetTokenRequest(grantType = grantType, code = code, scope = scope).responseObject(gsonDeserializerOf(), handler)
+        buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getToken(grantType: GrantType, code: String, scope: List<Scope>, handler: Handler<TokenResponse>) {
-        buildGetTokenRequest(grantType = grantType, code = code, scope = scope).responseObject(gsonDeserializerOf(), handler)
+    fun getToken(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null, handler: Handler<TokenResponse>) {
+        buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(gsonDeserializerOf(), handler)
     }
 
-    fun getTokenSync(grantType: GrantType, code: String, scope: List<Scope>): Triple<Request, Response, Result<TokenResponse, FuelError>> {
-        return buildGetTokenRequest(grantType = grantType, code = code, scope = scope).responseObject(gsonDeserializerOf())
+    fun getTokenSync(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null): Triple<Request, Response, Result<TokenResponse, FuelError>> {
+        return buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(gsonDeserializerOf())
     }
 
     fun refreshToken(refreshToken: String,
@@ -850,9 +860,12 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         return false
     }
 
-    fun waitForPushButtonOauth(maxDuration: Long,
-                               pollInterval: Long = 1000,
-                               scope: List<Scope> = listOf(Scope.ALL)): Triple<Request, Response, Result<*, FuelError>> {
+    /**
+     * authentication using Oauth with code + button
+     */
+    fun authenticateOauthButton(maxDuration: Long,
+                                    pollInterval: Long = 1000,
+                                    scope: List<Scope> = listOf(Scope.ALL)): Triple<Request, Response, Result<*, FuelError>> {
         val authorizeTriple = authorizeSync(grantType = GrantType.BUTTON, responseType = ResponseType.CODE)
         if (authorizeTriple.component2().statusCode == 200) {
             if (waitForPush(maxDuration, pollInterval)) {
@@ -868,6 +881,21 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
                     Result.error(Exception("failure")).flatMapError {
                         Result.error(FuelError(Exception("push button failure")))
                     })
+        }
+        return authorizeTriple
+    }
+
+    /**
+     * authentication using Oauth with code + password
+     */
+    fun authenticateOauthPassword(scope: List<Scope> = listOf(Scope.ALL)): Triple<Request, Response, Result<*, FuelError>> {
+        val authorizeTriple = authorizeSync(grantType = GrantType.PASSWORD, responseType = ResponseType.CODE)
+        if (authorizeTriple.component2().statusCode == 200) {
+            return getTokenSync(
+                    grantType = GrantType.PASSWORD,
+                    code = authorizeTriple.component3().get().code,
+                    password = password,
+                    scope = scope)
         }
         return authorizeTriple
     }

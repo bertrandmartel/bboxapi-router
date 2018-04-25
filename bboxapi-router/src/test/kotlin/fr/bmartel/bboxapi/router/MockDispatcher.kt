@@ -38,7 +38,7 @@ class MockDispatcher : Dispatcher() {
             request.method == "GET" && request.path == "/hosts" -> sendResponse(fileName = "hosts.json")
             request.method == "GET" && request.path == "/wan/ip" -> sendResponse(fileName = "wan_ip.json")
             request.method == "GET" && request.path == "/device" -> sendResponse(fileName = "device.json")
-            request.method == "GET" && request.path == "/services" -> sendResponse(fileName = "services.json")
+            request.method == "GET" && request.path == "/services" -> sendServices()
             request.method == "GET" && request.path.startsWith("/voip/fullcalllog/") -> processGetFullCallLog(request)
             request.method == "GET" && request.path == "/wireless" -> sendAuthenticatedResponse(request = request, fileName = "wireless.json")
             request.method == "GET" && request.path == "/wireless/acl" -> sendAuthenticatedResponse(request = request, fileName = "acl.json")
@@ -424,6 +424,14 @@ class MockDispatcher : Dispatcher() {
                         .addHeader("Set-Cookie", "BBOX_ID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; Version=1; HttpOnly")
                         .setBody("")
             }
+        }
+    }
+
+    private fun sendServices(): MockResponse {
+        return if (BboxApiTest.remoteActivable) {
+            sendResponse(fileName = "services_activable.json")
+        } else {
+            sendResponse(fileName = "services.json")
         }
     }
 }

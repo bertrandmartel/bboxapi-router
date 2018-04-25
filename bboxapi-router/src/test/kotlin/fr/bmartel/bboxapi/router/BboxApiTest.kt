@@ -32,6 +32,7 @@ open class BboxApiTest : TestCase() {
         var macFilterRule: MacFilterRule? = null
         var PINCODE = "123456789"
         var changePassword = 0
+        var remoteActivable = false
 
         const val code = "B1.4.426b.R0IkGG5QpS5i9fOb.GvLWGP2b0D4fMe2HQePsnE9pJdyTe0aA4zCFmjJSfak"
         const val refreshToken = "r1.BtwazByYlp15S-xf.8s6lNYrTUNBXCSMGcGa_1vehZS6hHmUf1tHUiw3ye_k"
@@ -66,6 +67,7 @@ open class BboxApiTest : TestCase() {
         bboxApi.blocked = false
         macFilterRule = null
         changePassword = 0
+        remoteActivable = false
         if (!runOnNetwork()) {
             bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
         }
@@ -1222,5 +1224,13 @@ open class BboxApiTest : TestCase() {
     @Test
     fun getServicesSync() {
         TestUtils.executeSync(filename = "services.json", body = bboxApi::getServicesSync)
+    }
+
+    @Test
+    fun checkRemoteActivable() {
+        remoteActivable = false
+        Assert.assertFalse(bboxApi.isRemoteActivable())
+        remoteActivable = true
+        Assert.assertTrue(bboxApi.isRemoteActivable())
     }
 }

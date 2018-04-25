@@ -915,4 +915,12 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     fun getServicesSync(): Triple<Request, Response, Result<List<ServiceObject>, FuelError>> {
         return buildServicesRequest().responseObject(gsonDeserializerOf())
     }
+
+    fun isRemoteActivable(): Boolean {
+        val (_, _, result) = getServicesSync()
+        if (result is Result.Success) {
+            return result.get()[0].services.remote.admin.activable == 1
+        }
+        return false
+    }
 }

@@ -40,7 +40,7 @@
         "port": 443,
         "ip": "",
         "duration": "",
-        "activable": 0,
+        "activable": 1,
         "ip6address": ""
       }
     },

@@ -42,4 +42,7 @@ fun main(args: Array<String>) {
             println(data)
         }
     }
+
+    //check if remote access to API is activable eg password is strong enough
+    println("remote access activable : ${bboxapi.isRemoteActivable()}")
 }

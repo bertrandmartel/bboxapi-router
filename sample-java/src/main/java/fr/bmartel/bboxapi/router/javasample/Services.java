@@ -43,5 +43,8 @@ public class Services {
         Response response = data.getSecond();
         Result<List<fr.bmartel.bboxapi.router.model.ServiceObject>, FuelError> obj = data.getThird();
         System.out.println(obj.get());
+
+        //check if remote access to API is activable eg password is strong enough
+        System.out.println("remote access activable : " + bboxapi.isRemoteActivable());
     }
 }

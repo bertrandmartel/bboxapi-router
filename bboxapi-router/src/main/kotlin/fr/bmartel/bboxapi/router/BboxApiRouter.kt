@@ -967,15 +967,12 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         return false
     }
 
-    fun configureRemoteAccess(state: Boolean, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
-        processSecureApi(request = buildRemoteAccessRequest(state), handler = handler, json = false)
-    }
-
-    fun configureRemoteAccess(state: Boolean, handler: Handler<String>) {
-        processSecureApi(request = buildRemoteAccessRequest(state), handler = handler, json = false)
-    }
-
-    fun configureRemoteAccessSync(state: Boolean): Triple<Request, Response, Result<String, FuelError>> {
-        return processSecureApiSync(request = buildRemoteAccessRequest(state), json = false)
+    fun configureRemoteAccess(state: Boolean): Triple<Request, Response, Result<String, FuelError>>? {
+        if (!state) {
+            return processSecureApiSync(request = buildRemoteAccessRequest(enable = state), json = false)
+        } else if (isRemoteActivable()) {
+            return processSecureApiSync(request = buildRemoteAccessRequest(enable = state), json = false)
+        }
+        return null
     }
 }

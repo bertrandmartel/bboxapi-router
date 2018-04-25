@@ -1237,24 +1237,17 @@ open class BboxApiTest : TestCase() {
     @Test
     fun configureRemoteAccess() {
         bboxApi.password = password
-        TestUtils.executeAsyncOneParam(input = true, testcase = this, filename = null, body = bboxApi::configureRemoteAccess)
-        lock = CountDownLatch(1)
-        TestUtils.executeAsyncOneParam(input = false, testcase = this, filename = null, body = bboxApi::configureRemoteAccess)
+        TestUtils.executeSyncOneParam(input = false, filename = null, body = bboxApi::configureRemoteAccess)
+        remoteActivable = true
+        TestUtils.executeSyncOneParam(input = true, filename = null, body = bboxApi::configureRemoteAccess)
     }
 
     @Test
-    fun configureRemoteAccessCb() {
+    fun configureRemoteAccessNotActivable() {
         bboxApi.password = password
-        TestUtils.executeAsyncOneParamCb(input = true, testcase = this, filename = null, body = bboxApi::configureRemoteAccess)
-        lock = CountDownLatch(1)
-        TestUtils.executeAsyncOneParamCb(input = false, testcase = this, filename = null, body = bboxApi::configureRemoteAccess)
-    }
-
-    @Test
-    fun configureRemoteAccessSync() {
-        bboxApi.password = password
-        TestUtils.executeSyncOneParam(input = true, filename = null, body = bboxApi::configureRemoteAccessSync)
-        TestUtils.executeSyncOneParam(input = false, filename = null, body = bboxApi::configureRemoteAccessSync)
+        remoteActivable = false
+        val triple = bboxApi.configureRemoteAccess(state = true)
+        Assert.assertNull(triple)
     }
 
     @Test

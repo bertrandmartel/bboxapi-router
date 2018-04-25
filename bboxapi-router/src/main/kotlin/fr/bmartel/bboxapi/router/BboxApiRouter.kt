@@ -864,8 +864,8 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
      * authentication using Oauth with code + button
      */
     fun authenticateOauthButton(maxDuration: Long,
-                                    pollInterval: Long = 1000,
-                                    scope: List<Scope> = listOf(Scope.ALL)): Triple<Request, Response, Result<*, FuelError>> {
+                                pollInterval: Long = 1000,
+                                scope: List<Scope> = listOf(Scope.ALL)): Triple<Request, Response, Result<*, FuelError>> {
         val authorizeTriple = authorizeSync(grantType = GrantType.BUTTON, responseType = ResponseType.CODE)
         if (authorizeTriple.component2().statusCode == 200) {
             if (waitForPush(maxDuration, pollInterval)) {

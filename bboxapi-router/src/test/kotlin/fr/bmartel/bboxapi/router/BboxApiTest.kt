@@ -1208,4 +1208,19 @@ open class BboxApiTest : TestCase() {
                 filename = "oauth_token.json",
                 body = bboxApi::authenticateOauthPassword)
     }
+
+    @Test
+    fun getServices() {
+        TestUtils.executeAsync(testcase = this, filename = "services.json", body = bboxApi::getServices)
+    }
+
+    @Test
+    fun getServicesCb() {
+        TestUtils.executeAsyncCb(testcase = this, filename = "services.json", body = bboxApi::getServices)
+    }
+
+    @Test
+    fun getServicesSync() {
+        TestUtils.executeSync(filename = "services.json", body = bboxApi::getServicesSync)
+    }
 }

@@ -1,0 +1,78 @@
+[{
+  "services": {
+    "now": "2018-04-25T21:48:19+0200",
+    "firewall": {
+      "status": 1,
+      "enable": 2,
+      "nbrules": 2
+    },
+    "dyndns": {
+      "state": 0,
+      "enable": 0,
+      "nbrules": 0
+    },
+    "dhcp": {
+      "status": 2,
+      "enable": 1,
+      "nbrules": 1
+    },
+    "nat": {
+      "status": 1,
+      "enable": 1,
+      "nbrules": 0
+    },
+    "upnp": {
+      "igd": {
+        "status": 2,
+        "enable": 1,
+        "nbrules": 0
+      }
+    },
+    "remote": {
+      "proxywol": {
+        "status": 0,
+        "enable": 0,
+        "ip": ""
+      },
+      "admin": {
+        "status": 0,
+        "enable": 0,
+        "port": 443,
+        "ip": "",
+        "duration": "",
+        "activable": 0,
+        "ip6address": ""
+      }
+    },
+    "parentalcontrol": {
+      "enable": 0
+    },
+    "wifischeduler": {
+      "enable": 0
+    },
+    "voipscheduler": {
+      "enable": 0
+    },
+    "notification": {
+      "enable": 0
+    },
+    "hotspot": {
+      "status": 0,
+      "enable": 0
+    },
+    "usb": {
+      "samba": {
+        "status": 0,
+        "enable": 1
+      },
+      "printer": {
+        "status": 0,
+        "enable": 1
+      },
+      "dlna": {
+        "status": 0,
+        "enable": 1
+      }
+    }
+  }
+}]

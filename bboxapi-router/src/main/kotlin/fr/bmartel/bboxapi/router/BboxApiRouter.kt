@@ -199,6 +199,10 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         return manager.request(method = Method.POST, path = "/oauth/token", param = data)
     }
 
+    private fun buildServicesRequest(): Request {
+        return manager.request(method = Method.GET, path = "/services")
+    }
+
     private fun onAuthenticationSuccess(response: Response) {
         response.headers["Set-Cookie"]?.flatMap { HttpCookie.parse(it) }?.find { it.name == "BBOX_ID" }?.let {
             bboxId = it.value
@@ -898,5 +902,17 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
                     scope = scope)
         }
         return authorizeTriple
+    }
+
+    fun getServices(handler: (Request, Response, Result<List<ServiceObject>, FuelError>) -> Unit) {
+        buildServicesRequest().responseObject(gsonDeserializerOf(), handler)
+    }
+
+    fun getServices(handler: Handler<List<ServiceObject>>) {
+        buildServicesRequest().responseObject(gsonDeserializerOf(), handler)
+    }
+
+    fun getServicesSync(): Triple<Request, Response, Result<List<ServiceObject>, FuelError>> {
+        return buildServicesRequest().responseObject(gsonDeserializerOf())
     }
 }

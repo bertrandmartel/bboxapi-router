@@ -34,6 +34,7 @@
 - [x] start password recovery (`POST /password-recovery`)
 - [x] verify password recovery (`GET /password-recovery/verify`)
 - [x] reset password (`POST /reset-password`)
+- [x] services list (`GET /services`)
 
 ## Tests
 

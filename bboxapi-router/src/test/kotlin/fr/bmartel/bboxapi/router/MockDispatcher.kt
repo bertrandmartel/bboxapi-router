@@ -38,6 +38,7 @@ class MockDispatcher : Dispatcher() {
             request.method == "GET" && request.path == "/hosts" -> sendResponse(fileName = "hosts.json")
             request.method == "GET" && request.path == "/wan/ip" -> sendResponse(fileName = "wan_ip.json")
             request.method == "GET" && request.path == "/device" -> sendResponse(fileName = "device.json")
+            request.method == "GET" && request.path == "/services" -> sendResponse(fileName = "services.json")
             request.method == "GET" && request.path.startsWith("/voip/fullcalllog/") -> processGetFullCallLog(request)
             request.method == "GET" && request.path == "/wireless" -> sendAuthenticatedResponse(request = request, fileName = "wireless.json")
             request.method == "GET" && request.path == "/wireless/acl" -> sendAuthenticatedResponse(request = request, fileName = "acl.json")

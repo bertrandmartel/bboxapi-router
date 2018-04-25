@@ -203,6 +203,10 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         return manager.request(method = Method.GET, path = "/services")
     }
 
+    private fun buildRemoteAccessRequest(enable: Boolean): Request {
+        return manager.request(method = Method.PUT, path = "/remote/admin?enable=${if (enable) "1" else "0"}")
+    }
+
     private fun onAuthenticationSuccess(response: Response) {
         response.headers["Set-Cookie"]?.flatMap { HttpCookie.parse(it) }?.find { it.name == "BBOX_ID" }?.let {
             bboxId = it.value
@@ -922,5 +926,17 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
             return result.get()[0].services.remote.admin.activable == 1
         }
         return false
+    }
+
+    fun configureRemoteAccess(state: Boolean, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
+        processSecureApi(request = buildRemoteAccessRequest(state), handler = handler, json = false)
+    }
+
+    fun configureRemoteAccess(state: Boolean, handler: Handler<String>) {
+        processSecureApi(request = buildRemoteAccessRequest(state), handler = handler, json = false)
+    }
+
+    fun configureRemoteAccessSync(state: Boolean): Triple<Request, Response, Result<String, FuelError>> {
+        return processSecureApiSync(request = buildRemoteAccessRequest(state), json = false)
     }
 }

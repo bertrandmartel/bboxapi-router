@@ -50,6 +50,7 @@ class MockDispatcher : Dispatcher() {
             request.method == "GET" && request.path == "/device/token" -> sendAuthenticatedResponse(request = request, fileName = "token.json")
             request.method == "PUT" && request.path.startsWith("/wireless?radio.enable=") -> updateWireless(request)
             request.method == "PUT" && request.path.startsWith("/voip/dial") -> voipDial(request)
+            request.method == "PUT" && request.path.startsWith("/remote/admin") -> remoteAccess(request)
             request.method == "PUT" && request.path.startsWith("/device/display?luminosity=") -> updateLuminosity(request)
             request.method == "GET" && request.path == "/voip" -> sendAuthenticatedResponse(request = request, fileName = "voip.json")
             request.method == "POST" && request.path == "/login" -> login(request)
@@ -358,6 +359,24 @@ class MockDispatcher : Dispatcher() {
                 return dispatchAuthResponse(request, MockResponse().setResponseCode(200).setBody(TestUtils.getResFile(fileName = "calllog.json")))
             } else {
                 return dispatchAuthResponse(request, MockResponse().setResponseCode(404))
+            }
+        } else {
+            return dispatchAuthResponse(request, MockResponse().setResponseCode(404))
+        }
+    }
+
+    /**
+     * PUT /remote/admin?enable=1
+     */
+    private fun remoteAccess(request: RecordedRequest): MockResponse {
+        val pattern = Pattern.compile("/remote/admin\\?enable=(\\d+)")
+        val matcher = pattern.matcher(request.path)
+        if (matcher.find()) {
+            val enable = matcher.group(1).toInt()
+            if (enable == 1 || enable == 0) {
+                return dispatchAuthResponse(request, MockResponse().setResponseCode(200))
+            } else {
+                return dispatchAuthResponse(request, MockResponse().setResponseCode(400))
             }
         } else {
             return dispatchAuthResponse(request, MockResponse().setResponseCode(404))

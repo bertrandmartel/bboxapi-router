@@ -35,6 +35,7 @@
 - [x] verify password recovery (`GET /password-recovery/verify`)
 - [x] reset password (`POST /reset-password`)
 - [x] services list (`GET /services`)
+- [x] configure remote access (`PUT /remote/admin?enable=1`)
 
 ## Tests
 

@@ -1,38 +1,24 @@
 package fr.bmartel.bboxapi.router.sample
 
+import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.result.Result
 import fr.bmartel.bboxapi.router.BboxApiRouter
-import java.util.concurrent.CountDownLatch
 
 fun main(args: Array<String>) {
     val bboxapi = BboxApiRouter()
-    bboxapi.password = "admin"
-
-    //asynchronous call
-    val latch = CountDownLatch(1)
-    bboxapi.configureRemoteAccess(state = true) { _, res, result ->
-        when (result) {
+    bboxapi.password = "AAaaa*1111"
+    val triple = bboxapi.configureRemoteAccess(state = false)
+    if (triple != null) {
+        when (triple.third) {
             is Result.Failure -> {
-                val ex = result.getException()
+                val ex = (triple.third as Result.Failure<String, FuelError>).getException()
                 println(ex)
             }
             is Result.Success -> {
-                println(res.statusCode)
+                println(triple.second.statusCode)
             }
         }
-        latch.countDown()
-    }
-    latch.await()
-
-    //synchronous call
-    val (_, res, result) = bboxapi.configureRemoteAccessSync(state = false)
-    when (result) {
-        is Result.Failure -> {
-            val ex = result.getException()
-            println(ex)
-        }
-        is Result.Success -> {
-            println(res.statusCode)
-        }
+    } else {
+        println("remote is not activable, change password strength to STRONG")
     }
 }

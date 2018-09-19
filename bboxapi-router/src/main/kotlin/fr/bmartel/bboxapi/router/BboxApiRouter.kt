@@ -372,7 +372,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
             }
 
             return if (triple.second.statusCode == 401) {
-                authenticateAndExecuteSync(request = request)
+                authenticateAndExecuteSync(request = request, json = json)
             } else {
                 triple as Triple<Request, Response, Result<T, FuelError>>
             }

@@ -15,7 +15,7 @@ buildscript {
         gsonVersion = '2.8.2'
         dokkaVersion = '0.9.16'
 
-        projectVersion = '2.1.1'
+        projectVersion = '2.1.2'
         projectDescription = 'Bbox router API library for Kotlin/Java/Android'
         projectSite = 'https://github.com/bertrandmartel/bboxapi-router'
         projectRepo = 'https://github.com/bertrandmartel/bboxapi-router.git'

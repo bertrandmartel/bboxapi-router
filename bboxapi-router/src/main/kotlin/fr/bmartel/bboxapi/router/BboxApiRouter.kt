@@ -193,7 +193,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         return manager.request(method = Method.GET, path = "/password-recovery/verify")
     }
 
-    private fun buildResetPasswordRequest(btoken: String?): Request {
+    private fun buildResetPasswordRequest(btoken: String?, password: String): Request {
         val data = listOf(
                 "password" to password
         )
@@ -779,7 +779,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     fun resetPassword(password: String, handler: (Request, Response, Result<String, FuelError>) -> Unit) {
         getBboxToken { _, _, result ->
             processSecureApi(
-                    request = buildResetPasswordRequest(btoken = result.get()[0].device?.token),
+                    request = buildResetPasswordRequest(btoken = result.get()[0].device?.token, password = password),
                     handler = { req: Request, res: Response, resetResult: Result<String, FuelError> ->
                         if (res.statusCode == 200) {
                             this.password = password
@@ -793,7 +793,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     fun resetPassword(password: String, handler: Handler<String>) {
         getBboxToken { _, _, result ->
             processSecureApi(
-                    request = buildResetPasswordRequest(btoken = result.get()[0].device?.token),
+                    request = buildResetPasswordRequest(btoken = result.get()[0].device?.token, password = password),
                     handler = { req: Request, res: Response, resetResult: Result<String, FuelError> ->
                         if (res.statusCode == 200) {
                             this.password = password
@@ -814,7 +814,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     fun resetPasswordSync(password: String): Triple<Request, Response, Result<String, FuelError>> {
         val (_, _, result) = getBboxTokenSync()
         val resetResult: Triple<Request, Response, Result<String, FuelError>> = processSecureApiSync(
-                request = buildResetPasswordRequest(btoken = result.get()[0].device?.token),
+                request = buildResetPasswordRequest(btoken = result.get()[0].device?.token, password = password),
                 json = false)
         if (resetResult.second.statusCode == 200) {
             this.password = password

@@ -692,7 +692,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun createCustomRequestSync(request: Request, auth: Boolean): Triple<Request, Response, Result<String, FuelError>> {
-        return if (auth) {
+        return if (auth && !password.isEmpty()) {
             processSecureApiSync(request = request, json = false)
         } else {
             request.responseString()

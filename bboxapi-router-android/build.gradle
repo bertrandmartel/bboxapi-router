@@ -6,7 +6,6 @@ apply plugin: 'org.jetbrains.dokka-android'
 
 android {
     compileSdkVersion bboxapiCompileSdkVersion
-    buildToolsVersion bboxapiBuildToolVersion
 
     defaultConfig {
         minSdkVersion 14

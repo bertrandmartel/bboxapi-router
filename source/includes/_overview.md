@@ -3,7 +3,7 @@
 > This call requires authentication :
 
 ```kotlin
-val bboxapi = BboxApi()
+val bboxapi = BboxApiRouter()
 bboxapi.setPassword("root")
 
 bboxapi.getVoipInfo { _, response, result ->
@@ -25,7 +25,7 @@ bboxapi.getVoipInfo { _, response, result ->
 ```
 
 ```java
-BboxApi bboxapi = new BboxApi();
+BboxApi bboxapi = new BboxApiRouter();
 bboxapi.setPassword("root");
 
 bboxapi.getVoipInfo(new Handler<List<Voip>>() {

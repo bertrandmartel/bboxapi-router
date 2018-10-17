@@ -10,7 +10,7 @@ The first time user connects to Bbox admin interface or when a user lose his/her
 You can simply use `waitForPushButton` to wait for an amount of time for the user to press the button with a configurable polling interval (default 1 second)
 
 ```kotlin
-val bboxapi = BboxApi()
+val bboxapi = BboxApiRouter()
 println("push the button on your Bbox for setting your password, you have 20 seconds")
 val state = bboxapi.waitForPushButton(maxDuration = 20000)
 if (state) {
@@ -20,7 +20,7 @@ if (state) {
 ```
 
 ```java
-BboxApi bboxapi = new BboxApi();
+BboxApi bboxapi = new BboxApiRouter();
 System.out.println("push the button on your Bbox for setting your password, you have 20 seconds");
 Boolean state = bboxapi.waitForPushButton(20000, 1000);
 if (state) {

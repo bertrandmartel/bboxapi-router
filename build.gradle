@@ -9,7 +9,7 @@ buildscript {
         junitVersion = '4.12'
         mockWebserverVersion = '3.10.0'
         jsonAssertVersion = '1.5.0'
-        bboxapiCompileSdkVersion = 26
+        bboxapiCompileSdkVersion = 27
         robolectricVersion = '3.4.2'
         gsonVersion = '2.8.2'
         dokkaVersion = '0.9.16'

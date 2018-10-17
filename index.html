@@ -336,7 +336,7 @@
 <blockquote>
 <p>This call requires authentication :</p>
 </blockquote>
-<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApi</span><span class="p">()</span>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApiRouter</span><span class="p">()</span>
 <span class="n">bboxapi</span><span class="p">.</span><span class="n">setPassword</span><span class="p">(</span><span class="s">"root"</span><span class="p">)</span>
 
 <span class="n">bboxapi</span><span class="p">.</span><span class="n">getVoipInfo</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
@@ -355,7 +355,7 @@
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApi</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApiRouter</span><span class="o">();</span>
 <span class="n">bboxapi</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="s">"root"</span><span class="o">);</span>
 
 <span class="n">bboxapi</span><span class="o">.</span><span class="na">getVoipInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
@@ -561,13 +561,13 @@ with Gradle, from JCenter or MavenCentral :</p>
 </ul>
 
 <p>A <code>Triple&lt;Request, Response, T&gt;</code> object is returned.</p>
-<h1 id='authentication-status'>Authentication status</h1><pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApi</span><span class="p">()</span>
+<h1 id='authentication-status'>Authentication status</h1><pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApiRouter</span><span class="p">()</span>
 
 <span class="n">println</span><span class="p">(</span><span class="s">"authentication attempts : ${bboxapi.attempts}"</span><span class="p">)</span>
 <span class="n">println</span><span class="p">(</span><span class="s">"user is authenticated   : ${bboxapi.authenticated}"</span><span class="p">)</span>
 <span class="n">println</span><span class="p">(</span><span class="s">"user is blocked         : ${bboxapi.blocked}"</span><span class="p">)</span>
 <span class="n">println</span><span class="p">(</span><span class="s">"ban expiration date     : ${bboxapi.blockedUntil}"</span><span class="p">)</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApi</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApiRouter</span><span class="o">();</span>
 
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"authentication attempts : "</span> <span class="o">+</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getAttempts</span><span class="o">());</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"user is authenticated   : "</span> <span class="o">+</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">getAuthenticated</span><span class="o">());</span>
@@ -1810,7 +1810,7 @@ This API doesn't require authentication
 <blockquote>
 <p>Asynchronous</p>
 </blockquote>
-<pre class="highlight kotlin tab-kotlin"><code><span class="n">bboxapi</span><span class="p">.</span><span class="n">createCustomRequest</span><span class="p">(</span><span class="n">request</span> <span class="p">=</span> <span class="n">Fuel</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="s">"/summary"</span><span class="p">),</span> <span class="n">auth</span> <span class="p">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
+<pre class="highlight kotlin tab-kotlin"><code><span class="n">bboxapi</span><span class="p">.</span><span class="n">createCustomRequest</span><span class="p">(</span><span class="n">request</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">manager</span><span class="p">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span> <span class="p">=</span> <span class="n">Method</span><span class="p">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">path</span> <span class="p">=</span> <span class="s">"/summary"</span><span class="p">),</span> <span class="n">auth</span> <span class="p">=</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
     <span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
             <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
@@ -1822,7 +1822,7 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">createCustomRequest</span><span class="o">(</span><span class="n">Fuel</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"/summary"</span><span class="o">),</span> <span class="kc">false</span><span class="o">,</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">bboxapi</span><span class="o">.</span><span class="na">createCustomRequest</span><span class="o">(</span><span class="n">bboxapi</span><span class="o">.</span><span class="na">getManager</span><span class="o">().</span><span class="na">request</span><span class="o">(</span><span class="n">Method</span><span class="o">.</span><span class="na">GET</span><span class="o">,</span> <span class="s">"/summary"</span><span class="o">,</span> <span class="kc">null</span><span class="o">),</span> <span class="kc">false</span><span class="o">,</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">failure</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FuelError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">error</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
@@ -1837,7 +1837,7 @@ This API doesn't require authentication
 <blockquote>
 <p>Synchronous</p>
 </blockquote>
-<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="err">(</span><span class="py">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">createCustomRequestSync</span><span class="p">(</span><span class="n">request</span> <span class="p">=</span> <span class="n">Fuel</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="s">"/voip"</span><span class="p">),</span> <span class="n">auth</span> <span class="p">=</span> <span class="k">true</span><span class="p">)</span>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="err">(</span><span class="py">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">createCustomRequestSync</span><span class="p">(</span><span class="n">request</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">manager</span><span class="p">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span> <span class="p">=</span> <span class="n">Method</span><span class="p">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">path</span> <span class="p">=</span> <span class="s">"/voip"</span><span class="p">),</span> <span class="n">auth</span> <span class="p">=</span> <span class="k">true</span><span class="p">)</span>
 <span class="k">when</span> <span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">is</span> <span class="n">Result</span><span class="p">.</span><span class="n">Failure</span> <span class="p">-&gt;</span> <span class="p">{</span>
         <span class="kd">val</span> <span class="py">ex</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="n">getException</span><span class="p">()</span>
@@ -1848,10 +1848,12 @@ This API doesn't require authentication
         <span class="n">println</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">createCustomRequestSync</span><span class="o">(</span><span class="n">Fuel</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"/voip"</span><span class="o">),</span> <span class="kc">true</span><span class="o">);</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">Triple</span><span class="o">&lt;</span><span class="n">Request</span><span class="o">,</span> <span class="n">Response</span><span class="o">,</span> <span class="n">Result</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">FuelError</span><span class="o">&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">createCustomRequestSync</span><span class="o">(</span><span class="n">bboxapi</span><span class="o">.</span><span class="na">getManager</span><span class="o">().</span><span class="na">request</span><span class="o">(</span><span class="n">Method</span><span class="o">.</span><span class="na">GET</span><span class="o">,</span> <span class="s">"/voip"</span><span class="o">,</span> <span class="kc">null</span><span class="o">),</span> <span class="kc">true</span><span class="o">);</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getThird</span><span class="o">().</span><span class="na">get</span><span class="o">());</span>
 </code></pre>
 <p>Create your own HTTP request, this can be useful for not relying on the library implementation</p>
+
+<p><strong>All request construction are prefixed with <a href="http://bbox.lan/api/v1">http://bbox.lan/api/v1</a> if host is not specified</strong></p>
 <h1 id='setting-password'>Setting Password</h1>
 <p>The first time user connects to Bbox admin interface or when a user lose his/her password, the password should be resetted. User will have to do the following things : </p>
 
@@ -1863,14 +1865,14 @@ This API doesn't require authentication
 </ul>
 
 <p>You can simply use <code>waitForPushButton</code> to wait for an amount of time for the user to press the button with a configurable polling interval (default 1 second)</p>
-<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApi</span><span class="p">()</span>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApiRouter</span><span class="p">()</span>
 <span class="n">println</span><span class="p">(</span><span class="s">"push the button on your Bbox for setting your password, you have 20 seconds"</span><span class="p">)</span>
 <span class="kd">val</span> <span class="py">state</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">waitForPushButton</span><span class="p">(</span><span class="n">maxDuration</span> <span class="p">=</span> <span class="m">20000</span><span class="p">)</span>
 <span class="k">if</span> <span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">val</span> <span class="py">setPasswordRes</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">resetPasswordSync</span><span class="p">(</span><span class="n">password</span> <span class="p">=</span> <span class="s">"admin2"</span><span class="p">)</span>
     <span class="n">println</span><span class="p">(</span><span class="s">"set password : ${setPasswordRes.second.statusCode}"</span><span class="p">)</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApi</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApiRouter</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"push the button on your Bbox for setting your password, you have 20 seconds"</span><span class="o">);</span>
 <span class="n">Boolean</span> <span class="n">state</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">waitForPushButton</span><span class="o">(</span><span class="mi">20000</span><span class="o">,</span> <span class="mi">1000</span><span class="o">);</span>
 <span class="k">if</span> <span class="o">(</span><span class="n">state</span><span class="o">)</span> <span class="o">{</span>
@@ -1883,7 +1885,7 @@ This API doesn't require authentication
 <blockquote>
 <p>check exception type &amp; response status code on failure :</p>
 </blockquote>
-<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApi</span><span class="p">()</span>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApiRouter</span><span class="p">()</span>
 <span class="n">bboxapi</span><span class="p">.</span><span class="n">setPassword</span><span class="p">(</span><span class="s">"root"</span><span class="p">)</span>
 
 <span class="n">bboxapi</span><span class="p">.</span><span class="n">getVoipInfo</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">result</span> <span class="p">-&gt;</span>
@@ -1902,7 +1904,7 @@ This API doesn't require authentication
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApi</span><span class="o">();</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApi</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApiRouter</span><span class="o">();</span>
 <span class="n">bboxapi</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="s">"root"</span><span class="o">);</span>
 
 <span class="n">bboxapi</span><span class="o">.</span><span class="na">getVoipInfo</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
@@ -1918,7 +1920,7 @@ This API doesn't require authentication
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">.</span><span class="na">Model</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Voip</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">});</span>

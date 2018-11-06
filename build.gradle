@@ -14,7 +14,7 @@ buildscript {
         gsonVersion = '2.8.2'
         dokkaVersion = '0.9.16'
 
-        projectVersion = '2.1.4'
+        projectVersion = '2.1.5'
         projectDescription = 'Bbox router API library for Kotlin/Java/Android'
         projectSite = 'https://github.com/bertrandmartel/bboxapi-router'
         projectRepo = 'https://github.com/bertrandmartel/bboxapi-router.git'
@@ -30,7 +30,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'com.dicedmelon.gradle:jacoco-android:0.1.2'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'

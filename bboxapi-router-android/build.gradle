@@ -18,11 +18,6 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_6
-    }
-
     buildTypes {
         release {
             minifyEnabled false

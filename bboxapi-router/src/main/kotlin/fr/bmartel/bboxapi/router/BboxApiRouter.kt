@@ -1,7 +1,6 @@
 package fr.bmartel.bboxapi.router
 
 import com.github.kittinunf.fuel.core.*
-import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.flatMapError
 import com.google.gson.Gson
@@ -9,6 +8,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import fr.bmartel.bboxapi.router.model.*
 import java.net.HttpCookie
+import java.net.UnknownHostException
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.concurrent.schedule
@@ -88,11 +88,19 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     val manager = FuelManager()
 
     init {
-        manager.basePath = "http://bbox.lan/api/v1"
+        manager.basePath = "https://mabbox.bytel.fr/api/v1"
     }
 
     fun setBasePath(basePath: String) {
         manager.basePath = basePath
+    }
+
+    fun init() {
+        val (_, _, result) = buildSummaryRequest().responseString()
+        if (result is Result.Failure && result.getException().exception is UnknownHostException) {
+            //switching to gestionbbox.lan
+            manager.basePath = "http://gestionbbox.lan/api/v1"
+        }
     }
 
     private fun buildLoginRequest(): Request {
@@ -267,7 +275,9 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
             } else {
                 bboxId = cookie ?: ""
                 if (json) {
-                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = gsonDeserializerOf(), handler = handler)
+                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = object : ResponseDeserializable<T> {
+                        override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
+                    }, handler = handler)
                 } else {
                     request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString(handler = handler as (Request, Response, Result<*, FuelError>) -> Unit)
                 }
@@ -283,7 +293,9 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
             } else {
                 bboxId = cookie ?: ""
                 if (json) {
-                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = gsonDeserializerOf(), handler = handler)
+                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = object : ResponseDeserializable<T> {
+                        override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
+                    }, handler = handler)
                 } else {
                     request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString(handler = handler as Handler<String>)
                 }
@@ -297,7 +309,9 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
             authenticateAndExecute(request, handler, json = json)
         } else {
             if (json) {
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(deserializer = gsonDeserializerOf()) { req, res, result ->
+                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(deserializer = object : ResponseDeserializable<T> {
+                    override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
+                }) { req, res, result ->
                     if (res.statusCode == 401) {
                         authenticateAndExecute(request = request, handler = handler, json = json)
                     } else {
@@ -326,7 +340,9 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
             authenticateAndExecute(request, handler, json = json)
         } else {
             if (json) {
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(deserializer = gsonDeserializerOf()) { req, res, result ->
+                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(deserializer = object : ResponseDeserializable<T> {
+                    override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
+                }) { req, res, result ->
                     if (res.statusCode == 401) {
                         authenticateAndExecute(request = request, handler = handler, json = json)
                     } else {
@@ -354,7 +370,9 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         } else {
             bboxId = cookie ?: ""
             if (json) {
-                return request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = gsonDeserializerOf())
+                return request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = object : ResponseDeserializable<T> {
+                    override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
+                })
             } else {
                 return request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString() as Triple<Request, Response, Result<T, FuelError>>
             }
@@ -366,7 +384,9 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
             return authenticateAndExecuteSync(request = request, json = json)
         } else {
             val triple = if (json) {
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(gsonDeserializerOf())
+                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(object : ResponseDeserializable<T> {
+                    override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
+                })
             } else {
                 request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString()
             }
@@ -428,63 +448,63 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun getSummary(handler: (Request, Response, Result<List<Summary>, FuelError>) -> Unit) {
-        buildSummaryRequest().responseObject(gsonDeserializerOf(), handler)
+        buildSummaryRequest().responseObject(Summary.Deserializer(), handler)
     }
 
     fun getSummary(handler: Handler<List<Summary>>) {
-        buildSummaryRequest().responseObject(gsonDeserializerOf(), handler)
+        buildSummaryRequest().responseObject(Summary.Deserializer(), handler)
     }
 
     fun getSummarySync(): Triple<Request, Response, Result<List<Summary>, FuelError>> {
-        return buildSummaryRequest().responseObject(gsonDeserializerOf())
+        return buildSummaryRequest().responseObject(Summary.Deserializer())
     }
 
     fun getXdslInfo(handler: (Request, Response, Result<List<Wan>, FuelError>) -> Unit) {
-        buildXdslRequest().responseObject(gsonDeserializerOf(), handler)
+        buildXdslRequest().responseObject(Wan.Deserializer(), handler)
     }
 
     fun getXdslInfo(handler: Handler<List<Wan>>) {
-        buildXdslRequest().responseObject(gsonDeserializerOf(), handler)
+        buildXdslRequest().responseObject(Wan.Deserializer(), handler)
     }
 
     fun getXdslInfoSync(): Triple<Request, Response, Result<List<Wan>, FuelError>> {
-        return buildXdslRequest().responseObject(gsonDeserializerOf())
+        return buildXdslRequest().responseObject(Wan.Deserializer())
     }
 
     fun getHosts(handler: (Request, Response, Result<List<Hosts>, FuelError>) -> Unit) {
-        buildHostRequest().responseObject(gsonDeserializerOf(), handler)
+        processSecureApi(request = buildHostRequest(), handler = handler)
     }
 
     fun getHosts(handler: Handler<List<Hosts>>) {
-        buildHostRequest().responseObject(gsonDeserializerOf(), handler)
+        processSecureApi(request = buildHostRequest(), handler = handler)
     }
 
     fun getHostsSync(): Triple<Request, Response, Result<List<Hosts>, FuelError>> {
-        return buildHostRequest().responseObject(gsonDeserializerOf())
+        return processSecureApiSync(request = buildHostRequest())
     }
 
     fun getWanIpInfo(handler: (Request, Response, Result<List<Wan>, FuelError>) -> Unit) {
-        buildWanIpInfoRequest().responseObject(gsonDeserializerOf(), handler)
+        buildWanIpInfoRequest().responseObject(Wan.Deserializer(), handler)
     }
 
     fun getWanIpInfo(handler: Handler<List<Wan>>) {
-        buildWanIpInfoRequest().responseObject(gsonDeserializerOf(), handler)
+        buildWanIpInfoRequest().responseObject(Wan.Deserializer(), handler)
     }
 
     fun getWanIpInfoSync(): Triple<Request, Response, Result<List<Wan>, FuelError>> {
-        return buildWanIpInfoRequest().responseObject(gsonDeserializerOf())
+        return buildWanIpInfoRequest().responseObject(Wan.Deserializer())
     }
 
     fun getDeviceInfo(handler: (Request, Response, Result<List<Device>, FuelError>) -> Unit) {
-        buildDeviceInfoRequest().responseObject(gsonDeserializerOf(), handler)
+        buildDeviceInfoRequest().responseObject(Device.Deserializer(), handler)
     }
 
     fun getDeviceInfo(handler: Handler<List<Device>>) {
-        buildDeviceInfoRequest().responseObject(gsonDeserializerOf(), handler)
+        buildDeviceInfoRequest().responseObject(Device.Deserializer(), handler)
     }
 
     fun getDeviceInfoSync(): Triple<Request, Response, Result<List<Device>, FuelError>> {
-        return buildDeviceInfoRequest().responseObject(gsonDeserializerOf())
+        return buildDeviceInfoRequest().responseObject(Device.Deserializer())
     }
 
     fun getVoipInfo(handler: (Request, Response, Result<List<Voip>, FuelError>) -> Unit) {
@@ -831,28 +851,28 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun authorize(grantType: GrantType, responseType: ResponseType, handler: (Request, Response, Result<CodeResponse, FuelError>) -> Unit) {
-        buildOauthAuthorizeRequest(grantType = grantType, responseType = responseType).responseObject(gsonDeserializerOf(), handler)
+        buildOauthAuthorizeRequest(grantType = grantType, responseType = responseType).responseObject(CodeResponse.Deserializer(), handler)
     }
 
     fun authorize(grantType: GrantType, responseType: ResponseType, handler: Handler<CodeResponse>) {
-        buildOauthAuthorizeRequest(grantType = grantType, responseType = responseType).responseObject(gsonDeserializerOf(), handler)
+        buildOauthAuthorizeRequest(grantType = grantType, responseType = responseType).responseObject(CodeResponse.Deserializer(), handler)
     }
 
     fun authorizeSync(grantType: GrantType, responseType: ResponseType): Triple<Request, Response, Result<CodeResponse, FuelError>> {
-        return buildOauthAuthorizeRequest(grantType = grantType, responseType = responseType).responseObject(gsonDeserializerOf())
+        return buildOauthAuthorizeRequest(grantType = grantType, responseType = responseType).responseObject(CodeResponse.Deserializer())
     }
 
     fun getToken(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null,
                  handler: (Request, Response, Result<TokenResponse, FuelError>) -> Unit) {
-        buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(gsonDeserializerOf(), handler)
+        buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(TokenResponse.Deserializer(), handler)
     }
 
     fun getToken(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null, handler: Handler<TokenResponse>) {
-        buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(gsonDeserializerOf(), handler)
+        buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(TokenResponse.Deserializer(), handler)
     }
 
     fun getTokenSync(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null): Triple<Request, Response, Result<TokenResponse, FuelError>> {
-        return buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(gsonDeserializerOf())
+        return buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(TokenResponse.Deserializer())
     }
 
     fun refreshToken(refreshToken: String,
@@ -860,7 +880,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
                      handler: (Request, Response, Result<TokenResponse, FuelError>) -> Unit) {
         buildRefreshTokenRequest(
                 refreshToken = refreshToken,
-                scope = scope).responseObject(gsonDeserializerOf(), handler)
+                scope = scope).responseObject(TokenResponse.Deserializer(), handler)
     }
 
     fun refreshToken(refreshToken: String,
@@ -868,14 +888,14 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
                      handler: Handler<TokenResponse>) {
         buildRefreshTokenRequest(
                 refreshToken = refreshToken,
-                scope = scope).responseObject(gsonDeserializerOf(), handler)
+                scope = scope).responseObject(TokenResponse.Deserializer(), handler)
     }
 
     fun refreshTokenSync(refreshToken: String,
                          scope: List<Scope>): Triple<Request, Response, Result<TokenResponse, FuelError>> {
         return buildRefreshTokenRequest(
                 refreshToken = refreshToken,
-                scope = scope).responseObject(gsonDeserializerOf())
+                scope = scope).responseObject(TokenResponse.Deserializer())
     }
 
     private fun waitForPush(maxDuration: Long, pollInterval: Long = 1000): Boolean {
@@ -948,15 +968,15 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun getServices(handler: (Request, Response, Result<List<ServiceObject>, FuelError>) -> Unit) {
-        buildServicesRequest().responseObject(gsonDeserializerOf(), handler)
+        buildServicesRequest().responseObject(ServiceObject.Deserializer(), handler)
     }
 
     fun getServices(handler: Handler<List<ServiceObject>>) {
-        buildServicesRequest().responseObject(gsonDeserializerOf(), handler)
+        buildServicesRequest().responseObject(ServiceObject.Deserializer(), handler)
     }
 
     fun getServicesSync(): Triple<Request, Response, Result<List<ServiceObject>, FuelError>> {
-        return buildServicesRequest().responseObject(gsonDeserializerOf())
+        return buildServicesRequest().responseObject(ServiceObject.Deserializer())
     }
 
     fun isRemoteActivable(): Boolean {

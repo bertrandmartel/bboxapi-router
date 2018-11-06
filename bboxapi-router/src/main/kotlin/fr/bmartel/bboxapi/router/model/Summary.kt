@@ -1,6 +1,8 @@
 package fr.bmartel.bboxapi.router.model
 
+import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.annotations.SerializedName
+import fr.bmartel.bboxapi.router.BboxApiUtils
 
 data class Summary(
         var now: String? = null,
@@ -15,7 +17,12 @@ data class Summary(
         val diags: List<Diag>? = null,
         val hosts: List<Host>? = null,
         val wan: SummaryWan? = null
-)
+) {
+
+    class Deserializer : ResponseDeserializable<List<Summary>> {
+        override fun deserialize(content: String) = BboxApiUtils.fromJson<List<Summary>>(content)
+    }
+}
 
 data class SummaryVoip(
         val status: String? = null,

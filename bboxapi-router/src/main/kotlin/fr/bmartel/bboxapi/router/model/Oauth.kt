@@ -1,5 +1,8 @@
 package fr.bmartel.bboxapi.router.model
 
+import com.github.kittinunf.fuel.core.ResponseDeserializable
+import fr.bmartel.bboxapi.router.BboxApiUtils
+
 data class OauthParam(
         val grantType: GrantType,
         val scope: List<Scope> = listOf(Scope.ALL),
@@ -8,9 +11,17 @@ data class OauthParam(
         val responseType: ResponseType = ResponseType.NONE
 )
 
-data class CodeResponse(val code: String, val interval: Int, val token_type: String, val expires_in: Int, val issued_at: String)
+data class CodeResponse(val code: String, val interval: Int, val token_type: String, val expires_in: Int, val issued_at: String) {
+    class Deserializer : ResponseDeserializable<CodeResponse> {
+        override fun deserialize(content: String) = BboxApiUtils.fromJson<CodeResponse>(content)
+    }
+}
 
-data class TokenResponse(val access_token: String, val refresh_token: String, val token_type: String, val expires_in: Int, val issued_at: String)
+data class TokenResponse(val access_token: String, val refresh_token: String, val token_type: String, val expires_in: Int, val issued_at: String) {
+    class Deserializer : ResponseDeserializable<TokenResponse> {
+        override fun deserialize(content: String) = BboxApiUtils.fromJson<TokenResponse>(content)
+    }
+}
 
 enum class GrantType(val field: String) {
     REFRESH_TOKEN("refresh_token"),

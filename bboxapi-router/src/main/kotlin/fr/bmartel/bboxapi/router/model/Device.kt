@@ -1,11 +1,16 @@
 package fr.bmartel.bboxapi.router.model
 
+import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.annotations.SerializedName
 import fr.bmartel.bboxapi.router.BboxApiUtils
 
 data class Device(
         val device: BboxDevice? = null
-)
+){
+    class Deserializer : ResponseDeserializable<List<Device>> {
+        override fun deserialize(content: String) = BboxApiUtils.fromJson<List<Device>>(content)
+    }
+}
 
 data class BboxDevice(
         val now: String? = null,

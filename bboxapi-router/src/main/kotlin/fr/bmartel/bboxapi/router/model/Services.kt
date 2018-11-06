@@ -1,8 +1,15 @@
 package fr.bmartel.bboxapi.router.model
 
+import com.github.kittinunf.fuel.core.ResponseDeserializable
+import fr.bmartel.bboxapi.router.BboxApiUtils
+
 data class ServiceObject(
         val services: Services
-)
+) {
+    class Deserializer : ResponseDeserializable<List<ServiceObject>> {
+        override fun deserialize(content: String) = BboxApiUtils.fromJson<List<ServiceObject>>(content)
+    }
+}
 
 data class ServiceRuleState(
         val state: Int,

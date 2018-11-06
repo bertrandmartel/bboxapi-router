@@ -1,10 +1,16 @@
 package fr.bmartel.bboxapi.router.model
 
+import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.annotations.SerializedName
+import fr.bmartel.bboxapi.router.BboxApiUtils
 
 data class Wan(
         val wan: WanEntry? = null
-)
+) {
+    class Deserializer : ResponseDeserializable<List<Wan>> {
+        override fun deserialize(content: String) = BboxApiUtils.fromJson<List<Wan>>(content)
+    }
+}
 
 data class WanEntry(
         val xdsl: Xdsl? = null,

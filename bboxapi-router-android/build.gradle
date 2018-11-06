@@ -36,8 +36,8 @@ android {
 }
 
 dependencies {
-    compile "com.github.kittinunf.fuel:fuel-android:$fuelAndroidVersion"
-    compile "com.google.code.gson:gson:$gsonVersion"
+    implementation "com.github.kittinunf.fuel:fuel-android:$fuelAndroidVersion"
+    implementation "com.google.code.gson:gson:$gsonVersion"
     compile(project(':bboxapi-router')) {
         exclude group: 'com.github.kittinunf.fuel'
     }

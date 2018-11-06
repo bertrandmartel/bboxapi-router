@@ -13,10 +13,9 @@ sourceSets {
 test {
     systemProperty 'testMode', System.getProperty("testMode") ?: 'local'
     //include '**/TestSuite.class'
-    outputs.upToDateWhen { false }
+    outputs.upToDateWhen {false}
     testLogging {
         showStandardStreams = true
-        exceptionFormat = 'full'
     }
 }
 
@@ -24,7 +23,7 @@ sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
 dependencies {
-    compile "com.github.kittinunf.fuel:fuel-gson:$fuelGsonVersion"
+    implementation "com.github.kittinunf.fuel:fuel-gson:$fuelGsonVersion"
     testCompile "junit:junit:$junitVersion"
     testCompile "com.squareup.okhttp3:mockwebserver:$mockWebserverVersion"
     testCompile "org.skyscreamer:jsonassert:$jsonAssertVersion"

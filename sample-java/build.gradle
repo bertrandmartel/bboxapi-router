@@ -1,5 +1,6 @@
 apply plugin: 'java'
 
 dependencies {
+    implementation "com.github.kittinunf.fuel:fuel-gson:$fuelGsonVersion"
     compile project(':bboxapi-router')
 }

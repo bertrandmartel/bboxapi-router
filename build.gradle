@@ -3,9 +3,9 @@
 buildscript {
 
     ext {
-        kotlinVersion = '1.2.61'
-        fuelGsonVersion = '1.12.1'
-        fuelAndroidVersion = '1.12.1'
+        kotlinVersion = '1.2.71'
+        fuelGsonVersion = '1.15.1'
+        fuelAndroidVersion = '1.15.1'
         junitVersion = '4.12'
         mockWebserverVersion = '3.10.0'
         jsonAssertVersion = '1.5.0'

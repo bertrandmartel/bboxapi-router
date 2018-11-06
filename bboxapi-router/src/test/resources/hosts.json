@@ -23,7 +23,7 @@
         "rssi1": 0,
         "rssi2": 0,
         "mcs": 0,
-        "rate": 0,
+        "rate": "",
         "idle": 0,
         "wexindex": 0,
         "starealmac": "00:00:00:00:00:00"

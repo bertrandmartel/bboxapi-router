@@ -105,16 +105,19 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun getHosts() {
+        bboxApi.password = password
         TestUtils.executeAsync(testcase = this, filename = "hosts.json", body = bboxApi::getHosts)
     }
 
     @Test
     fun getHostsCb() {
+        bboxApi.password = password
         TestUtils.executeAsyncCb(testcase = this, filename = "hosts.json", body = bboxApi::getHosts)
     }
 
     @Test
     fun getHostsSync() {
+        bboxApi.password = password
         TestUtils.executeSync(filename = "hosts.json", body = bboxApi::getHostsSync)
     }
 
@@ -299,13 +302,6 @@ open class BboxApiTest : TestCase() {
     }
 
     @Test
-    fun getVoipInfoAlreadyAuthenticatedSuccess() {
-        bboxApi.password = password
-        bboxApi.authenticated = true
-        TestUtils.executeAsync(testcase = this, filename = "voip.json", body = bboxApi::getVoipInfo)
-    }
-
-    @Test
     fun getVoipInfoAlreadyAuthenticatedFailure() {
         bboxApi.password = ""
         bboxApi.authenticated = true
@@ -329,13 +325,6 @@ open class BboxApiTest : TestCase() {
                 filename = "voip.json",
                 body = bboxApi::getVoipInfoSync,
                 expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
-    }
-
-    @Test
-    fun getVoipInfoSyncAlreadyAuthenticatedSuccess() {
-        bboxApi.password = password
-        bboxApi.authenticated = true
-        TestUtils.executeSync(filename = "voip.json", body = bboxApi::getVoipInfoSync)
     }
 
     @Test
@@ -363,13 +352,6 @@ open class BboxApiTest : TestCase() {
                 filename = "voip.json",
                 body = bboxApi::getVoipInfo,
                 expectedException = HttpException(httpCode = 401, httpMessage = "Client Error"))
-    }
-
-    @Test
-    fun getVoipInfoCbAlreadyAuthenticatedSuccess() {
-        bboxApi.password = password
-        bboxApi.authenticated = true
-        TestUtils.executeAsyncCb(testcase = this, filename = "voip.json", body = bboxApi::getVoipInfo)
     }
 
     @Test

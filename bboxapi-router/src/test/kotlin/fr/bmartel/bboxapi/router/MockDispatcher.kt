@@ -35,7 +35,7 @@ class MockDispatcher : Dispatcher() {
         return when {
             request.method == "GET" && request.path == "/summary" -> sendResponse(fileName = "summary.json")
             request.method == "GET" && request.path == "/wan/xdsl" -> sendResponse(fileName = "xdsl_info.json")
-            request.method == "GET" && request.path == "/hosts" -> sendResponse(fileName = "hosts.json")
+            request.method == "GET" && request.path == "/hosts" -> sendAuthenticatedResponse(request = request, fileName = "hosts.json")
             request.method == "GET" && request.path == "/wan/ip" -> sendResponse(fileName = "wan_ip.json")
             request.method == "GET" && request.path == "/device" -> sendResponse(fileName = "device.json")
             request.method == "GET" && request.path == "/services" -> sendServices()

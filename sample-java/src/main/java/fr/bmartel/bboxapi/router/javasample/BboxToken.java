@@ -16,6 +16,7 @@ public class BboxToken {
 
     public static void main(String args[]) throws InterruptedException {
         BboxApiRouter bboxapi = new BboxApiRouter();
+        bboxapi.init();
         bboxapi.setPassword("admin");
 
         //asynchronous call

@@ -15,7 +15,8 @@ public class Hosts {
 
     public static void main(String args[]) throws InterruptedException {
         BboxApiRouter bboxapi = new BboxApiRouter();
-
+        bboxapi.init();
+        bboxapi.setPassword("admin");
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
         bboxapi.getHosts(new Handler<List<fr.bmartel.bboxapi.router.model.Hosts>>() {

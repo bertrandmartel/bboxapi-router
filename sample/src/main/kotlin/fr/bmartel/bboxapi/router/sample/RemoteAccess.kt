@@ -6,6 +6,7 @@ import fr.bmartel.bboxapi.router.BboxApiRouter
 
 fun main(args: Array<String>) {
     val bboxapi = BboxApiRouter()
+    bboxapi.init()
     bboxapi.password = "AAaaa*1111"
     val triple = bboxapi.configureRemoteAccess(state = false)
     if (triple != null) {

@@ -7,6 +7,7 @@ import java.util.concurrent.CountDownLatch
 
 fun main(args: Array<String>) {
     val bboxapi = BboxApiRouter()
+    bboxapi.init()
     bboxapi.password = "admin"
 
     /**

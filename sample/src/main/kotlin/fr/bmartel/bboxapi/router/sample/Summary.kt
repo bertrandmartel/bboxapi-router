@@ -8,6 +8,7 @@ import java.util.concurrent.CountDownLatch
 
 fun main(args: Array<String>) {
     val bboxapi = BboxApiRouter()
+    bboxapi.init()
 
     println("authentication attempts : ${bboxapi.attempts}")
     println("user is authenticated   : ${bboxapi.authenticated}")

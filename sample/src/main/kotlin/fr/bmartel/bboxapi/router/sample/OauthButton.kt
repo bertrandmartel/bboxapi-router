@@ -8,6 +8,7 @@ import fr.bmartel.bboxapi.router.model.TokenResponse
 fun main(args: Array<String>) {
 
     val bboxapi = BboxApiRouter(clientId = "YOUR_CLIENT_ID", clientSecret = "YOUR_CLIENT_SECRET")
+    bboxapi.init()
 
     val (_, response, result) = bboxapi.authenticateOauthButton(
             maxDuration = 20000,

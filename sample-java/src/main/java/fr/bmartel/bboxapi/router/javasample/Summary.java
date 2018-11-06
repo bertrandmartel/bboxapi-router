@@ -13,7 +13,7 @@ public class Summary {
 
     public static void main(String args[]) throws InterruptedException {
         BboxApiRouter bboxapi = new BboxApiRouter();
-
+        bboxapi.init();
         System.out.println("authentication attempts : " + bboxapi.getAttempts());
         System.out.println("user is authenticated   : " + bboxapi.getAuthenticated());
         System.out.println("user is blocked         : " + bboxapi.getBlocked());
@@ -48,5 +48,6 @@ public class Summary {
         Response response = data.getSecond();
         Result<List<fr.bmartel.bboxapi.router.model.Summary>, FuelError> obj = data.getThird();
         System.out.println(obj.get());
+
     }
 }

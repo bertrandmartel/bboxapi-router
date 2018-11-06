@@ -13,7 +13,7 @@ public class Services {
 
     public static void main(String args[]) throws InterruptedException {
         BboxApiRouter bboxapi = new BboxApiRouter();
-
+        bboxapi.init();
         //asynchronous call
         CountDownLatch latch = new CountDownLatch(1);
         bboxapi.getServices(new Handler<List<fr.bmartel.bboxapi.router.model.ServiceObject>>() {

@@ -14,6 +14,7 @@ public class PasswordRecovery {
 
     public static void main(String args[]) {
         BboxApiRouter bboxapi = new BboxApiRouter();
+        bboxapi.init();
         System.out.println("push the button on your Bbox for setting your password, you have 20 seconds");
         Boolean state = bboxapi.waitForPushButton(20000, 1000);
         if (state) {

@@ -11,6 +11,7 @@ public class RemoteAccess {
 
     public static void main(String args[]) throws InterruptedException {
         BboxApiRouter bboxapi = new BboxApiRouter();
+        bboxapi.init();
         bboxapi.setPassword("AAaaa*1111");
         Triple<Request, Response, Result<String, FuelError>> data = bboxapi.configureRemoteAccess(true);
         if (data != null) {

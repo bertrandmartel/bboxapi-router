@@ -99,4 +99,4 @@ bboxapi.setOauthToken(new OauthToken(
 ```
 
 
-<aside class="warning">This API is experimental</aside>
+<aside class="warning">You can only use Basic authentication OR Oauth2.0 but not both. Settings clientId & clientSecret in constructor automatically set the authentication to Oauth2.0</aside>

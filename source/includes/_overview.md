@@ -50,7 +50,7 @@ bboxapi.getVoipInfo(new Handler<List<Voip>>() {
 
 Most of the APIs require authentication via `setPassword(password: String)` which is Bbox admin interface password.
 
-| method              | API call                               | require auth | description                    
+| method              | API call                               | require basic auth | description                    
 |---------------------|----------------------------------------|---------------|--------------------------------
 | login               | `POST /login`                          | false | login
 | logout              | `POST /logout`                         | true | logout                               
@@ -74,6 +74,7 @@ Most of the APIs require authentication via `setPassword(password: String)` whic
 | startPasswordRecovery | `POST /password-recovery`             | false | start password recovery process
 | verifyPasswordRecovery | `GET /password-recovery/verify`       | false | check if push button has been pressed   
 | resetPassword        | `POST /reset-password?btoken=$btoken`       | true | reset the password
-
+| getToken             | `POST /oauth/token` | false | get Oauth2.0 access token / refresh token 
+| refreshToken         | `POST /oauth/token` | false | refresh an Oauth2.0 access token
 
 (*) some information may be missing when unauthenticated

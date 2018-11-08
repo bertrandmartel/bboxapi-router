@@ -30,3 +30,73 @@ if (state) {
     System.out.println("didn't detect the push button");
 }
 ```
+
+# Oauth2.0 (Experimental)
+
+> Oauth2.0 via push button
+
+```kotlin
+val bboxapi = BboxApiRouter(clientId = "client_id_test", clientSecret = "client_secret_test")
+bboxapi.init()
+
+val token = bboxapi.authenticateOauthButton(
+        maxDuration = 20000,
+        pollInterval = 1000,
+        scope = listOf(Scope.ALL))
+if (token != null) {
+    //store bboxapi.oauthToken?.refresh_token
+    println(token)
+}
+```
+
+```java
+BboxApiRouter bboxapi = new BboxApiRouter("client_id_test", "client_secret_test");
+bboxapi.init();
+
+List<Scope> scope = new ArrayList<>();
+scope.add(Scope.ALL);
+
+OauthToken token = bboxapi.authenticateOauthButton(20000, 1000, scope);
+
+if (token != null) {
+    //store bboxapi.oauthToken?.refresh_token
+    System.out.println(token);
+}
+```
+
+You can request Oauth2.0 access token/refresh token via button push.
+
+A call to `authenticateOauthButton` will wait for a button push. This will give a refresh token & an access token
+
+Subsequent call to secured api endpoint will use this access token instead of the Basic auth Cookie. Afterwards, when secured call return 401, a refresh token request will be automatically issues before retrying the request with the new access token
+
+User should store the refresh token in local storage (`bboxapi.oauthToken?.refresh_token`) when button is push so you can set it when you initialize `BboxApiRouter` the next time user start your app
+
+> Set refresh token manually
+
+```kotlin
+val bboxapi = BboxApiRouter(clientId = "client_id_test", clientSecret = "client_secret_test")
+bboxapi.init()
+bboxapi.oauthToken = OauthToken(
+        access_token = "",
+        refresh_token = "some refresh token you have stored",
+        expires_in = 0,
+        issued_at = "",
+        token_type = "Bearer"
+)
+```
+
+```java
+BboxApiRouter bboxapi = new BboxApiRouter("client_id_test", "client_secret_test");
+bboxapi.init();
+bboxapi.setOauthToken(new OauthToken(
+        "", //access token
+        "some refresh token you have stored", //refresh token
+        "Bearer", //token type
+        0, //expires_in
+        "" //issues_at
+));
+```
+
+
+<aside class="warning">This API is experimental</aside>

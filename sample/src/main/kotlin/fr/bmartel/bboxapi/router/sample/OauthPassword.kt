@@ -9,12 +9,10 @@ fun main(args: Array<String>) {
 
     val bboxapi = BboxApiRouter(clientId = "client_id_test", clientSecret = "client_secret_test")
     bboxapi.init()
-    val token = bboxapi.authenticateOauthButton(
-            maxDuration = 20000,
-            pollInterval = 1000,
-            scope = listOf(Scope.ALL))
+    bboxapi.password = "admin"
+
+    val token = bboxapi.authenticateOauthPassword(scope = listOf(Scope.ALL))
     if (token != null) {
-        //store bboxapi.oauthToken?.refresh_token
         println(token)
         //asynchronous call
         val latch = CountDownLatch(1)
@@ -46,6 +44,6 @@ fun main(args: Array<String>) {
             }
         }
     } else {
-        println("button wasn't pushed")
+        println("error occured")
     }
 }

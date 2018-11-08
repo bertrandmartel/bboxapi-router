@@ -1130,14 +1130,12 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun waitForPushButtonOauth() {
-        var triple = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
-        Assert.assertNotNull(triple.third.component2())
-        Assert.assertEquals("push button failure", triple.third.component2()?.exception?.message)
+        var token = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
+        Assert.assertNull(token)
         changePassword = 1
-        triple = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
-        Assert.assertNull(triple.third.component2())
-        Assert.assertEquals(200, triple.second.statusCode)
-        JSONAssert.assertEquals(TestUtils.getResFile(fileName = "oauth_token.json"), Gson().toJson(triple.third.get()), false)
+        token = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
+        Assert.assertNotNull(token)
+        JSONAssert.assertEquals(TestUtils.getResFile(fileName = "oauth_token.json"), Gson().toJson(token), false)
         changePassword = 0
     }
 
@@ -1148,10 +1146,9 @@ open class BboxApiTest : TestCase() {
             changePassword = 1
         }
         changePassword = 2
-        val triple = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
-        Assert.assertNull(triple.third.component2())
-        Assert.assertEquals(200, triple.second.statusCode)
-        JSONAssert.assertEquals(TestUtils.getResFile(fileName = "oauth_token.json"), Gson().toJson(triple.third.get()), false)
+        val token = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
+        Assert.assertNotNull(token)
+        JSONAssert.assertEquals(TestUtils.getResFile(fileName = "oauth_token.json"), Gson().toJson(token), false)
         timer.cancel()
     }
 

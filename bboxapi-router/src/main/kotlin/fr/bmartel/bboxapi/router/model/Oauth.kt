@@ -17,9 +17,9 @@ data class CodeResponse(val code: String, val interval: Int, val token_type: Str
     }
 }
 
-data class TokenResponse(val access_token: String, val refresh_token: String, val token_type: String, val expires_in: Int, val issued_at: String) {
-    class Deserializer : ResponseDeserializable<TokenResponse> {
-        override fun deserialize(content: String) = BboxApiUtils.fromJson<TokenResponse>(content)
+data class OauthToken(var access_token: String, var refresh_token: String, var token_type: String, var expires_in: Int, var issued_at: String) {
+    class Deserializer : ResponseDeserializable<OauthToken> {
+        override fun deserialize(content: String) = BboxApiUtils.fromJson<OauthToken>(content)
     }
 }
 

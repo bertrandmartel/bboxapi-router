@@ -17,7 +17,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
 
     var password: String = ""
     var bboxId: String = ""
-
+    var oauthToken: OauthToken? = null
     var authenticated: Boolean = false
 
     class BboxAuthException(error: BboxException) : Exception("Bbox authentication failed : ${error.exception.toString()}") {
@@ -263,9 +263,25 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         }
     }
 
+    private fun onOAuthenticationSuccess(response: Response) {
+        try {
+            val token = Gson().fromJson(String(response.data), OauthToken::class.java)
+            if (token != null) {
+                oauthToken?.access_token = token.access_token
+                oauthToken?.expires_in = token.expires_in
+                oauthToken?.issued_at = token.issued_at
+                bboxId = ""
+                authenticated = true
+                attempts = 0
+                blockedUntil = Date()
+            }
+        } catch (e: JsonSyntaxException) {
+        }
+    }
+
     inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object : TypeToken<T>() {}.type)
 
-    private inline fun <reified T : Any> authenticateAndExecute(request: Request, noinline handler: (Request, Response, Result<T, FuelError>) -> Unit, json: Boolean = true) {
+    private inline fun <reified T : Any> authenticateAndExecute(request: Request, noinline handler: (Request, Response, Result<T, FuelError>) -> Unit, json: Boolean = true, refresh: Boolean = false) {
         authenticate { authResult ->
             val (req, res, exception, cookie) = authResult
             if (exception != null) {
@@ -274,85 +290,87 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
                 })
             } else {
                 bboxId = cookie ?: ""
+                if (useOauth) request.headers["Authorization"] = "Bearer ${oauthToken?.access_token}" else request.headers["Cookie"] = "BBOX_ID=$bboxId"
                 if (json) {
-                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = object : ResponseDeserializable<T> {
+                    request.responseObject(deserializer = object : ResponseDeserializable<T> {
                         override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
                     }, handler = handler)
                 } else {
-                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString(handler = handler as (Request, Response, Result<*, FuelError>) -> Unit)
+                    request.responseString(handler = handler as (Request, Response, Result<*, FuelError>) -> Unit)
                 }
             }
         }
     }
 
-    private inline fun <reified T : Any> authenticateAndExecute(request: Request, handler: Handler<T>, json: Boolean = true) {
-        authenticate { authResult ->
-            val (req, res, exception, cookie) = authResult
-            if (exception != null) {
-                handler.failure(req, res, Result.error(FuelError(exception)).error)
-            } else {
-                bboxId = cookie ?: ""
-                if (json) {
-                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = object : ResponseDeserializable<T> {
-                        override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
-                    }, handler = handler)
+    private inline fun <reified T : Any> authenticateAndExecute(request: Request, handler: Handler<T>, json: Boolean = true, refresh: Boolean = false) {
+        if (!useOauth) {
+            authenticate { authResult ->
+                val (req, res, exception, cookie) = authResult
+                if (exception != null) {
+                    handler.failure(req, res, Result.error(FuelError(exception)).error)
                 } else {
-                    request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString(handler = handler as Handler<String>)
+                    bboxId = cookie ?: ""
+                    if (useOauth) request.headers["Authorization"] = "Bearer ${oauthToken?.access_token}" else request.headers["Cookie"] = "BBOX_ID=$bboxId"
+                    if (json) {
+                        request.responseObject(deserializer = object : ResponseDeserializable<T> {
+                            override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
+                        }, handler = handler)
+                    } else {
+                        request.responseString(handler = handler as Handler<String>)
+                    }
                 }
             }
+        } else {
+
         }
     }
 
     private inline fun <reified T : Any> processSecureApi(request: Request, handler: Handler<T>, json: Boolean = true) {
-        //if (!useOauth) {
         if (!authenticated) {
             authenticateAndExecute(request, handler, json = json)
         } else {
+            if (useOauth) request.headers["Authorization"] = "Bearer ${oauthToken?.access_token}" else request.headers["Cookie"] = "BBOX_ID=$bboxId"
             if (json) {
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(deserializer = object : ResponseDeserializable<T> {
+                request.responseObject<T>(deserializer = object : ResponseDeserializable<T> {
                     override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
                 }) { req, res, result ->
                     if (res.statusCode == 401) {
-                        authenticateAndExecute(request = request, handler = handler, json = json)
+                        authenticateAndExecute(request = request, handler = handler, json = json, refresh = true)
                     } else {
                         handler.success(req, res, result.get())
                     }
                 }
             } else {
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString { req, res, result ->
+                request.responseString { req, res, result ->
                     if (res.statusCode == 401) {
-                        authenticateAndExecute(request = request, handler = handler, json = json)
+                        authenticateAndExecute(request = request, handler = handler, json = json, refresh = true)
                     } else {
                         handler.success(req, res, result.get() as T)
                     }
                 }
             }
         }
-        /*
-        } else {
-            //TODO: implement oauth
-        }
-        */
     }
 
     private inline fun <reified T : Any> processSecureApi(request: Request, noinline handler: (Request, Response, Result<T, FuelError>) -> Unit, json: Boolean = true) {
         if (!authenticated) {
             authenticateAndExecute(request, handler, json = json)
         } else {
+            if (useOauth) request.headers["Authorization"] = "Bearer ${oauthToken?.access_token}" else request.headers["Cookie"] = "BBOX_ID=$bboxId"
             if (json) {
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(deserializer = object : ResponseDeserializable<T> {
+                request.responseObject<T>(deserializer = object : ResponseDeserializable<T> {
                     override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
                 }) { req, res, result ->
                     if (res.statusCode == 401) {
-                        authenticateAndExecute(request = request, handler = handler, json = json)
+                        authenticateAndExecute(request = request, handler = handler, json = json, refresh = true)
                     } else {
                         handler(req, res, result)
                     }
                 }
             } else {
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString { req, res, result ->
+                request.responseString { req, res, result ->
                     if (res.statusCode == 401) {
-                        authenticateAndExecute(request = request, handler = handler, json = json)
+                        authenticateAndExecute(request = request, handler = handler, json = json, refresh = true)
                     } else {
                         handler(req, res, result as Result<T, FuelError>)
                     }
@@ -369,12 +387,13 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
             })
         } else {
             bboxId = cookie ?: ""
+            if (useOauth) request.headers["Authorization"] = "Bearer ${oauthToken?.access_token}" else request.headers["Cookie"] = "BBOX_ID=$bboxId"
             if (json) {
-                return request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject(deserializer = object : ResponseDeserializable<T> {
+                return request.responseObject(deserializer = object : ResponseDeserializable<T> {
                     override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
                 })
             } else {
-                return request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString() as Triple<Request, Response, Result<T, FuelError>>
+                return request.responseString() as Triple<Request, Response, Result<T, FuelError>>
             }
         }
     }
@@ -383,12 +402,14 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         if (!authenticated) {
             return authenticateAndExecuteSync(request = request, json = json)
         } else {
+            if (useOauth) request.headers["Authorization"] = "Bearer ${oauthToken?.access_token}" else request.headers["Cookie"] = "BBOX_ID=$bboxId"
+
             val triple = if (json) {
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseObject<T>(object : ResponseDeserializable<T> {
+                request.responseObject<T>(object : ResponseDeserializable<T> {
                     override fun deserialize(content: String) = BboxApiUtils.fromJson<T>(content)
                 })
             } else {
-                request.header(pairs = *arrayOf("Cookie" to "BBOX_ID=$bboxId")).responseString()
+                request.responseString()
             }
 
             return if (triple.second.statusCode == 401) {
@@ -430,15 +451,26 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
                 return AuthResult(request = request, response = response, exception = exception, bboxid = null)
             }
             is Result.Success -> {
-                onAuthenticationSuccess(response)
+                if (!useOauth) {
+                    onAuthenticationSuccess(response)
+                } else {
+                    onOAuthenticationSuccess(response)
+                }
                 return AuthResult(request = request, response = response, exception = null, bboxid = bboxId)
             }
         }
     }
 
     fun authenticate(handler: (AuthResult) -> Unit) {
-        buildLoginRequest().response { request, response, result ->
-            handler(processAuth(request = request, response = response, result = result))
+        if (!useOauth) {
+            buildLoginRequest().response { request, response, result ->
+                handler(processAuth(request = request, response = response, result = result))
+            }
+        } else {
+            buildRefreshTokenRequest(refreshToken = oauthToken?.refresh_token
+                    ?: "", scope = listOf(Scope.ALL)).response { request, response, result ->
+                handler(processAuth(request = request, response = response, result = result))
+            }
         }
     }
 
@@ -772,6 +804,7 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
                     handler.failure(req, res, result.error)
                 }
                 is Result.Success -> {
+
                     if (result.get().isEmpty()) {
                         onAuthenticationSuccess(res)
                         handler.success(req, res, null)
@@ -863,39 +896,39 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
     }
 
     fun getToken(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null,
-                 handler: (Request, Response, Result<TokenResponse, FuelError>) -> Unit) {
-        buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(TokenResponse.Deserializer(), handler)
+                 handler: (Request, Response, Result<OauthToken, FuelError>) -> Unit) {
+        buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(OauthToken.Deserializer(), handler)
     }
 
-    fun getToken(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null, handler: Handler<TokenResponse>) {
-        buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(TokenResponse.Deserializer(), handler)
+    fun getToken(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null, handler: Handler<OauthToken>) {
+        buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(OauthToken.Deserializer(), handler)
     }
 
-    fun getTokenSync(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null): Triple<Request, Response, Result<TokenResponse, FuelError>> {
-        return buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(TokenResponse.Deserializer())
-    }
-
-    fun refreshToken(refreshToken: String,
-                     scope: List<Scope>,
-                     handler: (Request, Response, Result<TokenResponse, FuelError>) -> Unit) {
-        buildRefreshTokenRequest(
-                refreshToken = refreshToken,
-                scope = scope).responseObject(TokenResponse.Deserializer(), handler)
+    fun getTokenSync(grantType: GrantType, code: String, scope: List<Scope>, password: String? = null): Triple<Request, Response, Result<OauthToken, FuelError>> {
+        return buildGetTokenRequest(grantType = grantType, code = code, scope = scope, password = password).responseObject(OauthToken.Deserializer())
     }
 
     fun refreshToken(refreshToken: String,
                      scope: List<Scope>,
-                     handler: Handler<TokenResponse>) {
+                     handler: (Request, Response, Result<OauthToken, FuelError>) -> Unit) {
         buildRefreshTokenRequest(
                 refreshToken = refreshToken,
-                scope = scope).responseObject(TokenResponse.Deserializer(), handler)
+                scope = scope).responseObject(OauthToken.Deserializer(), handler)
+    }
+
+    fun refreshToken(refreshToken: String,
+                     scope: List<Scope>,
+                     handler: Handler<OauthToken>) {
+        buildRefreshTokenRequest(
+                refreshToken = refreshToken,
+                scope = scope).responseObject(OauthToken.Deserializer(), handler)
     }
 
     fun refreshTokenSync(refreshToken: String,
-                         scope: List<Scope>): Triple<Request, Response, Result<TokenResponse, FuelError>> {
+                         scope: List<Scope>): Triple<Request, Response, Result<OauthToken, FuelError>> {
         return buildRefreshTokenRequest(
                 refreshToken = refreshToken,
-                scope = scope).responseObject(TokenResponse.Deserializer())
+                scope = scope).responseObject(OauthToken.Deserializer())
     }
 
     private fun waitForPush(maxDuration: Long, pollInterval: Long = 1000): Boolean {
@@ -927,44 +960,67 @@ class BboxApiRouter(val clientId: String? = null, val clientSecret: String? = nu
         return false
     }
 
+    private fun waitForPushOauth(maxDuration: Long, pollInterval: Long = 1000, code: String, scope: List<Scope> = listOf(Scope.ALL)): OauthToken? {
+        var listenTimer = Timer()
+        var stop = false
+        listenTimer.schedule(delay = maxDuration) {
+            stop = true
+        }
+        while (!stop) {
+            val (_, response, tokenResult) = getTokenSync(
+                    grantType = GrantType.BUTTON,
+                    code = code,
+                    scope = scope)
+            if (response.statusCode == 200) {
+                listenTimer.cancel()
+                return tokenResult.get()
+            }
+            Thread.sleep(pollInterval)
+        }
+        listenTimer.cancel()
+        return null
+    }
+
     /**
      * authentication using Oauth with code + button
      */
     fun authenticateOauthButton(maxDuration: Long,
                                 pollInterval: Long = 1000,
-                                scope: List<Scope> = listOf(Scope.ALL)): Triple<Request, Response, Result<*, FuelError>> {
-        val authorizeTriple = authorizeSync(grantType = GrantType.BUTTON, responseType = ResponseType.CODE)
-        if (authorizeTriple.component2().statusCode == 200) {
-            if (waitForPush(maxDuration, pollInterval)) {
-                return getTokenSync(
-                        grantType = GrantType.BUTTON,
-                        code = authorizeTriple.component3().get().code,
-                        scope = scope)
+                                scope: List<Scope> = listOf(Scope.ALL)): OauthToken? {
+        val (_, response, result) = authorizeSync(grantType = GrantType.BUTTON, responseType = ResponseType.CODE)
+        if (response.statusCode == 200) {
+            val token = waitForPushOauth(maxDuration, pollInterval, result.get().code, scope)
+            if (token != null) {
+                oauthToken = token
+                authenticated = true
             }
-            //send custom error failure for pushing button
-            return Triple(
-                    authorizeTriple.component1(),
-                    authorizeTriple.component2(),
-                    Result.error(Exception("failure")).flatMapError {
-                        Result.error(FuelError(Exception("push button failure")))
-                    })
+            return token
         }
-        return authorizeTriple
+        return null
     }
 
     /**
      * authentication using Oauth with code + password
      */
-    fun authenticateOauthPassword(scope: List<Scope> = listOf(Scope.ALL)): Triple<Request, Response, Result<*, FuelError>> {
+    fun authenticateOauthPassword(scope: List<Scope> = listOf(Scope.ALL)): OauthToken? {
         val authorizeTriple = authorizeSync(grantType = GrantType.PASSWORD, responseType = ResponseType.CODE)
         if (authorizeTriple.component2().statusCode == 200) {
-            return getTokenSync(
+            val (_, _, tokenResult) = getTokenSync(
                     grantType = GrantType.PASSWORD,
                     code = authorizeTriple.component3().get().code,
                     password = password,
                     scope = scope)
+            when (tokenResult) {
+                is Result.Failure -> {
+                    return null
+                }
+                is Result.Success -> {
+                    oauthToken = tokenResult.get()
+                    return oauthToken
+                }
+            }
         }
-        return authorizeTriple
+        return null
     }
 
     fun getServices(handler: (Request, Response, Result<List<ServiceObject>, FuelError>) -> Unit) {

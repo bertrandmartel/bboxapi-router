@@ -23,7 +23,7 @@ open class BboxApiTest : TestCase() {
         const val clientSecret = "secret"
         const val clientId = "client"
         private val mockServer = MockWebServer()
-        private val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
+        private val bboxApi = BboxApiRouter()
 
         val password = "admin@box"
 
@@ -1043,21 +1043,29 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun authorize() {
+        val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
+        bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
         TestUtils.executeAsyncTwoParam(input1 = GrantType.BUTTON, input2 = ResponseType.CODE, testcase = this, filename = "code.json", body = bboxApi::authorize)
     }
 
     @Test
     fun authorizeSync() {
+        val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
+        bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
         TestUtils.executeSyncTwoParam(input1 = GrantType.BUTTON, input2 = ResponseType.CODE, filename = "code.json", body = bboxApi::authorizeSync)
     }
 
     @Test
     fun authorizeCb() {
+        val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
+        bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
         TestUtils.executeAsyncTwoParamCb(input1 = GrantType.BUTTON, input2 = ResponseType.CODE, testcase = this, filename = "code.json", body = bboxApi::authorize)
     }
 
     @Test
     fun getTokenButton() {
+        val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
+        bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
         TestUtils.executeAsyncFourParam(
                 input1 = GrantType.BUTTON,
                 input2 = code,
@@ -1070,6 +1078,8 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun getTokenButtonSync() {
+        val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
+        bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
         TestUtils.executeSyncFourParam(
                 input1 = GrantType.BUTTON,
                 input2 = code,
@@ -1082,6 +1092,8 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun getTokenButtonCb() {
+        val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
+        bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
         TestUtils.executeAsyncFourParamCb(
                 input1 = GrantType.BUTTON,
                 input2 = code,
@@ -1130,10 +1142,10 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun waitForPushButtonOauth() {
-        var token = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
-        Assert.assertNull(token)
+        val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
+        bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
         changePassword = 1
-        token = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
+        val token = bboxApi.authenticateOauthButton(maxDuration = 2000, pollInterval = 250)
         Assert.assertNotNull(token)
         JSONAssert.assertEquals(TestUtils.getResFile(fileName = "oauth_token.json"), Gson().toJson(token), false)
         changePassword = 0
@@ -1141,6 +1153,8 @@ open class BboxApiTest : TestCase() {
 
     @Test
     fun waitForPushButtonOauthSimuButton() {
+        val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
+        bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
         val timer = Timer()
         timer.schedule(delay = 1000) {
             changePassword = 1
@@ -1182,7 +1196,10 @@ open class BboxApiTest : TestCase() {
     }
 
     @Test
+    @Ignore
     fun authorizeOauthPassword() {
+        val bboxApi = BboxApiRouter(clientId = clientId, clientSecret = clientSecret)
+        bboxApi.setBasePath(basePath = mockServer.url("").toString().dropLast(n = 1))
         bboxApi.password = password
         TestUtils.executeSyncOneParam(
                 input = listOf(Scope.ALL),

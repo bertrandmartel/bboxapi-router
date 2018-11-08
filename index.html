@@ -317,6 +317,9 @@
             <a href="#setting-password" class="toc-h1 toc-link" data-title="setting-password">Setting Password</a>
           </li>
           <li>
+            <a href="#oauth2-0-experimental" class="toc-h1 toc-link" data-title="oauth2-0-experimental">Oauth2.0 (Experimental)</a>
+          </li>
+          <li>
             <a href="#errors" class="toc-h1 toc-link" data-title="errors">Errors</a>
           </li>
       </div>
@@ -386,7 +389,7 @@
 <tr>
 <th>method</th>
 <th>API call</th>
-<th>require auth</th>
+<th>require basic auth</th>
 <th>description</th>
 </tr>
 </thead><tbody>
@@ -522,6 +525,18 @@
 <td>true</td>
 <td>reset the password</td>
 </tr>
+<tr>
+<td>getToken</td>
+<td><code>POST /oauth/token</code></td>
+<td>false</td>
+<td>get Oauth2.0 access token / refresh token</td>
+</tr>
+<tr>
+<td>refreshToken</td>
+<td><code>POST /oauth/token</code></td>
+<td>false</td>
+<td>refresh an Oauth2.0 access token</td>
+</tr>
 </tbody></table>
 
 <p>(*) some information may be missing when unauthenticated</p>
@@ -533,8 +548,8 @@ with Gradle, from JCenter or MavenCentral :</p>
 <span class="o">}</span>
 
 <span class="n">dependencies</span> <span class="o">{</span>
-    <span class="n">compile</span> <span class="s1">'fr.bmartel:bboxapi-router:2.1.5'</span> <span class="c1">//for JVM</span>
-    <span class="n">compile</span> <span class="s1">'fr.bmartel:bboxapi-router-android:2.1.5'</span> <span class="c1">//for Android</span>
+    <span class="n">compile</span> <span class="s1">'fr.bmartel:bboxapi-router:2.1.6'</span> <span class="c1">//for JVM</span>
+    <span class="n">compile</span> <span class="s1">'fr.bmartel:bboxapi-router-android:2.1.6'</span> <span class="c1">//for Android</span>
 <span class="o">}</span>
 </code></pre><h2 id='synchronous-amp-asynchronous'>Synchronous &amp; Asynchronous</h2>
 <p>All methods have an asynchronous &amp; synchronous version. The synchronous version is suffixed with <code>Sync</code> :</p>
@@ -1881,7 +1896,66 @@ This API doesn't require authentication
 <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
     <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"didn't detect the push button"</span><span class="o">);</span>
 <span class="o">}</span>
-</code></pre><h1 id='errors'>Errors</h1>
+</code></pre><h1 id='oauth2-0-experimental'>Oauth2.0 (Experimental)</h1>
+<blockquote>
+<p>Oauth2.0 via push button</p>
+</blockquote>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApiRouter</span><span class="p">(</span><span class="n">clientId</span> <span class="p">=</span> <span class="s">"client_id_test"</span><span class="p">,</span> <span class="n">clientSecret</span> <span class="p">=</span> <span class="s">"client_secret_test"</span><span class="p">)</span>
+<span class="n">bboxapi</span><span class="p">.</span><span class="n">init</span><span class="p">()</span>
+
+<span class="kd">val</span> <span class="py">token</span> <span class="p">=</span> <span class="n">bboxapi</span><span class="p">.</span><span class="n">authenticateOauthButton</span><span class="p">(</span>
+        <span class="n">maxDuration</span> <span class="p">=</span> <span class="m">20000</span><span class="p">,</span>
+        <span class="n">pollInterval</span> <span class="p">=</span> <span class="m">1000</span><span class="p">,</span>
+        <span class="n">scope</span> <span class="p">=</span> <span class="n">listOf</span><span class="p">(</span><span class="n">Scope</span><span class="p">.</span><span class="n">ALL</span><span class="p">))</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">token</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//store bboxapi.oauthToken?.refresh_token
+</span>    <span class="n">println</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApiRouter</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApiRouter</span><span class="o">(</span><span class="s">"client_id_test"</span><span class="o">,</span> <span class="s">"client_secret_test"</span><span class="o">);</span>
+<span class="n">bboxapi</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Scope</span><span class="o">&gt;</span> <span class="n">scope</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">scope</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">Scope</span><span class="o">.</span><span class="na">ALL</span><span class="o">);</span>
+
+<span class="n">OauthToken</span> <span class="n">token</span> <span class="o">=</span> <span class="n">bboxapi</span><span class="o">.</span><span class="na">authenticateOauthButton</span><span class="o">(</span><span class="mi">20000</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">scope</span><span class="o">);</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="n">token</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//store bboxapi.oauthToken?.refresh_token</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">token</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre>
+<p>You can request Oauth2.0 access token/refresh token via button push.</p>
+
+<p>A call to <code>authenticateOauthButton</code> will wait for a button push. This will give a refresh token &amp; an access token</p>
+
+<p>Subsequent call to secured api endpoint will use this access token instead of the Basic auth Cookie. Afterwards, when secured call return 401, a refresh token request will be automatically issues before retrying the request with the new access token</p>
+
+<p>User should store the refresh token in local storage (<code>bboxapi.oauthToken?.refresh_token</code>) when button is push so you can set it when you initialize <code>BboxApiRouter</code> the next time user start your app</p>
+
+<blockquote>
+<p>Set refresh token manually</p>
+</blockquote>
+<pre class="highlight kotlin tab-kotlin"><code><span class="kd">val</span> <span class="py">bboxapi</span> <span class="p">=</span> <span class="n">BboxApiRouter</span><span class="p">(</span><span class="n">clientId</span> <span class="p">=</span> <span class="s">"client_id_test"</span><span class="p">,</span> <span class="n">clientSecret</span> <span class="p">=</span> <span class="s">"client_secret_test"</span><span class="p">)</span>
+<span class="n">bboxapi</span><span class="p">.</span><span class="n">init</span><span class="p">()</span>
+<span class="n">bboxapi</span><span class="p">.</span><span class="n">oauthToken</span> <span class="p">=</span> <span class="n">OauthToken</span><span class="p">(</span>
+        <span class="n">access_token</span> <span class="p">=</span> <span class="s">""</span><span class="p">,</span>
+        <span class="n">refresh_token</span> <span class="p">=</span> <span class="s">"some refresh token you have stored"</span><span class="p">,</span>
+        <span class="n">expires_in</span> <span class="p">=</span> <span class="m">0</span><span class="p">,</span>
+        <span class="n">issued_at</span> <span class="p">=</span> <span class="s">""</span><span class="p">,</span>
+        <span class="n">token_type</span> <span class="p">=</span> <span class="s">"Bearer"</span>
+<span class="p">)</span>
+</code></pre><pre class="highlight java tab-java"><code><span class="n">BboxApiRouter</span> <span class="n">bboxapi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BboxApiRouter</span><span class="o">(</span><span class="s">"client_id_test"</span><span class="o">,</span> <span class="s">"client_secret_test"</span><span class="o">);</span>
+<span class="n">bboxapi</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+<span class="n">bboxapi</span><span class="o">.</span><span class="na">setOauthToken</span><span class="o">(</span><span class="k">new</span> <span class="n">OauthToken</span><span class="o">(</span>
+        <span class="s">""</span><span class="o">,</span> <span class="c1">//access token</span>
+        <span class="s">"some refresh token you have stored"</span><span class="o">,</span> <span class="c1">//refresh token</span>
+        <span class="s">"Bearer"</span><span class="o">,</span> <span class="c1">//token type</span>
+        <span class="mi">0</span><span class="o">,</span> <span class="c1">//expires_in</span>
+        <span class="s">""</span> <span class="c1">//issues_at</span>
+<span class="o">));</span>
+</code></pre>
+<aside class="warning">This API is experimental</aside>
+<h1 id='errors'>Errors</h1>
 <blockquote>
 <p>check exception type &amp; response status code on failure :</p>
 </blockquote>

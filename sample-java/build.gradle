@@ -4,3 +4,19 @@ dependencies {
     implementation "com.github.kittinunf.fuel:fuel-gson:$fuelGsonVersion"
     compile project(':bboxapi-router')
 }
+
+def generateTask(className) {
+    def javaTask = project.tasks.create(name: className, type: JavaExec)
+    javaTask.group = "examples"
+    javaTask.classpath = sourceSets.main.runtimeClasspath
+    javaTask.classpath += sourceSets.main.resources
+    javaTask.main = "fr.bmartel.bboxapi.router.javasample.${className}"
+}
+
+sourceSets.main.java.srcDirs.each {
+    fileTree(
+            dir: it
+    ).each { file ->
+        generateTask(file.name.take(file.name.lastIndexOf('.')))
+    }
+}

@@ -1,26 +1,28 @@
 apply plugin: 'kotlin'
 
-sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
-    test.java.srcDirs += 'src/test/kotlin'
-    test.resources.srcDirs = ['src/test/resources']
-}
+
 dependencies {
     implementation "com.github.kittinunf.fuel:fuel-gson:$fuelGsonVersion"
-    compile project(':bboxapi-router')
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation project(':bboxapi-router')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+}
+
+def generateTask(className) {
+    def javaTask = project.tasks.create(name: className, type: JavaExec)
+    javaTask.group = "examples"
+    javaTask.classpath = sourceSets.main.runtimeClasspath
+    javaTask.classpath += sourceSets.main.resources
+    javaTask.main = "fr.bmartel.bboxapi.router.sample.${className}Kt"
+}
+
+sourceSets.main.kotlin.srcDirs.each {
+    fileTree(
+            dir: it
+    ).each { file ->
+        generateTask(file.name.take(file.name.lastIndexOf('.')))
+    }
 }
 
 repositories {
     mavenCentral()
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
